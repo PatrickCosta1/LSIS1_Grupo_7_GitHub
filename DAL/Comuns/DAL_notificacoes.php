@@ -8,5 +8,11 @@ class DAL_Notificacoes {
         $stmt->execute([$userId]);
         return $stmt->fetchAll();
     }
+
+    public function marcarComoLida($notificacaoId) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("UPDATE notificacoes SET lida = 1 WHERE id = ?");
+        return $stmt->execute([$notificacaoId]);
+    }
 }
 ?>

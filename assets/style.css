@@ -1,0 +1,293 @@
+.tabela-permissoes {
+    border-collapse: collapse;
+    width: 98vw;
+    min-width: 900px;
+    margin: 24px auto 0 auto;
+    background: #fff;
+}
+.tabela-permissoes th, .tabela-permissoes td {
+    border: 1px solid #ccc;
+    padding: 10px 8px;
+    text-align: center;
+    max-width: 180px;
+    word-break: break-word;
+    font-size: 15px;
+}
+.tabela-permissoes th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    font-size: 15px;
+}
+.tabela-permissoes tr:nth-child(even) {
+    background: #f6f6fa;
+}
+.tabela-permissoes tr:hover {
+    background: #e6e6f7;
+}
+.btn-salvar {
+    margin-top: 16px;
+    background: #667eea;
+    color: #fff;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-salvar:hover {
+    background: #4b5fc9;
+}
+.perfil-col {
+    font-weight: bold;
+    background: #ececff;
+}
+.tabela-scroll {
+    overflow-x: auto;
+    width: 100%;
+    margin: 0 auto;
+}
+@media (max-width: 1200px) {
+    .tabela-permissoes th, .tabela-permissoes td {
+        font-size: 13px;
+        max-width: 120px;
+    }
+}
+.ficha-form-moderna {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(102,126,234,0.08);
+    padding: 32px 24px;
+    max-width: 600px;
+    margin: 32px auto;
+}
+
+.ficha-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px 32px;
+}
+
+.ficha-campo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
+.ficha-campo label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.ficha-campo input,
+.ficha-campo select {
+    padding: 8px 10px;
+    border: 1px solid #ccd;
+    border-radius: 6px;
+    font-size: 15px;
+    background: #f8f8fc;
+    transition: border 0.2s;
+}
+
+.ficha-campo input:focus,
+.ficha-campo select:focus {
+    border: 1.5px solid #667eea;
+    outline: none;
+    background: #fff;
+}
+
+.success-message, .error-message {
+    max-width: 600px;
+    margin: 16px auto 0 auto;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 16px;
+}
+.success-message {
+    background: #e6ffe6;
+    color: #1a7f1a;
+    border: 1px solid #b2e6b2;
+}
+.error-message {
+    background: #ffeaea;
+    color: #a33;
+    border: 1px solid #e6b2b2;
+}
+.tabela-colaboradores-moderna {
+    width: 98vw;
+    max-width: 1400px;
+    margin: 32px auto 0 auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+    box-shadow: 0 4px 24px rgba(102,126,234,0.08);
+    border-radius: 10px;
+    overflow: hidden;
+    table-layout: fixed;
+}
+.tabela-colaboradores-moderna th, .tabela-colaboradores-moderna td {
+    border: 1px solid #e0e0f0;
+    padding: 10px 6px;
+    text-align: center;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.tabela-colaboradores-moderna th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    font-size: 15px;
+}
+.tabela-colaboradores-moderna tr:nth-child(even) {
+    background: #f6f6fa;
+}
+.tabela-colaboradores-moderna tr:hover {
+    background: #e6e6f7;
+}
+.btn, .btn-danger {
+    padding: 6px 18px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    margin: 2px;
+    transition: background 0.2s;
+}
+.btn {
+    background: #667eea;
+    color: #fff;
+}
+.btn:hover {
+    background: #4b5fc9;
+}
+.btn-danger {
+    background: #e74c3c;
+    color: #fff;
+}
+.btn-danger:hover {
+    background: #b93222;
+}
+.add-colab-btn {
+    margin: 24px 0 0 0;
+    display: inline-block;
+}
+@media (max-width: 1100px) {
+    .tabela-colaboradores-moderna th, .tabela-colaboradores-moderna td {
+        font-size: 13px;
+        padding: 7px 3px;
+    }
+}
+@media (max-width: 800px) {
+    .tabela-colaboradores-moderna {
+        font-size: 12px;
+        max-width: 99vw;
+    }
+    .tabela-colaboradores-moderna th, .tabela-colaboradores-moderna td {
+        padding: 5px 2px;
+    }
+}
+.tabela-colaboradores-compacta {
+    width: 95vw;
+    max-width: 1100px;
+    min-width: 650px;
+    margin: 32px auto 0 auto;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 4px 24px rgba(102,126,234,0.08);
+    border-radius: 10px;
+    overflow: hidden;
+    table-layout: auto;
+}
+.tabela-colaboradores-compacta th, .tabela-colaboradores-compacta td {
+    border: 1px solid #e0e0f0;
+    padding: 8px 6px;
+    text-align: center;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+.tabela-colaboradores-compacta th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    font-size: 14px;
+}
+.tabela-colaboradores-compacta tr:nth-child(even) {
+    background: #f6f6fa;
+}
+.tabela-colaboradores-compacta tr:hover {
+    background: #e6e6f7;
+}
+.btn, .btn-danger {
+    padding: 6px 18px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    margin: 2px;
+    transition: background 0.2s;
+}
+.btn-sm {
+    padding: 3px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+.btn {
+    background: #667eea;
+    color: #fff;
+}
+.btn:hover {
+    background: #4b5fc9;
+}
+.btn-danger {
+    background: #e74c3c;
+    color: #fff;
+}
+.btn-danger:hover {
+    background: #b93222;
+}
+.add-colab-btn {
+    margin: 24px 0 0 0;
+    display: inline-block;
+}
+@media (max-width: 1000px) {
+    .tabela-colaboradores-compacta {
+        width: 99vw;
+        min-width: 0;
+        max-width: 99vw;
+    }
+    .tabela-colaboradores-compacta th, .tabela-colaboradores-compacta td {
+        font-size: 12px;
+        max-width: 80px;
+        padding: 5px 2px;
+    }
+}
+.tabela-colaboradores-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    margin: 0 auto 32px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(102,126,234,0.08);
+    padding: 32px 0;
+    min-width: 0;
+    max-width: 1200px;
+}
+
+.tabela-colaboradores-compacta {
+    width: 95%;
+    min-width: 650px;
+    max-width: 1050px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    table-layout: auto;
+}

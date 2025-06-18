@@ -21,9 +21,9 @@ $nome = htmlspecialchars($colabBLL->getColaboradorName($_SESSION['user_id']));
         <nav>
             <a href="dashboard_colaborador.php">Dashboard</a>
             <a href="ficha_colaborador.php">Minha Ficha</a>
-            <a href="notificacoes.php">Notificações</a>
-            <a href="perfil.php">Perfil</a>
-            <a href="logout.php">Sair</a>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <a href="../Comuns/perfil.php">Perfil</a>
+            <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
     <main>
@@ -37,7 +37,7 @@ $nome = htmlspecialchars($colabBLL->getColaboradorName($_SESSION['user_id']));
             <div class="card">
                 <h2>Notificações</h2>
                 <p>Veja alertas e mensagens importantes.</p>
-                <a href="notificacoes.php" class="btn">Ver Notificações</a>
+                <a href="../Comuns/notificacoes.php" class="btn">Ver Notificações</a>
             </div>
         </section>
     </main>

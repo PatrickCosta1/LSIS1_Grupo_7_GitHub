@@ -6,8 +6,11 @@ class RHColaboradoresManager {
     public function __construct() {
         $this->dal = new DAL_ColaboradoresGerir();
     }
-    public function getAllColaboradores() {
-        return $this->dal->getAllColaboradores();
+    public function getAllColaboradores($excludeUserId = null) {
+        return $this->dal->getAllColaboradores($excludeUserId);
+    }
+    public function addColaborador($dados) {
+        return $this->dal->addColaborador($dados);
     }
 }
 ?>

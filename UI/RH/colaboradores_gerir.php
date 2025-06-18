@@ -1,64 +1,103 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'rh') {
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admin'])) {
     header('Location: ../Comuns/erro.php');
     exit();
 }
 require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
 $colabBLL = new RHColaboradoresManager();
-$colaboradores = $colabBLL->getAllColaboradores();
+$colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <title>Gestão de Colaboradores - Portal Tlantic</title>
+    <link rel="stylesheet" href="../../assets/style.css">
     <link rel="stylesheet" href="../../assets/teste.css">
 </head>
 <body>
     <header>
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
-            <a href="dashboard_rh.php">Dashboard</a>
-            <a href="colaboradores_gerir.php">Colaboradores</a>
-            <a href="equipas.php">Equipas</a>
-            <a href="relatorios.php">Relatórios</a>
-            <a href="exportar.php">Exportar</a>
-            <a href="notificacoes.php">Notificações</a>
-            <a href="perfil.php">Perfil</a>
-            <a href="logout.php">Sair</a>
+            <?php if ($_SESSION['profile'] === 'admin'): ?>
+                <a href="../Admin/dashboard_admin.php">Dashboard</a>
+                <a href="../Admin/utilizadores.php">Utilizadores</a>
+                <a href="../Admin/permissoes.php">Permissões</a>
+                <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
+                <a href="../Admin/alertas.php">Alertas</a>
+                <a href="colaboradores_gerir.php">Colaboradores</a>
+                <a href="equipas.php">Equipas</a>
+                <a href="relatorios.php">Relatórios</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php else: ?>
+                <a href="dashboard_rh.php">Dashboard</a>
+                <a href="colaboradores_gerir.php">Colaboradores</a>
+                <a href="equipas.php">Equipas</a>
+                <a href="relatorios.php">Relatórios</a>
+                <a href="exportar.php">Exportar</a>
+                <a href="../Comuns/notificacoes.php">Notificações</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php endif; ?>
         </nav>
     </header>
     <main>
         <h1>Gestão de Colaboradores</h1>
-        <table class="tabela-colaboradores">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Função</th>
-                    <th>Equipa</th>
-                    <th>Email</th>
-                    <th>Estado</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($colaboradores as $col): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($col['nome']); ?></td>
-                    <td><?php echo htmlspecialchars($col['funcao']); ?></td>
-                    <td><?php echo htmlspecialchars($col['equipa']); ?></td>
-                    <td><?php echo htmlspecialchars($col['email']); ?></td>
-                    <td><?php echo $col['ativo'] ? 'Ativo' : 'Inativo'; ?></td>
-                    <td>
-                        <a href="../Colaborador/ficha_colaborador.php?id=<?php echo $col['id']; ?>" class="btn">Ver/Editar</a>
-                        <a href="#" class="btn btn-danger">Remover</a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-        <a href="colaborador_novo.php" class="btn">Adicionar Novo Colaborador</a>
+        <div class="tabela-colaboradores-wrapper">
+            <table class="tabela-colaboradores tabela-colaboradores-compacta">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Tipo</th>
+                        <th>Função</th>
+                        <th>Equipa</th>
+                        <th>Estado</th>
+                        <th style="min-width:90px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($colaboradores as $col): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($col['nome']); ?></td>
+                        <td><?php echo htmlspecialchars($col['username'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($col['email']); ?></td>
+                        <td>
+                            <?php
+                            if (isset($col['perfil'])) {
+                                $tipo = strtolower($col['perfil']);
+                                if ($tipo === 'coordenador') {
+                                    echo 'Coordenador';
+                                } elseif ($tipo === 'colaborador') {
+                                    echo 'Colaborador';
+                                } elseif ($tipo === 'rh') {
+                                    echo 'RH';
+                                } elseif ($tipo === 'admin') {
+                                    echo 'Administrador';
+                                } else {
+                                    echo ucfirst($tipo);
+                                }
+                            } else {
+                                echo 'Colaborador';
+                            }
+                            ?>
+                        </td>
+                        <td><?php echo htmlspecialchars($col['funcao']); ?></td>
+                        <td><?php echo htmlspecialchars($col['equipa']); ?></td>
+                        <td><?php echo $col['ativo'] ? 'Ativo' : 'Inativo'; ?></td>
+                        <td>
+                            <a href="../Colaborador/ficha_colaborador.php?id=<?php echo $col['id']; ?>" class="btn btn-sm">Ver</a>
+                            <a href="#" class="btn btn-danger btn-sm">Remover</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <a href="colaborador_novo.php" class="btn add-colab-btn">Adicionar Novo Colaborador</a>
     </main>
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">

@@ -7,33 +7,110 @@ if (!isset($_SESSION['user_id'])) {
 require_once '../../BLL/Comuns/BLL_perfil.php';
 $userBLL = new PerfilManager();
 $user = $userBLL->getUserById($_SESSION['user_id']);
+
+$success_message = '';
+$error_message = '';
+
+// Menu dinâmico por perfil (sempre pelo $_SESSION['profile'])
+$menu = [];
+switch ($_SESSION['profile']) {
+    case 'admin':
+        $menu = [
+            'Dashboard' => '../Admin/dashboard_admin.php',
+            'Utilizadores' => '../Admin/utilizadores.php',
+            'Permissões' => '../Admin/permissoes.php',
+            'Campos Personalizados' => '../Admin/campos_personalizados.php',
+            'Alertas' => '../Admin/alertas.php',
+            'Colaboradores' => '../RH/colaboradores_gerir.php',
+            'Equipas' => '../RH/equipas.php',
+            'Relatórios' => '../RH/relatorios.php',
+            'Perfil' => '../Comuns/perfil.php',
+            'Sair' => '../Comuns/logout.php'
+        ];
+        break;
+    case 'rh':
+        $menu = [
+            'Dashboard' => '../RH/dashboard_rh.php',
+            'Colaboradores' => '../RH/colaboradores_gerir.php',
+            'Equipas' => '../RH/equipas.php',
+            'Relatórios' => '../RH/relatorios.php',
+            'Exportar' => '../RH/exportar.php',
+            'Notificações' => '../Comuns/notificacoes.php',
+            'Perfil' => '../Comuns/perfil.php',
+            'Sair' => '../Comuns/logout.php'
+        ];
+        break;
+    case 'coordenador':
+        $menu = [
+            'Dashboard' => '../Coordenador/dashboard_coordenador.php',
+            'Minha Ficha' => '../Colaborador/ficha_colaborador.php',
+            'Minha Equipa' => '../Coordenador/equipa.php',
+            'Relatórios Equipa' => '../Coordenador/relatorios_equipa.php',
+            'Notificações' => '../Comuns/notificacoes.php',
+            'Perfil' => '../Comuns/perfil.php',
+            'Sair' => '../Comuns/logout.php'
+        ];
+        break;
+    case 'colaborador':
+        $menu = [
+            'Dashboard' => '../Colaborador/dashboard_colaborador.php',
+            'Minha Ficha' => '../Colaborador/ficha_colaborador.php',
+            'Notificações' => '../Comuns/notificacoes.php',
+            'Perfil' => '../Comuns/perfil.php',
+            'Sair' => '../Comuns/logout.php'
+        ];
+        break;
+    case 'convidado':
+        $menu = [
+            'Preencher Dados' => '../Convidado/onboarding_convidado.php',
+            'Sair' => '../Comuns/logout.php'
+        ];
+        break;
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <title>Meu Perfil - Portal Tlantic</title>
+    <link rel="stylesheet" href="../../assets/style.css">
     <link rel="stylesheet" href="../../assets/teste.css">
 </head>
 <body>
     <header>
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
-            <a href="../Colaborador/dashboard_colaborador.php">Dashboard</a>
-            <a href="../Colaborador/ficha_colaborador.php">Minha Ficha</a>
-            <a href="notificacoes.php">Notificações</a>
-            <a href="perfil.php">Perfil</a>
-            <a href="logout.php">Sair</a>
+            <?php foreach ($menu as $label => $url): ?>
+                <a href="<?php echo $url; ?>"><?php echo $label; ?></a>
+            <?php endforeach; ?>
         </nav>
     </header>
     <main>
         <h1>Meu Perfil</h1>
-        <form class="ficha-form">
-            <label>Nome: <input type="text" value="<?php echo htmlspecialchars($user['nome'] ?? ''); ?>"></label><br><br>
-            <label>Email: <input type="email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>"></label><br><br>
-            <label>Username: <input type="text" value="<?php echo htmlspecialchars($user['username'] ?? ''); ?>"></label><br><br>
-            <label>Nova Palavra-passe: <input type="password"></label><br><br>
-            <button type="submit" class="btn">Guardar Alterações</button>
+        <?php if ($success_message): ?><div class="success-message"><?php echo $success_message; ?></div><?php endif; ?>
+        <?php if ($error_message): ?><div class="error-message"><?php echo $error_message; ?></div><?php endif; ?>
+        <form class="ficha-form ficha-form-moderna" method="POST">
+            <div class="ficha-grid">
+                <div class="ficha-campo">
+                    <label>Nome:</label>
+                    <input type="text" name="nome" value="<?php echo htmlspecialchars($user['nome'] ?? ''); ?>">
+                </div>
+                <div class="ficha-campo">
+                    <label>Email:</label>
+                    <input type="email" name="email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>">
+                </div>
+                <div class="ficha-campo">
+                    <label>Username:</label>
+                    <input type="text" name="username" value="<?php echo htmlspecialchars($user['username'] ?? ''); ?>">
+                </div>
+                <div class="ficha-campo">
+                    <label>Nova Palavra-passe:</label>
+                    <input type="password" name="nova_password">
+                </div>
+            </div>
+            <div style="text-align:center; margin-top: 24px;">
+                <button type="submit" class="btn">Guardar Alterações</button>
+            </div>
         </form>
     </main>
 

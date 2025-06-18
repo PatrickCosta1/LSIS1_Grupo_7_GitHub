@@ -8,5 +8,15 @@ class DAL_Perfil {
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
+
+    public function updateUserProfile($id, $nome, $email, $username) {
+        $pdo = Database::getConnection();
+        // Atualiza utilizadores e colaboradores
+        $stmt1 = $pdo->prepare("UPDATE utilizadores SET email = ?, username = ? WHERE id = ?");
+        $stmt2 = $pdo->prepare("UPDATE colaboradores SET nome = ? WHERE utilizador_id = ?");
+        $ok1 = $stmt1->execute([$email, $username, $id]);
+        $ok2 = $stmt2->execute([$nome, $id]);
+        return $ok1 && $ok2;
+    }
 }
 ?>

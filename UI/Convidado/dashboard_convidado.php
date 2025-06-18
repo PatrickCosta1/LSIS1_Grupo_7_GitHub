@@ -20,6 +20,7 @@ $nome = htmlspecialchars($convidadoBLL->getConvidadoName($_SESSION['user_id']));
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <a href="onboarding_convidado.html">Preencher Dados</a>
+            <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
     <main>

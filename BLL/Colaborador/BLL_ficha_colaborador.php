@@ -9,5 +9,13 @@ class ColaboradorFichaManager {
     public function getColaboradorByUserId($userId) {
         return $this->dal->getColaboradorByUserId($userId);
     }
+    public function updateColaboradorByUserId($userId, $dados) {
+        return $this->dal->updateColaboradorByUserId($userId, $dados);
+    }
+    public function getColaboradorById($colabId) {
+        return $this->dal->getColaboradorById($colabId);
+    }
+}
+?>
 }
 ?>

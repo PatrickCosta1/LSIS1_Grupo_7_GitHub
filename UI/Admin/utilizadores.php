@@ -24,11 +24,11 @@ $utilizadores = $utilBLL->getAllUtilizadores();
             <a href="permissoes.php">Permissões</a>
             <a href="campos_personalizados.php">Campos Personalizados</a>
             <a href="alertas.php">Alertas</a>
-            <a href="colaboradores_gerir.php">Colaboradores</a>
-            <a href="equipas.php">Equipas</a>
-            <a href="relatorios.php">Relatórios</a>
-            <a href="perfil.php">Perfil</a>
-            <a href="logout.php">Sair</a>
+            <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
+            <a href="../RH/equipas.php">Equipas</a>
+            <a href="../RH/relatorios.php">Relatórios</a>
+            <a href="../Comuns/perfil.php">Perfil</a>
+            <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
     <main>
@@ -53,8 +53,8 @@ $utilizadores = $utilBLL->getAllUtilizadores();
                     <td><?php echo htmlspecialchars($u['perfil']); ?></td>
                     <td><?php echo $u['ativo'] ? 'Ativo' : 'Inativo'; ?></td>
                     <td>
-                        <a href="#" class="btn">Editar</a>
-                        <a href="#" class="btn btn-danger">Remover</a>
+                        <a href="utilizador_editar.php?id=<?php echo $u['id']; ?>" class="btn">Editar</a>
+                        <a href="utilizador_remover.php?id=<?php echo $u['id']; ?>" class="btn btn-danger" onclick="return confirm('Tem a certeza?');">Remover</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

@@ -1,8 +1,23 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'rh') {
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admin'])) {
     header('Location: ../Comuns/erro.php');
     exit();
+}
+
+if (isset($_GET['export']) && $_GET['export'] === 'colaboradores') {
+    require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
+    $colabBLL = new RHColaboradoresManager();
+    $colaboradores = $colabBLL->getAllColaboradores();
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment;filename="colaboradores.csv"');
+    $out = fopen('php://output', 'w');
+    fputcsv($out, ['Nome', 'Função', 'Equipa', 'Email', 'Estado']);
+    foreach ($colaboradores as $col) {
+        fputcsv($out, [$col['nome'], $col['funcao'], $col['equipa'], $col['email'], $col['ativo'] ? 'Ativo' : 'Inativo']);
+    }
+    fclose($out);
+    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -16,14 +31,27 @@ if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'rh') {
     <header>
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
-            <a href="dashboard_rh.php">Dashboard</a>
-            <a href="colaboradores_gerir.php">Colaboradores</a>
-            <a href="equipas.php">Equipas</a>
-            <a href="relatorios.php">Relatórios</a>
-            <a href="exportar.php">Exportar</a>
-            <a href="notificacoes.php">Notificações</a>
-            <a href="perfil.php">Perfil</a>
-            <a href="logout.php">Sair</a>
+            <?php if ($_SESSION['profile'] === 'admin'): ?>
+                <a href="../Admin/dashboard_admin.php">Dashboard</a>
+                <a href="../Admin/utilizadores.php">Utilizadores</a>
+                <a href="../Admin/permissoes.php">Permissões</a>
+                <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
+                <a href="../Admin/alertas.php">Alertas</a>
+                <a href="colaboradores_gerir.php">Colaboradores</a>
+                <a href="equipas.php">Equipas</a>
+                <a href="relatorios.php">Relatórios</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php else: ?>
+                <a href="dashboard_rh.php">Dashboard</a>
+                <a href="colaboradores_gerir.php">Colaboradores</a>
+                <a href="equipas.php">Equipas</a>
+                <a href="relatorios.php">Relatórios</a>
+                <a href="exportar.php">Exportar</a>
+                <a href="../Comuns/notificacoes.php">Notificações</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php endif; ?>
         </nav>
     </header>
     <main>
@@ -36,7 +64,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'rh') {
                     <option>Por perfil</option>
                 </select>
             </label>
-            <button type="submit" class="btn">Exportar para Excel</button>
+            <a href="exportar.php?export=colaboradores" class="btn">Exportar para Excel</a>
         </form>
     </main>
 

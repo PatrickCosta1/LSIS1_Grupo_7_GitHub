@@ -9,5 +9,8 @@ class NotificacoesManager {
     public function getNotificacoesByUserId($userId) {
         return $this->dal->getNotificacoesByUserId($userId);
     }
+    public function marcarComoLida($notificacaoId) {
+        return $this->dal->marcarComoLida($notificacaoId);
+    }
 }
 ?>

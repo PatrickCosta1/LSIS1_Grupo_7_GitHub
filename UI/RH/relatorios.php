@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'rh') {
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admin'])) {
     header('Location: ../Comuns/erro.php');
     exit();
 }
@@ -19,14 +19,27 @@ $indicadores = $relatoriosBLL->getIndicadoresGlobais();
     <header>
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
-            <a href="dashboard_rh.php">Dashboard</a>
-            <a href="colaboradores_gerir.php">Colaboradores</a>
-            <a href="equipas.php">Equipas</a>
-            <a href="relatorios.php">Relatórios</a>
-            <a href="exportar.php">Exportar</a>
-            <a href="notificacoes.php">Notificações</a>
-            <a href="perfil.php">Perfil</a>
-            <a href="logout.php">Sair</a>
+            <?php if ($_SESSION['profile'] === 'admin'): ?>
+                <a href="../Admin/dashboard_admin.php">Dashboard</a>
+                <a href="../Admin/utilizadores.php">Utilizadores</a>
+                <a href="../Admin/permissoes.php">Permissões</a>
+                <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
+                <a href="../Admin/alertas.php">Alertas</a>
+                <a href="colaboradores_gerir.php">Colaboradores</a>
+                <a href="equipas.php">Equipas</a>
+                <a href="relatorios.php">Relatórios</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php else: ?>
+                <a href="dashboard_rh.php">Dashboard</a>
+                <a href="colaboradores_gerir.php">Colaboradores</a>
+                <a href="equipas.php">Equipas</a>
+                <a href="relatorios.php">Relatórios</a>
+                <a href="exportar.php">Exportar</a>
+                <a href="../Comuns/notificacoes.php">Notificações</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php endif; ?>
         </nav>
     </header>
     <main>

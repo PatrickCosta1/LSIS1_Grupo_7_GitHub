@@ -20,7 +20,7 @@ $colab = $convidadoBLL->getConvidadoByUserId($_SESSION['user_id']);
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <a href="onboarding_convidado.php">Preencher Dados</a>
-            <a href="logout.php">Sair</a>
+            <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
     <main>

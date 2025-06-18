@@ -7,12 +7,14 @@ if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'coordenador') {
 require_once '../../BLL/Coordenador/BLL_dashboard_coordenador.php';
 $coordBLL = new CoordenadorDashboardManager();
 $nome = htmlspecialchars($coordBLL->getCoordenadorName($_SESSION['user_id']));
+$equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Coordenador - Portal Tlantic</title>
+    <link rel="stylesheet" href="../../assets/style.css">
     <link rel="stylesheet" href="../../assets/teste.css">
 </head>
 <body>
@@ -20,31 +22,39 @@ $nome = htmlspecialchars($coordBLL->getCoordenadorName($_SESSION['user_id']));
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <a href="dashboard_coordenador.php">Dashboard</a>
-            <a href="ficha_colaborador.php">Minha Ficha</a>
+            <a href="../Colaborador/ficha_colaborador.php">Minha Ficha</a>
             <a href="equipa.php">Minha Equipa</a>
             <a href="relatorios_equipa.php">Relatórios Equipa</a>
-            <a href="notificacoes.php">Notificações</a>
-            <a href="perfil.php">Perfil</a>
-            <a href="logout.php">Sair</a>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <a href="../Comuns/perfil.php">Perfil</a>
+            <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
     <main>
         <h1>Olá, <?php echo $nome; ?></h1>
         <section class="dashboard-cards">
             <div class="card">
-                <h2>Minha Equipa</h2>
-                <p>Consulte e acompanhe os dados da sua equipa.</p>
-                <a href="equipa.php" class="btn">Ver Equipa</a>
+                <h2>Minhas Equipas</h2>
+                <?php if ($equipas): ?>
+                    <ul>
+                        <?php foreach ($equipas as $e): ?>
+                            <li>
+                                <?php echo htmlspecialchars($e['nome']); ?>
+                                <a href="equipa.php?id=<?php echo $e['id']; ?>" class="btn">Ver Equipa</a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <p>Não gere nenhuma equipa.</p>
+                <?php endif; ?>
             </div>
             <div class="card">
                 <h2>Relatórios da Equipa</h2>
-                <p>Indicadores e dashboards da equipa.</p>
                 <a href="relatorios_equipa.php" class="btn">Ver Relatórios</a>
             </div>
             <div class="card">
                 <h2>Notificações</h2>
-                <p>Alertas e mensagens importantes.</p>
-                <a href="notificacoes.php" class="btn">Ver Notificações</a>
+                <a href="../Comuns/notificacoes.php" class="btn">Ver Notificações</a>
             </div>
         </section>
     </main>

@@ -9,5 +9,11 @@ class CoordenadorDashboardManager {
     public function getCoordenadorName($userId) {
         return $this->dal->getCoordenadorName($userId);
     }
+    public function getEquipasByCoordenador($userId) {
+        return $this->dal->getEquipasByCoordenador($userId);
+    }
+    public function getColaboradoresByEquipa($equipaId) {
+        return $this->dal->getColaboradoresByEquipa($equipaId);
+    }
 }
 ?>

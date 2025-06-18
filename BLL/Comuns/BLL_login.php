@@ -10,8 +10,6 @@
  */
 class Authenticator
 {
-    private $maxLoginAttempts = 5;
-    private $lockoutDuration = 900; // 15 minutos em segundos
     private $dal;
 
     public function __construct()
@@ -30,12 +28,17 @@ class Authenticator
     public function login($username, $password)
     {
         $user = $this->dal->getUserByUsername($username);
-        if ($user && password_verify($password, $user['password_hash']) && $user['ativo']) {
+        if ($user && $user['ativo'] && $password === $user['password']) {
+            $colabName = $this->dal->getColaboradorName($user['id']);
+            if (!$colabName) {
+                $colabName = $user['username'];
+            }
+            $profile = strtolower($this->dal->getProfileName($user['perfil_id']));
             return [
                 'id' => $user['id'],
                 'username' => $user['username'],
-                'profile' => $this->dal->getProfileName($user['perfil_id']),
-                'name' => $this->dal->getColaboradorName($user['id'])
+                'profile' => $profile,
+                'name' => $colabName
             ];
         }
         return false;
@@ -49,21 +52,9 @@ class Authenticator
      */
     public function logout($userId)
     {
-        // Implementação futura
+        session_unset();
+        session_destroy();
         return true;
-    }
-
-    /**
-     * Verificar se o utilizador tem permissão para ação específica
-     * 
-     * @param string $userProfile Perfil do utilizador
-     * @param string $requiredPermission Permissão requerida
-     * @return bool
-     */
-    public function hasPermission($userProfile, $requiredPermission)
-    {
-        // Implementação futura
-        return false;
     }
 
     /**
@@ -76,33 +67,11 @@ class Authenticator
      */
     public function changePassword($userId, $oldPassword, $newPassword)
     {
-        // Implementação futura
-        return false;
-    }
-
-    /**
-     * Verificar palavra-passe com hash
-     * 
-     * @param string $password Palavra-passe em texto simples
-     * @param string $hash Hash armazenado
-     * @return bool
-     */
-    private function verifyPassword($password, $hash)
-    {
-        // Implementação futura
-        return false;
-    }
-
-    /**
-     * Gerar hash seguro para palavra-passe
-     * 
-     * @param string $password Palavra-passe em texto simples
-     * @return string
-     */
-    private function hashPassword($password)
-    {
-        // Implementação futura
-        return '';
+        $user = $this->dal->getUserById($userId);
+        if (!$user) return false;
+        if ($user['password'] !== $oldPassword) return false;
+        if (!$this->isPasswordStrong($newPassword)) return false;
+        return $this->dal->updatePassword($userId, $newPassword);
     }
 
     /**
@@ -113,86 +82,26 @@ class Authenticator
      */
     private function isPasswordStrong($password)
     {
-        // Implementação futura
-        return false;
+        // Pelo menos 6 caracteres
+        return strlen($password) >= 6;
     }
 
     /**
-     * Verificar se conta está bloqueada por tentativas falhadas
+     * Obter permissões do perfil de utilizador a partir da base de dados
      * 
-     * @param string $username Nome de utilizador
-     * @return bool
-     */
-    private function isAccountLocked($username)
-    {
-        // Implementação futura
-        return false;
-    }
-
-    /**
-     * Registar tentativa falhada de login
-     * 
-     * @param string $username Nome de utilizador
-     */
-    private function recordFailedAttempt($username)
-    {
-        // Implementação futura
-    }
-
-    /**
-     * Limpar tentativas falhadas de login
-     * 
-     * @param string $username Nome de utilizador
-     */
-    private function clearFailedAttempts($username)
-    {
-        // Implementação futura
-    }
-
-    /**
-     * Atualizar timestamp do último login
-     * 
-     * @param int $userId ID do utilizador
-     */
-    private function updateLastLogin($userId)
-    {
-        // Implementação futura
-    }
-
-    /**
-     * Gerar token de sessão seguro
-     * 
-     * @return string
-     */
-    public function generateSecureToken()
-    {
-        // Implementação futura
-        return '';
-    }
-
-    /**
-     * Validar token de sessão
-     * 
-     * @param int $userId ID do utilizador
-     * @param string $token Token a validar
-     * @return bool
-     */
-    public function validateSessionToken($userId, $token)
-    {
-        // Implementação futura
-        return false;
-    }
-
-    /**
-     * Obter permissões do perfil de utilizador
-     * 
-     * @param string $profile Perfil
+     * @param int $perfil_id
      * @return array
      */
-    public function getProfilePermissions($profile)
+    public function getProfilePermissions($perfil_id)
     {
-        // Implementação futura
-        return [];
+        $pdo = \Database::getConnection();
+        $stmt = $pdo->prepare("SELECT permissao, valor FROM permissoes WHERE perfil_id = ?");
+        $stmt->execute([$perfil_id]);
+        $perms = [];
+        while ($row = $stmt->fetch()) {
+            $perms[$row['permissao']] = (bool)$row['valor'];
+        }
+        return $perms;
     }
 }
 ?>

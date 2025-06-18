@@ -1,7 +1,7 @@
 <?php
 class Database {
     private static $host = 'localhost';
-    private static $db   = 'nome_da_base_de_dados';
+    private static $db   = 'lsis1_grupo7';
     private static $user = 'root';
     private static $pass = '';
     private static $charset = 'utf8mb4';

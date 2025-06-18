@@ -3,6 +3,7 @@ require_once '../../BLL/Comuns/BLL_login.php';
 
 session_start();
 
+
 $error_message = '';
 $success_message = '';
 
@@ -16,7 +17,7 @@ if (isset($_SESSION['user_id'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
-    
+
     // Basic validation
     if (empty($username) || empty($password)) {
         $error_message = 'Por favor, preencha todos os campos obrigatórios.';
@@ -28,42 +29,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $auth = new Authenticator();
             $user = $auth->login($username, $password);
-            
+
             if ($user) {
-                // Set session variables
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['profile'] = $user['profile'];
                 $_SESSION['name'] = $user['name'];
                 $_SESSION['last_login'] = date('Y-m-d H:i:s');
-                
-                // Redirect based on user profile
+
+                // Redirecionamento por perfil
                 switch ($user['profile']) {
                     case 'guest':
-                        header('Location: guest_dashboard.php');
+                    case 'convidado':
+                        header('Location: ../Convidado/dashboard_convidado.php');
                         break;
                     case 'employee':
-                        header('Location: employee_dashboard.php');
+                    case 'colaborador':
+                        header('Location: ../Colaborador/dashboard_colaborador.php');
                         break;
                     case 'coordinator':
-                        header('Location: coordinator_dashboard.php');
+                    case 'coordenador':
+                        header('Location: ../Coordenador/dashboard_coordenador.php');
                         break;
                     case 'hr':
-                        header('Location: hr_dashboard.php');
+                    case 'rh':
+                        header('Location: ../RH/dashboard_rh.php');
                         break;
                     case 'admin':
-                        header('Location: admin_dashboard.php');
+                        header('Location: ../Admin/dashboard_admin.php');
                         break;
                     default:
-                        header('Location: index.php');
+                        header('Location: ../index.php');
                 }
                 exit();
             } else {
-                $error_message = 'Credenciais inválidas. Verifique o utilizador e palavra-passe.';
+                $error_message = 'Credenciais inválidas ou conta inativa.';
             }
         } catch (Exception $e) {
             error_log('Login error: ' . $e->getMessage());
             $error_message = 'Erro interno do sistema. Tente novamente mais tarde.';
+            // DEBUG: mostrar erro real no ecrã (remova depois de resolver)
+            echo '<div style="color:red;font-weight:bold;">Erro real: ' . htmlspecialchars($e->getMessage()) . '</div>';
         }
     }
 }
@@ -150,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p class="version">Portal de Colaboradores v1.0 | Sistema LSIS1</p>
         </div>
     </div>
-    <script src="../assets/login.js"></script>
+    <script src="../../assets/login.js"></script> <!-- Corrigido caminho -->
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
       <button id="open-chatbot" style="
@@ -181,3 +187,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="../../assets/chatbot.js"></script>
 </body>
 </html>
+
+<?php
+// Após login bem-sucedido, redirecionamento já está correto.
+// Para garantir navegação correta, ajuste os menus em cada dashboard/ficha conforme o perfil do utilizador.
+
+// Exemplo de menu dinâmico (coloque este bloco PHP no início de cada página protegida):
+/*
+$menu = [];
+switch ($_SESSION['profile']) {
+    case 'admin':
+        $menu = [
+            'Dashboard' => '../Admin/dashboard_admin.php',
+            'Utilizadores' => '../Admin/utilizadores.php',
+            'Permissões' => '../Admin/permissoes.php',
+            'Campos Personalizados' => '../Admin/campos_personalizados.php',
+            'Alertas' => '../Admin/alertas.php',
+            'Colaboradores' => '../Admin/colaboradores_gerir.php',
+            'Equipas' => '../Admin/equipas.php',
+            'Relatórios' => '../Admin/relatorios.php',
+            'Perfil' => '../Comuns/perfil.php',
+            'Sair' => '../Comuns/logout.php'
+        ];
+        break;
+    case 'rh':
+        $menu = [
+            'Dashboard' => '../RH/dashboard_rh.php',
+            'Colaboradores' => '../RH/colaboradores_gerir.php',
+            'Equipas' => '../RH/equipas.php',
+            'Relatórios' => '../RH/relatorios.php',
+            'Exportar' => '../RH/exportar.php',
+            'Notificações' => '../Comuns/notificacoes.php',
+            'Perfil' => '../Comuns/perfil.php',
+            'Sair' => '../Comuns/logout.php'
+        ];
+        break;
+    case 'coordenador':
+        $menu = [
+            'Dashboard' => '../Coordenador/dashboard_coordenador.php',
+            'Minha Ficha' => '../Colaborador/ficha_colaborador.php',
+            'Minha Equipa' => '../Coordenador/equipa.php',
+            'Relatórios Equipa' => '../Coordenador/relatorios_equipa.php',
+            'Notificações' => '../Comuns/notificacoes.php',
+            'Perfil' => '../Comuns/perfil.php',
+            'Sair' => '../Comuns/logout.php'
+        ];
+        break;
+    case 'colaborador':
+        $menu = [
+            'Dashboard' => '../Colaborador/dashboard_colaborador.php',
+            'Minha Ficha' => '../Colaborador/ficha_colaborador.php',
+            'Notificações' => '../Comuns/notificacoes.php',
+            'Perfil' => '../Comuns/perfil.php',
+            'Sair' => '../Comuns/logout.php'
+        ];
+        break;
+    case 'convidado':
+        $menu = [
+            'Preencher Dados' => '../Convidado/onboarding_convidado.php',
+            'Sair' => '../Comuns/logout.php'
+        ];
+        break;
+}
+*/
+
+// Para mostrar o menu:
+/*
+<nav>
+<?php foreach ($menu as $label => $url): ?>
+    <a href="<?php echo $url; ?>"><?php echo $label; ?></a>
+<?php endforeach; ?>
+</nav>
+*/

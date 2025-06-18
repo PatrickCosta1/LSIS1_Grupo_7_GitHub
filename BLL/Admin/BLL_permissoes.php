@@ -9,5 +9,8 @@ class AdminPermissoesManager {
     public function getAllPermissoes() {
         return $this->dal->getAllPermissoes();
     }
+    public function updatePermissao($id, $valor) {
+        return $this->dal->updatePermissao($id, $valor);
+    }
 }
 ?>

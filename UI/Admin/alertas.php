@@ -24,11 +24,11 @@ $alertas = $alertasBLL->getAllAlertas();
             <a href="permissoes.php">Permissões</a>
             <a href="campos_personalizados.php">Campos Personalizados</a>
             <a href="alertas.php">Alertas</a>
-            <a href="colaboradores_gerir.php">Colaboradores</a>
-            <a href="equipas.php">Equipas</a>
-            <a href="relatorios.php">Relatórios</a>
-            <a href="perfil.php">Perfil</a>
-            <a href="logout.php">Sair</a>
+            <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
+            <a href="../RH/equipas.php">Equipas</a>
+            <a href="../RH/relatorios.php">Relatórios</a>
+            <a href="../Comuns/perfil.php">Perfil</a>
+            <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
     <main>

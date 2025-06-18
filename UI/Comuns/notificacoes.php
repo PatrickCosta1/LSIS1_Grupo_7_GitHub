@@ -7,23 +7,65 @@ if (!isset($_SESSION['user_id'])) {
 require_once '../../BLL/Comuns/BLL_notificacoes.php';
 $notBLL = new NotificacoesManager();
 $notificacoes = $notBLL->getNotificacoesByUserId($_SESSION['user_id']);
+
+// Marcar notificação como lida
+if (isset($_GET['marcar_lida'])) {
+    $notificacaoId = $_GET['marcar_lida'];
+    $notBLL->marcarComoLida($notificacaoId);
+    header('Location: notificacoes.php');
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <title>Notificações - Portal Tlantic</title>
+    <link rel="stylesheet" href="../../assets/style.css">
     <link rel="stylesheet" href="../../assets/teste.css">
 </head>
 <body>
     <header>
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
-            <a href="../Colaborador/dashboard_colaborador.php">Dashboard</a>
-            <a href="../Colaborador/ficha_colaborador.php">Minha Ficha</a>
-            <a href="notificacoes.php">Notificações</a>
-            <a href="perfil.php">Perfil</a>
-            <a href="logout.php">Sair</a>
+            <?php if ($_SESSION['profile'] === 'coordenador'): ?>
+                <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
+                <a href="../Colaborador/ficha_colaborador.php">Minha Ficha</a>
+                <a href="../Coordenador/equipa.php">Minha Equipa</a>
+                <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
+                <a href="../Comuns/notificacoes.php">Notificações</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php elseif ($_SESSION['profile'] === 'colaborador'): ?>
+                <a href="../Colaborador/dashboard_colaborador.php">Dashboard</a>
+                <a href="../Colaborador/ficha_colaborador.php">Minha Ficha</a>
+                <a href="../Comuns/notificacoes.php">Notificações</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php elseif ($_SESSION['profile'] === 'admin'): ?>
+                <a href="../Admin/dashboard_admin.php">Dashboard</a>
+                <a href="../Admin/utilizadores.php">Utilizadores</a>
+                <a href="../Admin/permissoes.php">Permissões</a>
+                <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
+                <a href="../Admin/alertas.php">Alertas</a>
+                <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
+                <a href="../RH/equipas.php">Equipas</a>
+                <a href="../RH/relatorios.php">Relatórios</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php elseif ($_SESSION['profile'] === 'rh'): ?>
+                <a href="../RH/dashboard_rh.php">Dashboard</a>
+                <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
+                <a href="../RH/equipas.php">Equipas</a>
+                <a href="../RH/relatorios.php">Relatórios</a>
+                <a href="../RH/exportar.php">Exportar</a>
+                <a href="../Comuns/notificacoes.php">Notificações</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php else: ?>
+                <a href="../Convidado/onboarding_convidado.php">Preencher Dados</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php endif; ?>
         </nav>
     </header>
     <main>
@@ -34,6 +76,9 @@ $notificacoes = $notBLL->getNotificacoesByUserId($_SESSION['user_id']);
                     <strong><?php echo htmlspecialchars($n['tipo']); ?>:</strong>
                     <?php echo htmlspecialchars($n['mensagem']); ?>
                     <span class="data"><?php echo htmlspecialchars($n['data_envio']); ?></span>
+                    <?php if (!$n['lida']): ?>
+                        <a href="notificacoes.php?marcar_lida=<?php echo $n['id']; ?>" class="btn">Marcar como lida</a>
+                    <?php endif; ?>
                 </li>
             <?php endforeach; ?>
         </ul>
