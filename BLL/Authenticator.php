@@ -17,6 +17,8 @@ class Authenticator
     {
         // Inicialização futura se necessário
     }
+    //bllshh
+
 
     /**
      * Autenticar login do utilizador
