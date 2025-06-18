@@ -1,6 +1,6 @@
 <?php
 // UI/login.php
-require_once '../BLL/Authenticator.php';
+require_once '../../BLL/Authenticator.php';
 
 session_start();
 
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
     <div class="login-container">
-        <img src="../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-img" />
+        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-img" />
         <h1 class="welcome-text">Bem-vindo</h1>
         <p class="subtitle">Portal do Colaborador</p>
         <p class="company-info">Tlantic - Unlocking Smart Business</p>
@@ -179,6 +179,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
       </iframe>
     </div>
-    <script src="../assets/chatbot.js"></script>
+    <script src="../../assets/chatbot.js"></script>
 </body>
 </html>
