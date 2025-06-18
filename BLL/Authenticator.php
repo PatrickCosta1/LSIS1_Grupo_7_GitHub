@@ -17,7 +17,7 @@ class Authenticator
     {
         // Inicialização futura se necessário
     }
-    //bllshhmmmm
+    //
 
 
     /**
