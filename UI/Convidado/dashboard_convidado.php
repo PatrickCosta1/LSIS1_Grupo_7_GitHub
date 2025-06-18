@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'convidado') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/Convidado/BLL_dashboard_convidado.php';
+$convidadoBLL = new ConvidadoDashboardManager();
+$nome = htmlspecialchars($convidadoBLL->getConvidadoName($_SESSION['user_id']));
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -13,9 +23,9 @@
         </nav>
     </header>
     <main>
-        <h1>Bem-vindo(a)!</h1>
+        <h1>Bem-vindo(a), <?php echo $nome; ?>!</h1>
         <p>Por favor, preencha os seus dados para iniciar o processo de contratação.</p>
-        <a href="onboarding_convidado.html" class="btn">Preencher Dados</a>
+        <a href="onboarding_convidado.php" class="btn">Preencher Dados</a>
     </main>
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">

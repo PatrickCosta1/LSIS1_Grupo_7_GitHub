@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'colaborador') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/Colaborador/BLL_ficha_colaborador.php';
+$colabBLL = new ColaboradorFichaManager();
+$colab = $colabBLL->getColaboradorByUserId($_SESSION['user_id']);
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -19,17 +29,17 @@
     <main>
         <h1>Minha Ficha de Colaborador</h1>
         <form class="ficha-form">
-            <label>Nome: <input type="text" value="Maria Silva"></label><br><br>
-            <label>Morada: <input type="text" value="Rua Exemplo, 123"></label><br><br>
-            <label>Estado Civil: <input type="text" value="Solteiro(a)"></label><br><br>
-            <label>Habilitações: <input type="text" value="Licenciatura"></label><br><br>
-            <label>Contacto Emergência: <input type="text" value="912345678"></label><br><br>
-            <label>Matrícula Viatura: <input type="text" value="AA-00-BB"></label><br><br>
-            <label>Data de Nascimento: <input type="date" value="1990-01-01"></label><br><br>
-            <label>Função: <input type="text" value="Analista"></label><br><br>
-            <label>Geografia: <input type="text" value="Porto"></label><br><br>
-            <label>Nível Hierárquico: <input type="text" value="Júnior"></label><br><br>
-            <label>Remuneração: <input type="number" value="1200"></label><br><br>
+            <label>Nome: <input type="text" value="<?php echo htmlspecialchars($colab['nome'] ?? ''); ?>"></label><br><br>
+            <label>Morada: <input type="text" value="<?php echo htmlspecialchars($colab['morada'] ?? ''); ?>"></label><br><br>
+            <label>Estado Civil: <input type="text" value="<?php echo htmlspecialchars($colab['estado_civil'] ?? ''); ?>"></label><br><br>
+            <label>Habilitações: <input type="text" value="<?php echo htmlspecialchars($colab['habilitacoes'] ?? ''); ?>"></label><br><br>
+            <label>Contacto Emergência: <input type="text" value="<?php echo htmlspecialchars($colab['contacto_emergencia'] ?? ''); ?>"></label><br><br>
+            <label>Matrícula Viatura: <input type="text" value="<?php echo htmlspecialchars($colab['matricula_viatura'] ?? ''); ?>"></label><br><br>
+            <label>Data de Nascimento: <input type="date" value="<?php echo htmlspecialchars($colab['data_nascimento'] ?? ''); ?>"></label><br><br>
+            <label>Função: <input type="text" value="<?php echo htmlspecialchars($colab['funcao'] ?? ''); ?>"></label><br><br>
+            <label>Geografia: <input type="text" value="<?php echo htmlspecialchars($colab['geografia'] ?? ''); ?>"></label><br><br>
+            <label>Nível Hierárquico: <input type="text" value="<?php echo htmlspecialchars($colab['nivel_hierarquico'] ?? ''); ?>"></label><br><br>
+            <label>Remuneração: <input type="number" value="<?php echo htmlspecialchars($colab['remuneracao'] ?? ''); ?>"></label><br><br>
             <button type="submit" class="btn">Guardar Alterações</button>
         </form>
     </main>

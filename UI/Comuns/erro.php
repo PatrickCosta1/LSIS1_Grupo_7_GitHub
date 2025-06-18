@@ -1,3 +1,6 @@
+<?php
+// Página de erro de acesso
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>

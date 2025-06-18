@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'colaborador') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/Colaborador/BLL_dashboard_colaborador.php';
+$colabBLL = new ColaboradorDashboardManager();
+$nome = htmlspecialchars($colabBLL->getColaboradorName($_SESSION['user_id']));
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -17,7 +27,7 @@
         </nav>
     </header>
     <main>
-        <h1>Olá, [Nome do Colaborador]</h1>
+        <h1>Olá, <?php echo $nome; ?></h1>
         <section class="dashboard-cards">
             <div class="card">
                 <h2>Minha Ficha</h2>

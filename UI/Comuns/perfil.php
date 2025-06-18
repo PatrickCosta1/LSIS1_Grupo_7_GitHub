@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/Comuns/BLL_perfil.php';
+$userBLL = new PerfilManager();
+$user = $userBLL->getUserById($_SESSION['user_id']);
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -19,9 +29,9 @@
     <main>
         <h1>Meu Perfil</h1>
         <form class="ficha-form">
-            <label>Nome: <input type="text" value="Maria Silva"></label><br><br>
-            <label>Email: <input type="email" value="maria@tlantic.com"></label><br><br>
-            <label>Username: <input type="text" value="maria"></label><br><br>
+            <label>Nome: <input type="text" value="<?php echo htmlspecialchars($user['nome'] ?? ''); ?>"></label><br><br>
+            <label>Email: <input type="email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>"></label><br><br>
+            <label>Username: <input type="text" value="<?php echo htmlspecialchars($user['username'] ?? ''); ?>"></label><br><br>
             <label>Nova Palavra-passe: <input type="password"></label><br><br>
             <button type="submit" class="btn">Guardar Alterações</button>
         </form>

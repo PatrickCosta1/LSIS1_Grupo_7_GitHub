@@ -1,5 +1,5 @@
 <?php
-// BLL/Comuns/BLL_login.php
+// BLL/Authenticator.php
 
 /**
  * Camada de Lógica de Negócio para Autenticação
@@ -12,13 +12,13 @@ class Authenticator
 {
     private $maxLoginAttempts = 5;
     private $lockoutDuration = 900; // 15 minutos em segundos
-    private $dal;
 
     public function __construct()
     {
-        require_once __DIR__ . '/../../DAL/Comuns/DAL_login.php';
-        $this->dal = new DAL_Login();
+        // Inicialização futura se necessário
     }
+    //ola
+
 
     /**
      * Autenticar login do utilizador
@@ -29,13 +29,23 @@ class Authenticator
      */
     public function login($username, $password)
     {
-        $user = $this->dal->getUserByUsername($username);
+        $userDAL = new UserDataAccess();
+        $user = $userDAL->getUserByUsername($username);
         if ($user && password_verify($password, $user['password_hash']) && $user['ativo']) {
+            // Buscar nome do colaborador
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare("SELECT nome FROM colaboradores WHERE utilizador_id = ?");
+            $stmt->execute([$user['id']]);
+            $colab = $stmt->fetch();
+            // Buscar perfil
+            $stmt2 = $pdo->prepare("SELECT nome FROM perfis WHERE id = ?");
+            $stmt2->execute([$user['perfil_id']]);
+            $perfil = $stmt2->fetch();
             return [
                 'id' => $user['id'],
                 'username' => $user['username'],
-                'profile' => $this->dal->getProfileName($user['perfil_id']),
-                'name' => $this->dal->getColaboradorName($user['id'])
+                'profile' => $perfil ? $perfil['nome'] : '',
+                'name' => $colab ? $colab['nome'] : $user['username']
             ];
         }
         return false;

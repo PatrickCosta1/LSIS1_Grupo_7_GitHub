@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'rh') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/RH/BLL_relatorios.php';
+$relatoriosBLL = new RHRelatoriosManager();
+$indicadores = $relatoriosBLL->getIndicadoresGlobais();
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -21,6 +31,15 @@
     </header>
     <main>
         <h1>Relatórios e Dashboards</h1>
+        <section>
+            <h2>Indicadores Gerais</h2>
+            <ul>
+                <li>Total de colaboradores: <?php echo htmlspecialchars($indicadores['total_colaboradores']); ?></li>
+                <li>Colaboradores ativos: <?php echo htmlspecialchars($indicadores['ativos']); ?></li>
+                <li>Colaboradores inativos: <?php echo htmlspecialchars($indicadores['inativos']); ?></li>
+                <li>Total de equipas: <?php echo htmlspecialchars($indicadores['total_equipas']); ?></li>
+            </ul>
+        </section>
         <section class="dashboard-cards">
             <div class="card">
                 <h2>Aniversários por Equipa</h2>

@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'rh') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>

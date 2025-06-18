@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'admin') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/Admin/BLL_utilizadores.php';
+$utilBLL = new AdminUtilizadoresManager();
+$utilizadores = $utilBLL->getAllUtilizadores();
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -35,28 +45,19 @@
                 </tr>
             </thead>
             <tbody>
+                <?php foreach ($utilizadores as $u): ?>
                 <tr>
-                    <td>Maria Silva</td>
-                    <td>maria</td>
-                    <td>maria@tlantic.com</td>
-                    <td>Colaborador</td>
-                    <td>Ativo</td>
+                    <td><?php echo htmlspecialchars($u['nome']); ?></td>
+                    <td><?php echo htmlspecialchars($u['username']); ?></td>
+                    <td><?php echo htmlspecialchars($u['email']); ?></td>
+                    <td><?php echo htmlspecialchars($u['perfil']); ?></td>
+                    <td><?php echo $u['ativo'] ? 'Ativo' : 'Inativo'; ?></td>
                     <td>
                         <a href="#" class="btn">Editar</a>
                         <a href="#" class="btn btn-danger">Remover</a>
                     </td>
                 </tr>
-                <tr>
-                    <td>João Costa</td>
-                    <td>joao</td>
-                    <td>joao@tlantic.com</td>
-                    <td>RH</td>
-                    <td>Ativo</td>
-                    <td>
-                        <a href="#" class="btn">Editar</a>
-                        <a href="#" class="btn btn-danger">Remover</a>
-                    </td>
-                </tr>
+                <?php endforeach; ?>
             </tbody>
         </table>
         <a href="utilizador_novo.php" class="btn">Adicionar Novo Utilizador</a>

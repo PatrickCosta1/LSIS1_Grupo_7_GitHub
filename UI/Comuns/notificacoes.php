@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/Comuns/BLL_notificacoes.php';
+$notBLL = new NotificacoesManager();
+$notificacoes = $notBLL->getNotificacoesByUserId($_SESSION['user_id']);
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -19,9 +29,13 @@
     <main>
         <h1>Notificações</h1>
         <ul class="notificacoes-lista">
-            <li><strong>Alerta:</strong> Atualize a sua morada. <span class="data">2025-06-18</span></li>
-            <li><strong>Info:</strong> Novo relatório disponível. <span class="data">2025-06-15</span></li>
-            <li><strong>Alerta:</strong> Faltam documentos no seu processo. <span class="data">2025-06-10</span></li>
+            <?php foreach ($notificacoes as $n): ?>
+                <li>
+                    <strong><?php echo htmlspecialchars($n['tipo']); ?>:</strong>
+                    <?php echo htmlspecialchars($n['mensagem']); ?>
+                    <span class="data"><?php echo htmlspecialchars($n['data_envio']); ?></span>
+                </li>
+            <?php endforeach; ?>
         </ul>
     </main>
 

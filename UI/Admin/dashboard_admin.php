@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'admin') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/Admin/BLL_dashboard_admin.php';
+$adminBLL = new AdminDashboardManager();
+$nome = htmlspecialchars($adminBLL->getAdminName($_SESSION['user_id']));
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -22,7 +32,7 @@
         </nav>
     </header>
     <main>
-        <h1>Olá, Administrador</h1>
+        <h1>Olá, <?php echo $nome; ?></h1>
         <section class="dashboard-cards">
             <div class="card">
                 <h2>Gestão de Utilizadores</h2>

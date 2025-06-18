@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'rh') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
+$colabBLL = new RHColaboradoresManager();
+$colaboradores = $colabBLL->getAllColaboradores();
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -33,28 +43,19 @@
                 </tr>
             </thead>
             <tbody>
+                <?php foreach ($colaboradores as $col): ?>
                 <tr>
-                    <td>Maria Silva</td>
-                    <td>Analista</td>
-                    <td>Equipa A</td>
-                    <td>maria@tlantic.com</td>
-                    <td>Ativo</td>
+                    <td><?php echo htmlspecialchars($col['nome']); ?></td>
+                    <td><?php echo htmlspecialchars($col['funcao']); ?></td>
+                    <td><?php echo htmlspecialchars($col['equipa']); ?></td>
+                    <td><?php echo htmlspecialchars($col['email']); ?></td>
+                    <td><?php echo $col['ativo'] ? 'Ativo' : 'Inativo'; ?></td>
                     <td>
-                        <a href="../Colaborador/ficha_colaborador.php?id=1" class="btn">Ver/Editar</a>
+                        <a href="../Colaborador/ficha_colaborador.php?id=<?php echo $col['id']; ?>" class="btn">Ver/Editar</a>
                         <a href="#" class="btn btn-danger">Remover</a>
                     </td>
                 </tr>
-                <tr>
-                    <td>João Costa</td>
-                    <td>Gestor</td>
-                    <td>Equipa B</td>
-                    <td>joao@tlantic.com</td>
-                    <td>Ativo</td>
-                    <td>
-                        <a href="../Colaborador/ficha_colaborador.php?id=2" class="btn">Ver/Editar</a>
-                        <a href="#" class="btn btn-danger">Remover</a>
-                    </td>
-                </tr>
+                <?php endforeach; ?>
             </tbody>
         </table>
         <a href="colaborador_novo.php" class="btn">Adicionar Novo Colaborador</a>

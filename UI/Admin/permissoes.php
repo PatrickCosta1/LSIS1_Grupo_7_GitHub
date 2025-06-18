@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'admin') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/Admin/BLL_permissoes.php';
+$permBLL = new AdminPermissoesManager();
+$permissoes = $permBLL->getAllPermissoes();
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -32,26 +42,13 @@
                 </tr>
             </thead>
             <tbody>
+                <?php foreach ($permissoes as $p): ?>
                 <tr>
-                    <td>Colaborador</td>
-                    <td>Ver/Editar ficha própria</td>
+                    <td><?php echo htmlspecialchars($p['perfil']); ?></td>
+                    <td><?php echo htmlspecialchars($p['permissoes']); ?></td>
                     <td><a href="#" class="btn">Editar</a></td>
                 </tr>
-                <tr>
-                    <td>Coordenador</td>
-                    <td>Ver equipa, relatórios equipa</td>
-                    <td><a href="#" class="btn">Editar</a></td>
-                </tr>
-                <tr>
-                    <td>RH</td>
-                    <td>Gestão total, relatórios, exportação</td>
-                    <td><a href="#" class="btn">Editar</a></td>
-                </tr>
-                <tr>
-                    <td>Administrador</td>
-                    <td>Todas as permissões</td>
-                    <td><a href="#" class="btn">Editar</a></td>
-                </tr>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </main>

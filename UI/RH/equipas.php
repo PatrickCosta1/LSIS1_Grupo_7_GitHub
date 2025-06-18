@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'rh') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/RH/BLL_equipas.php';
+$equipasBLL = new RHEquipasManager();
+$equipas = $equipasBLL->getAllEquipas();
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -31,24 +41,17 @@
                 </tr>
             </thead>
             <tbody>
+                <?php foreach ($equipas as $eq): ?>
                 <tr>
-                    <td>Equipa A</td>
-                    <td>Joana Lima</td>
-                    <td>8</td>
+                    <td><?php echo htmlspecialchars($eq['nome']); ?></td>
+                    <td><?php echo htmlspecialchars($eq['coordenador']); ?></td>
+                    <td><?php echo htmlspecialchars($eq['num_colaboradores']); ?></td>
                     <td>
-                        <a href="equipa.php?id=1" class="btn">Ver</a>
+                        <a href="equipa.php?id=<?php echo $eq['id']; ?>" class="btn">Ver</a>
                         <a href="#" class="btn btn-danger">Remover</a>
                     </td>
                 </tr>
-                <tr>
-                    <td>Equipa B</td>
-                    <td>João Costa</td>
-                    <td>5</td>
-                    <td>
-                        <a href="equipa.php?id=2" class="btn">Ver</a>
-                        <a href="#" class="btn btn-danger">Remover</a>
-                    </td>
-                </tr>
+                <?php endforeach; ?>
             </tbody>
         </table>
         <a href="equipa_nova.php" class="btn">Adicionar Nova Equipa</a>

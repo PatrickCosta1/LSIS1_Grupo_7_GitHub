@@ -1,5 +1,4 @@
 <?php
-// UI/login.php
 require_once '../../BLL/Comuns/BLL_login.php';
 
 session_start();

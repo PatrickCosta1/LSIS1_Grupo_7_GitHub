@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'admin') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/Admin/BLL_alertas.php';
+$alertasBLL = new AdminAlertasManager();
+$alertas = $alertasBLL->getAllAlertas();
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -33,24 +43,14 @@
                 </tr>
             </thead>
             <tbody>
+                <?php foreach ($alertas as $a): ?>
                 <tr>
-                    <td>Atualização anual de dados</td>
-                    <td>12 meses</td>
-                    <td>Sim</td>
+                    <td><?php echo htmlspecialchars($a['tipo']); ?></td>
+                    <td><?php echo htmlspecialchars($a['periodicidade_meses'] ? $a['periodicidade_meses'].' meses' : ''); ?></td>
+                    <td><?php echo $a['ativo'] ? 'Sim' : 'Não'; ?></td>
                     <td><a href="#" class="btn">Editar</a></td>
                 </tr>
-                <tr>
-                    <td>Voucher telemóvel</td>
-                    <td>23 meses</td>
-                    <td>Sim</td>
-                    <td><a href="#" class="btn">Editar</a></td>
-                </tr>
-                <tr>
-                    <td>Documentos pendentes</td>
-                    <td>Ao submeter alteração</td>
-                    <td>Sim</td>
-                    <td><a href="#" class="btn">Editar</a></td>
-                </tr>
+                <?php endforeach; ?>
             </tbody>
         </table><br>
         <a href="alerta_novo.php" class="btn">Adicionar Novo Alerta</a>

@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'admin') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/Admin/BLL_campos_personalizados.php';
+$camposBLL = new AdminCamposPersonalizadosManager();
+$campos = $camposBLL->getAllCampos();
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -32,22 +42,16 @@
                 </tr>
             </thead>
             <tbody>
+                <?php foreach ($campos as $c): ?>
                 <tr>
-                    <td>Cartão de Saúde</td>
-                    <td>Texto</td>
+                    <td><?php echo htmlspecialchars($c['nome']); ?></td>
+                    <td><?php echo htmlspecialchars($c['tipo']); ?></td>
                     <td>
                         <a href="#" class="btn">Editar</a>
                         <a href="#" class="btn btn-danger">Remover</a>
                     </td>
                 </tr>
-                <tr>
-                    <td>Data de Renovação</td>
-                    <td>Data</td>
-                    <td>
-                        <a href="#" class="btn">Editar</a>
-                        <a href="#" class="btn btn-danger">Remover</a>
-                    </td>
-                </tr>
+                <?php endforeach; ?>
             </tbody>
         </table>
         <a href="campo_novo.php" class="btn">Adicionar Novo Campo</a>

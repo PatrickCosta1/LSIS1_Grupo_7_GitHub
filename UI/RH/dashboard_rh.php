@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'rh') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/RH/BLL_dashboard_rh.php';
+$rhBLL = new RHDashboardManager();
+$nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -20,7 +30,7 @@
         </nav>
     </header>
     <main>
-        <h1>Olá, Equipa de RH</h1>
+        <h1>Olá, <?php echo $nome; ?></h1>
         <section class="dashboard-cards">
             <div class="card">
                 <h2>Gestão de Colaboradores</h2>

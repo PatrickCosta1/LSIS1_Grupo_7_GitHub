@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'convidado') {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
+require_once '../../BLL/Convidado/BLL_onboarding_convidado.php';
+$convidadoBLL = new OnboardingConvidadoManager();
+$colab = $convidadoBLL->getConvidadoByUserId($_SESSION['user_id']);
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -16,10 +26,10 @@
     <main>
         <h1>Preencha os seus dados</h1>
         <form class="ficha-form">
-            <label>Nome: <input type="text"></label><br><br>
-            <label>Email: <input type="email"></label><br><br>
-            <label>Morada: <input type="text"></label><br><br>
-            <label>Contacto: <input type="text"></label><br><br>
+            <label>Nome: <input type="text" value="<?php echo htmlspecialchars($colab['nome'] ?? ''); ?>"></label><br><br>
+            <label>Email: <input type="email" value="<?php echo htmlspecialchars($colab['email'] ?? ''); ?>"></label><br><br>
+            <label>Morada: <input type="text" value="<?php echo htmlspecialchars($colab['morada'] ?? ''); ?>"></label><br><br>
+            <label>Contacto: <input type="text" value="<?php echo htmlspecialchars($colab['contacto_emergencia'] ?? ''); ?>"></label><br><br>
             <button type="submit" class="btn">Submeter</button>
         </form>
     </main>
