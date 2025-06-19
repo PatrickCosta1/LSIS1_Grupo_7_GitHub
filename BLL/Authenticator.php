@@ -29,7 +29,25 @@ class Authenticator
      */
     public function login($username, $password)
     {
-        // Implementação futura
+        $userDAL = new UserDataAccess();
+        $user = $userDAL->getUserByUsername($username);
+        if ($user && password_verify($password, $user['password_hash']) && $user['ativo']) {
+            // Buscar nome do colaborador
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare("SELECT nome FROM colaboradores WHERE utilizador_id = ?");
+            $stmt->execute([$user['id']]);
+            $colab = $stmt->fetch();
+            // Buscar perfil
+            $stmt2 = $pdo->prepare("SELECT nome FROM perfis WHERE id = ?");
+            $stmt2->execute([$user['perfil_id']]);
+            $perfil = $stmt2->fetch();
+            return [
+                'id' => $user['id'],
+                'username' => $user['username'],
+                'profile' => $perfil ? $perfil['nome'] : '',
+                'name' => $colab ? $colab['nome'] : $user['username']
+            ];
+        }
         return false;
     }
 
