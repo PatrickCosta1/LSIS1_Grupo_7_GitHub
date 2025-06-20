@@ -9,27 +9,37 @@ class DAL_FichaColaborador {
         return $stmt->fetch();
     }
 
-    public function updateColaboradorByUserId($userId, $dados) {
+    public function updateColaboradorByUserId($userId, $dados, $comprovativo = null) {
         $pdo = Database::getConnection();
-        $sql = "UPDATE colaboradores SET 
-            nome = ?, morada = ?, estado_civil = ?, habilitacoes = ?, contacto_emergencia = ?, matricula_viatura = ?, data_nascimento = ?, funcao = ?, geografia = ?, nivel_hierarquico = ?, remuneracao = ?, genero = ?
-            WHERE utilizador_id = ?";
+        $campos = [
+            'nome' => $dados['nome'] ?? null,
+            'morada' => $dados['morada'] ?? null,
+            'estado_civil' => $dados['estado_civil'] ?? null,
+            'habilitacoes' => $dados['habilitacoes'] ?? null,
+            'contacto_emergencia' => $dados['contacto_emergencia'] ?? null,
+            'matricula_viatura' => $dados['matricula_viatura'] ?? null,
+            'data_nascimento' => $dados['data_nascimento'] ?? null,
+            'funcao' => $dados['funcao'] ?? null,
+            'geografia' => $dados['geografia'] ?? null,
+            'nivel_hierarquico' => $dados['nivel_hierarquico'] ?? null,
+            'remuneracao' => $dados['remuneracao'] ?? null,
+            'genero' => $dados['genero'] ?? null
+        ];
+        if ($comprovativo) {
+            $campos['comprovativo_estado_civil'] = $comprovativo;
+        }
+        $set = [];
+        $params = [];
+        foreach ($campos as $campo => $valor) {
+            if ($valor !== null) {
+                $set[] = "$campo = ?";
+                $params[] = $valor;
+            }
+        }
+        $params[] = $userId;
+        $sql = "UPDATE colaboradores SET " . implode(', ', $set) . " WHERE utilizador_id = ?";
         $stmt = $pdo->prepare($sql);
-        return $stmt->execute([
-            $dados['nome'],
-            $dados['morada'],
-            $dados['estado_civil'],
-            $dados['habilitacoes'],
-            $dados['contacto_emergencia'],
-            $dados['matricula_viatura'],
-            $dados['data_nascimento'],
-            $dados['funcao'],
-            $dados['geografia'],
-            $dados['nivel_hierarquico'],
-            $dados['remuneracao'],
-            $dados['genero'],
-            $userId
-        ]);
+        return $stmt->execute($params);
     }
 
     public function getColaboradorById($colabId) {

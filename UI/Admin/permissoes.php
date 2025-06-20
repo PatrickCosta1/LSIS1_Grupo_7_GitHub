@@ -37,6 +37,86 @@ $colunas = array_keys($colunas);
     <title>Permissões - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/style.css">
     <link rel="stylesheet" href="../../assets/teste.css">
+    <style>
+        .permissoes-container {
+            max-width: 1100px;
+            margin: 36px auto 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 32px 32px 36px 32px;
+        }
+        .permissoes-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .permissoes-header h1 {
+            font-size: 2rem;
+            color: #3a366b;
+            margin: 0;
+        }
+        .tabela-scroll {
+            overflow-x: auto;
+        }
+        .tabela-permissoes {
+            width: 100%;
+            min-width: 700px;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #f9f9fb;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .tabela-permissoes th, .tabela-permissoes td {
+            padding: 13px 14px;
+            text-align: center;
+        }
+        .tabela-permissoes th {
+            background: #ecebfa;
+            color: #4a468a;
+            font-weight: 600;
+            border-bottom: 2px solid #d5d3f1;
+        }
+        .tabela-permissoes tr:nth-child(even) {
+            background: #f4f4fa;
+        }
+        .tabela-permissoes tr:hover {
+            background: #e6e6f7;
+        }
+        .tabela-permissoes td {
+            color: #3a366b;
+            font-size: 1rem;
+        }
+        .perfil-col {
+            font-weight: 600;
+            color: #764ba2;
+            text-align: left;
+        }
+        .btn-salvar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 10px 28px;
+            font-size: 1.08rem;
+            cursor: pointer;
+            margin-top: 18px;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-salvar:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b47b6 100%);
+        }
+        @media (max-width: 900px) {
+            .permissoes-container { padding: 12px 4px; }
+            .permissoes-header h1 { font-size: 1.3rem; }
+            .tabela-permissoes th, .tabela-permissoes td { padding: 8px 6px; font-size: 0.95rem; }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -54,8 +134,10 @@ $colunas = array_keys($colunas);
             <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
-    <main>
-        <h1>Permissões dos Perfis</h1>
+    <div class="permissoes-container">
+        <div class="permissoes-header">
+            <h1>Permissões dos Perfis</h1>
+        </div>
         <form method="POST">
         <div class="tabela-scroll">
         <table class="tabela-permissoes">
@@ -85,9 +167,11 @@ $colunas = array_keys($colunas);
             </tbody>
         </table>
         </div>
-        <button type="submit" class="btn-salvar">Guardar Permissões</button>
+        <div style="text-align:center;">
+            <button type="submit" class="btn-salvar">Guardar Permissões</button>
+        </div>
         </form>
-    </main>
+    </div>
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
       <button id="open-chatbot" style="

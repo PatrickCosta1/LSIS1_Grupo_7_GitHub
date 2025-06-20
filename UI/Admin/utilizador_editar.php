@@ -39,28 +39,115 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Editar Utilizador</title>
     <link rel="stylesheet" href="../../assets/teste.css">
+    <style>
+        .editar-utilizador-container {
+            max-width: 480px;
+            margin: 40px auto 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+            padding: 36px 32px 32px 32px;
+        }
+        .editar-utilizador-container h1 {
+            font-size: 1.7rem;
+            color: #3a366b;
+            margin-bottom: 22px;
+            text-align: center;
+        }
+        .editar-utilizador-container label {
+            display: block;
+            margin-bottom: 12px;
+            color: #4a468a;
+            font-weight: 500;
+        }
+        .editar-utilizador-container input[type="text"],
+        .editar-utilizador-container input[type="email"],
+        .editar-utilizador-container select {
+            width: 100%;
+            padding: 8px 10px;
+            margin-top: 3px;
+            margin-bottom: 18px;
+            border: 1px solid #d5d3f1;
+            border-radius: 7px;
+            font-size: 1rem;
+            background: #f8f8fc;
+            color: #3a366b;
+            transition: border 0.2s;
+        }
+        .editar-utilizador-container input[type="text"]:focus,
+        .editar-utilizador-container input[type="email"]:focus,
+        .editar-utilizador-container select:focus {
+            border-color: #764ba2;
+            outline: none;
+        }
+        .editar-utilizador-container input[type="checkbox"] {
+            margin-right: 7px;
+        }
+        .editar-utilizador-container .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 8px 22px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-right: 8px;
+            margin-top: 10px;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .editar-utilizador-container .btn:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b47b6 100%);
+        }
+        .success-message, .error-message {
+            text-align: center;
+            margin-bottom: 18px;
+            padding: 8px 0;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .success-message { background: #e6fffa; color: #2c7a7b; }
+        .error-message { background: #fff5f5; color: #c53030; }
+        @media (max-width: 600px) {
+            .editar-utilizador-container { padding: 12px 4px; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Editar Utilizador</h1>
-    <?php if ($success): ?><div class="success-message"><?php echo $success; ?></div><?php endif; ?>
-    <?php if ($error): ?><div class="error-message"><?php echo $error; ?></div><?php endif; ?>
-    <form method="POST">
-        <label>Nome: <input type="text" name="nome" value="<?php echo htmlspecialchars($util['nome']); ?>" required></label><br>
-        <label>Username: <input type="text" name="username" value="<?php echo htmlspecialchars($util['username']); ?>" required></label><br>
-        <label>Email: <input type="email" name="email" value="<?php echo htmlspecialchars($util['email']); ?>" required></label><br>
-        <label>Perfil:
-            <select name="perfil_id" required>
-                <?php foreach ($perfis as $p): ?>
-                    <option value="<?php echo $p['id']; ?>" <?php if ($util['perfil_id'] == $p['id']) echo 'selected'; ?>>
-                        <?php echo htmlspecialchars($p['nome']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </label><br>
-        <label>Ativo: <input type="checkbox" name="ativo" <?php if ($util['ativo']) echo 'checked'; ?>></label><br>
-        <button type="submit" class="btn">Guardar</button>
-    </form>
-    <a href="utilizadores.php" class="btn">Voltar</a>
+    <div class="editar-utilizador-container">
+        <h1>Editar Utilizador</h1>
+        <?php if ($success): ?><div class="success-message"><?php echo $success; ?></div><?php endif; ?>
+        <?php if ($error): ?><div class="error-message"><?php echo $error; ?></div><?php endif; ?>
+        <form method="POST">
+            <label>Nome:
+                <input type="text" name="nome" value="<?php echo htmlspecialchars($util['nome']); ?>" required>
+            </label>
+            <label>Username:
+                <input type="text" name="username" value="<?php echo htmlspecialchars($util['username']); ?>" required>
+            </label>
+            <label>Email:
+                <input type="email" name="email" value="<?php echo htmlspecialchars($util['email']); ?>" required>
+            </label>
+            <label>Perfil:
+                <select name="perfil_id" required>
+                    <?php foreach ($perfis as $p): ?>
+                        <option value="<?php echo $p['id']; ?>" <?php if ($util['perfil_id'] == $p['id']) echo 'selected'; ?>>
+                            <?php echo htmlspecialchars($p['nome']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label>
+                <input type="checkbox" name="ativo" <?php if ($util['ativo']) echo 'checked'; ?>>
+                Ativo
+            </label>
+            <div style="text-align:center;">
+                <button type="submit" class="btn">Guardar</button>
+                <a href="utilizadores.php" class="btn" style="background:#ecebfa;color:#4a468a;">Voltar</a>
+            </div>
+        </form>
+    </div>
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
       <button id="open-chatbot" style="
