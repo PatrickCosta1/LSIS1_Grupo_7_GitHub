@@ -35,6 +35,18 @@ if (in_array($perfil, ['rh', 'admin']) && $editColabId) {
 $success_message = '';
 $error_message = '';
 
+// Diretório para uploads
+$upload_dir = __DIR__ . '/../../uploads/comprovativos/';
+if (!is_dir($upload_dir)) {
+    mkdir($upload_dir, 0777, true);
+}
+
+// Verifica se já existe comprovativo
+$comprovativo_atual = '';
+if (isset($colab['comprovativo_estado_civil']) && $colab['comprovativo_estado_civil']) {
+    $comprovativo_atual = $colab['comprovativo_estado_civil'];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dados = [
         'nome' => $_POST['nome'] ?? '',
@@ -60,6 +72,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } else {
         $error_message = "Erro ao atualizar dados.";
+    }
+    // Upload de comprovativo se estado civil for alterado
+    if (isset($_FILES['comprovativo_estado_civil']) && $_FILES['comprovativo_estado_civil']['error'] === UPLOAD_ERR_OK) {
+        $ext = pathinfo($_FILES['comprovativo_estado_civil']['name'], PATHINFO_EXTENSION);
+        $filename = 'comprovativo_' . $userId . '_' . time() . '.' . $ext;
+        $dest = $upload_dir . $filename;
+        if (move_uploaded_file($_FILES['comprovativo_estado_civil']['tmp_name'], $dest)) {
+            $dados['comprovativo_estado_civil'] = $filename;
+            $comprovativo_atual = $filename;
+        } else {
+            $error_message = "Erro ao fazer upload do comprovativo.";
+        }
     }
 }
 ?>
@@ -116,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1>Minha Ficha de Colaborador</h1>
         <?php if ($success_message): ?><div class="success-message"><?php echo $success_message; ?></div><?php endif; ?>
         <?php if ($error_message): ?><div class="error-message"><?php echo $error_message; ?></div><?php endif; ?>
-        <form class="ficha-form ficha-form-moderna" method="POST">
+        <form class="ficha-form ficha-form-moderna" method="POST" enctype="multipart/form-data">
             <div class="ficha-grid">
                 <div class="ficha-campo">
                     <label>Nome:</label>
@@ -129,6 +153,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="ficha-campo">
                     <label>Estado Civil:</label>
                     <input type="text" name="estado_civil" value="<?php echo htmlspecialchars($colab['estado_civil'] ?? ''); ?>">
+                    <div style="margin-top:6px;">
+                        <label>Comprovativo Estado Civil (PDF/JPG):</label>
+                        <input type="file" name="comprovativo_estado_civil" accept=".pdf,.jpg,.jpeg,.png">
+                        <?php if ($comprovativo_atual): ?>
+                            <div style="margin-top:4px;">
+                                <a href="../../uploads/comprovativos/<?php echo htmlspecialchars($comprovativo_atual); ?>" target="_blank" style="color:#667eea;">Ver comprovativo atual</a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <div class="ficha-campo">
                     <label>Habilitações:</label>
