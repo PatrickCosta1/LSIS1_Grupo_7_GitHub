@@ -15,5 +15,17 @@ class RHEquipasManager {
     public function getCoordenadores() {
         return $this->dal->getCoordenadores();
     }
+    public function getEquipaById($id) {
+        return $this->dal->getEquipaById($id);
+    }
+    public function getColaboradoresByEquipa($equipa_id) {
+        return $this->dal->getColaboradoresByEquipa($equipa_id);
+    }
+    public function atualizarColaboradoresEquipa($equipa_id, $colaboradores_ids) {
+        return $this->dal->atualizarColaboradoresEquipa($equipa_id, $colaboradores_ids);
+    }
+    public function alterarCoordenador($equipa_id, $coordenador_id) {
+        return $this->dal->alterarCoordenador($equipa_id, $coordenador_id);
+    }
 }
 ?>

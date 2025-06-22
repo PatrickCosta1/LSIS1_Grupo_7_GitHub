@@ -9,5 +9,8 @@ class AdminAlertasManager {
     public function getAllAlertas() {
         return $this->dal->getAllAlertas();
     }
+    public function addAlerta($tipo, $mensagem, $periodicidade_meses, $ativo, $criado_por) {
+        return $this->dal->addAlerta($tipo, $mensagem, $periodicidade_meses, $ativo, $criado_por);
+    }
 }
 ?>

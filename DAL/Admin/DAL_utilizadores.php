@@ -47,11 +47,18 @@ class DAL_UtilizadoresAdmin {
 
     public function removeUtilizador($id) {
         $pdo = Database::getConnection();
-        $stmt1 = $pdo->prepare("DELETE FROM colaboradores WHERE utilizador_id = ?");
-        $stmt2 = $pdo->prepare("DELETE FROM utilizadores WHERE id = ?");
-        $ok1 = $stmt1->execute([$id]);
-        $ok2 = $stmt2->execute([$id]);
-        return $ok1 && $ok2;
+
+        // Primeiro, remover o colaborador da(s) equipa(s)
+        $stmt = $pdo->prepare("DELETE FROM equipa_colaboradores WHERE colaborador_id = (SELECT id FROM colaboradores WHERE utilizador_id = ?)");
+        $stmt->execute([$id]);
+
+        // Depois, remover o colaborador (se existir)
+        $stmt = $pdo->prepare("DELETE FROM colaboradores WHERE utilizador_id = ?");
+        $stmt->execute([$id]);
+
+        // Por fim, remover o utilizador
+        $stmt = $pdo->prepare("DELETE FROM utilizadores WHERE id = ?");
+        return $stmt->execute([$id]);
     }
 
     public function updatePassword($id, $password) {

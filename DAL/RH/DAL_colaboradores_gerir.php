@@ -2,18 +2,31 @@
 require_once __DIR__ . '/../Database.php';
 
 class DAL_ColaboradoresGerir {
-    public function getAllColaboradores($excludeUserId = null) {
+    public function getAllColaboradores($excludeUserId = null, $tipoRH = null, $equipa_id = null) {
         $pdo = Database::getConnection();
-        $sql = "SELECT c.id, c.nome, c.funcao, e.nome as equipa, u.email, u.ativo, u.username, p.nome as perfil
+        $sql = "SELECT c.id, c.nome, c.funcao, e.nome as equipa, u.email, u.ativo, u.username, p.nome as perfil, c.utilizador_id
                 FROM colaboradores c
                 LEFT JOIN equipa_colaboradores ec ON c.id = ec.colaborador_id
                 LEFT JOIN equipas e ON ec.equipa_id = e.id
                 LEFT JOIN utilizadores u ON c.utilizador_id = u.id
                 LEFT JOIN perfis p ON u.perfil_id = p.id";
         $params = [];
+        $where = [];
         if ($excludeUserId !== null) {
-            $sql .= " WHERE u.id <> ?";
+            $where[] = "u.id <> ?";
             $params[] = $excludeUserId;
+        }
+        // RH tipo 1: só pode ver colaboradores (perfil = colaborador)
+        if ($tipoRH === 'colaboradores') {
+            $where[] = "LOWER(p.nome) = 'colaborador'";
+        }
+        // RH tipo 2: pode ver todos de uma equipa específica
+        if ($tipoRH === 'equipa' && $equipa_id) {
+            $where[] = "ec.equipa_id = ?";
+            $params[] = $equipa_id;
+        }
+        if ($where) {
+            $sql .= " WHERE " . implode(" AND ", $where);
         }
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);

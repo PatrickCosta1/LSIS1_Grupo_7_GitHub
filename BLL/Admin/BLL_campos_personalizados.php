@@ -9,5 +9,8 @@ class AdminCamposPersonalizadosManager {
     public function getAllCampos() {
         return $this->dal->getAllCampos();
     }
+    public function addCampo($nome, $tipo, $obrigatorio, $ordem) {
+        return $this->dal->addCampo($nome, $tipo, $obrigatorio, $ordem);
+    }
 }
 ?>
