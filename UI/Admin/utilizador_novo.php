@@ -18,8 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $perfil_id = $_POST['perfil_id'];
     $ativo = isset($_POST['ativo']) ? 1 : 0;
     $password = $_POST['password'];
+    $tipo_rh = $_POST['tipo_rh'] ?? null;
 
-    if ($utilBLL->addUtilizador($nome, $username, $email, $perfil_id, $ativo, $password)) {
+    if ($utilBLL->addUtilizador($nome, $username, $email, $perfil_id, $ativo, $password, $tipo_rh)) {
         $success = "Utilizador criado com sucesso!";
     } else {
         $error = "Erro ao criar utilizador.";
@@ -42,12 +43,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label>Username: <input type="text" name="username" required></label><br>
         <label>Email: <input type="email" name="email" required></label><br>
         <label>Perfil:
-            <select name="perfil_id" required>
+            <select name="perfil_id" id="perfil_id" required onchange="toggleTipoRh()">
                 <?php foreach ($perfis as $p): ?>
                     <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['nome']); ?></option>
                 <?php endforeach; ?>
             </select>
         </label><br>
+        <div id="tipo-rh-div">
+            <label>Tipo de RH:
+                <select name="tipo_rh">
+                    <option value="">Não aplicável</option>
+                    <option value="restrito">RH Restrito (apenas vê colaboradores)</option>
+                    <option value="completo">RH Completo (vê todos os perfis)</option>
+                </select>
+            </label><br>
+        </div>
         <label>Ativo: <input type="checkbox" name="ativo" checked></label><br>
         <label>Password: <input type="password" name="password" required></label><br>
         <button type="submit" class="btn">Criar</button>
@@ -81,5 +91,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </iframe>
     </div>
     <script src="../../assets/chatbot.js"></script>
+    <script>
+    function toggleTipoRh() {
+        var perfil = document.getElementById('perfil_id');
+        var tipoRhDiv = document.getElementById('tipo-rh-div');
+        var selected = perfil.options[perfil.selectedIndex].text.toLowerCase();
+        tipoRhDiv.style.display = (selected === 'rh') ? 'block' : 'none';
+    }
+    window.onload = toggleTipoRh;
+    </script>
 </body>
 </html>

@@ -6,6 +6,73 @@ if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'admin') {
 }
 require_once '../../BLL/Admin/BLL_campos_personalizados.php';
 $camposBLL = new AdminCamposPersonalizadosManager();
+require_once '../../BLL/Admin/BLL_alertas.php';
+require_once '../../DAL/Admin/DAL_utilizadores.php';
+$alertasBLL = new AdminAlertasManager();
+$dalUtil = new DAL_UtilizadoresAdmin();
+$user = $dalUtil->getUtilizadorById($_SESSION['user_id']);
+$perfil_id = $user['perfil_id'];
+$user_id = $_SESSION['user_id'];
+$alertas = $alertasBLL->getAlertasParaUtilizador($perfil_id);
+$tem_nao_lidas = false;
+foreach ($alertas as $a) {
+    if (!$alertasBLL->isAlertaLido($a['id'], $user_id)) {
+        $tem_nao_lidas = true;
+        break;
+    }
+}
+$icone_sino = '<span style="position:relative;display:inline-block;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill=\"#4a468a\" viewBox=\"0 0 24 24\" style=\"vertical-align:middle;\">
+        <path d=\"M12 2a6 6 0 0 0-6 6v3.586l-.707.707A1 1 0 0 0 5 14h14a1 1 0 0 0 .707-1.707L19 11.586V8a6 6 0 0 0-6-6zm0 20a2.978 2.978 0 0 0 2.816-2H9.184A2.978 2.978 0 0 0 12 22z\"/>
+    </svg>';
+if ($tem_nao_lidas) {
+    $icone_sino .= '<span style="position:absolute;top:2px;right:2px;width:10px;height:10px;background:#e53e3e;border-radius:50%;border:2px solid #fff;"></span>';
+}
+$icone_sino .= '</span>';
+$menu = [
+    'Dashboard' => 'dashboard_admin.php',
+    'Utilizadores' => 'utilizadores.php',
+    'Permissões' => 'permissoes.php',
+    'Campos Personalizados' => 'campos_personalizados.php',
+    'Alertas' => 'alertas.php',
+    'Colaboradores' => '../RH/colaboradores_gerir.php',
+    'Equipas' => '../RH/equipas.php',
+    'Relatórios' => '../RH/relatorios.php',
+    'Perfil' => '../Comuns/perfil.php',
+    $icone_sino => '../Comuns/notificacoes.php',
+    'Sair' => '../Comuns/logout.php'
+];
+
+$success = '';
+$error = '';
+
+// Adicionar campo
+if (isset($_POST['add_nome'], $_POST['add_tipo'])) {
+    if ($camposBLL->addCampo(trim($_POST['add_nome']), $_POST['add_tipo'])) {
+        $success = "Campo adicionado!";
+    } else {
+        $error = "Erro ao adicionar campo.";
+    }
+}
+
+// Editar campo
+if (isset($_POST['edit_id'], $_POST['edit_nome'], $_POST['edit_tipo'])) {
+    if ($camposBLL->updateCampo($_POST['edit_id'], trim($_POST['edit_nome']), $_POST['edit_tipo'])) {
+        $success = "Campo atualizado!";
+    } else {
+        $error = "Erro ao atualizar campo.";
+    }
+}
+
+// Remover campo
+if (isset($_GET['remover']) && is_numeric($_GET['remover'])) {
+    if ($camposBLL->removeCampo($_GET['remover'])) {
+        $success = "Campo removido!";
+    } else {
+        $error = "Erro ao remover campo.";
+    }
+}
+
 $campos = $camposBLL->getAllCampos();
 ?>
 <!DOCTYPE html>
@@ -116,8 +183,21 @@ $campos = $camposBLL->getAllCampos();
     <div class="campos-container">
         <div class="campos-header">
             <h1>Campos Personalizados da Ficha</h1>
-            <a href="campo_novo.php" class="btn">+ Novo Campo</a>
         </div>
+        <?php if ($success): ?><div class="success-message"><?php echo $success; ?></div><?php endif; ?>
+        <?php if ($error): ?><div class="error-message"><?php echo $error; ?></div><?php endif; ?>
+
+        <!-- Formulário adicionar campo -->
+        <form method="POST" style="margin-bottom:18px;">
+            <input type="text" name="add_nome" placeholder="Nome do campo" required>
+            <select name="add_tipo" required>
+                <option value="texto">Texto</option>
+                <option value="numero">Número</option>
+                <option value="data">Data</option>
+            </select>
+            <button type="submit" class="btn">Adicionar Campo</button>
+        </form>
+
         <table class="tabela-campos">
             <thead>
                 <tr>
@@ -129,12 +209,23 @@ $campos = $camposBLL->getAllCampos();
             <tbody>
                 <?php foreach ($campos as $c): ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($c['nome']); ?></td>
-                    <td><?php echo htmlspecialchars($c['tipo']); ?></td>
-                    <td>
-                        <a href="#" class="btn">Editar</a>
-                        <a href="#" class="btn btn-danger">Remover</a>
-                    </td>
+                    <form method="POST" style="display:inline;">
+                        <td>
+                            <input type="hidden" name="edit_id" value="<?php echo $c['id']; ?>">
+                            <input type="text" name="edit_nome" value="<?php echo htmlspecialchars($c['nome']); ?>" required>
+                        </td>
+                        <td>
+                            <select name="edit_tipo" required>
+                                <option value="texto" <?php if ($c['tipo'] === 'texto') echo 'selected'; ?>>Texto</option>
+                                <option value="numero" <?php if ($c['tipo'] === 'numero') echo 'selected'; ?>>Número</option>
+                                <option value="data" <?php if ($c['tipo'] === 'data') echo 'selected'; ?>>Data</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button type="submit" class="btn">Guardar</button>
+                            <a href="?remover=<?php echo $c['id']; ?>" class="btn btn-danger" onclick="return confirm('Remover este campo?');">Remover</a>
+                        </td>
+                    </form>
                 </tr>
                 <?php endforeach; ?>
             </tbody>

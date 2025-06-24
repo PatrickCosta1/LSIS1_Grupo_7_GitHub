@@ -9,6 +9,12 @@ class RHColaboradoresManager {
     public function getAllColaboradores($excludeUserId = null) {
         return $this->dal->getAllColaboradores($excludeUserId);
     }
+    public function getColaboradoresApenasColaboradores() {
+        return $this->dal->getColaboradoresApenasColaboradores();
+    }
+    public function getColaboradoresByPerfil($perfilNome) {
+        return $this->dal->getColaboradoresByPerfil($perfilNome);
+    }
     public function addColaborador($dados) {
         return $this->dal->addColaborador($dados);
     }

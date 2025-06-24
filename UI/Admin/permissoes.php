@@ -5,18 +5,44 @@ if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'admin') {
     exit();
 }
 require_once '../../BLL/Admin/BLL_permissoes.php';
-$permBLL = new AdminPermissoesManager();
-
-// Atualizar permissões
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['permissao'])) {
-    foreach ($_POST['permissao'] as $id => $valor) {
-        $permBLL->updatePermissao($id, $valor ? 1 : 0);
+require_once '../../BLL/Admin/BLL_alertas.php';
+require_once '../../DAL/Admin/DAL_utilizadores.php';
+$alertasBLL = new AdminAlertasManager();
+$dalUtil = new DAL_UtilizadoresAdmin();
+$user = $dalUtil->getUtilizadorById($_SESSION['user_id']);
+$perfil_id = $user['perfil_id'];
+$user_id = $_SESSION['user_id'];
+$alertas = $alertasBLL->getAlertasParaUtilizador($perfil_id);
+$tem_nao_lidas = false;
+foreach ($alertas as $a) {
+    if (!$alertasBLL->isAlertaLido($a['id'], $user_id)) {
+        $tem_nao_lidas = true;
+        break;
     }
-    header('Location: permissoes.php');
-    exit();
 }
-
-// Obter permissões organizadas por perfil e lista de permissões distintas
+$icone_sino = '<span style="position:relative;display:inline-block;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#4a468a" viewBox="0 0 24 24" style="vertical-align:middle;">
+        <path d="M12 2a6 6 0 0 0-6 6v3.586l-.707.707A1 1 0 0 0 5 14h14a1 1 0 0 0 .707-1.707L19 11.586V8a6 6 0 0 0-6-6zm0 20a2.978 2.978 0 0 0 2.816-2H9.184A2.978 2.978 0 0 0 12 22z"/>
+    </svg>';
+if ($tem_nao_lidas) {
+    $icone_sino .= '<span style="position:absolute;top:2px;right:2px;width:10px;height:10px;background:#e53e3e;border-radius:50%;border:2px solid #fff;"></span>';
+}
+$icone_sino .= '</span>';
+$menu = [
+    'Dashboard' => 'dashboard_admin.php',
+    'Utilizadores' => 'utilizadores.php',
+    'Permissões' => 'permissoes.php',
+    'Campos Personalizados' => 'campos_personalizados.php',
+    'Alertas' => 'alertas.php',
+    'Colaboradores' => '../RH/colaboradores_gerir.php',
+    'Equipas' => '../RH/equipas.php',
+    'Relatórios' => '../RH/relatorios.php',
+    'Perfil' => '../Comuns/perfil.php',
+    $icone_sino => '../Comuns/notificacoes.php',
+    'Sair' => '../Comuns/logout.php'
+];
+require_once '../../BLL/Admin/BLL_permissoes.php';
+$permBLL = new AdminPermissoesManager();
 $permissoes = $permBLL->getAllPermissoes();
 $perfis = [];
 $colunas = [];
@@ -39,42 +65,46 @@ $colunas = array_keys($colunas);
     <link rel="stylesheet" href="../../assets/teste.css">
     <style>
         .permissoes-container {
-            max-width: 1400px;
-            margin: 32px auto 0 auto;
+            max-width: 1100px;
+            margin: 36px auto 0 auto;
             background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-            padding: 18px 24px 24px 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 32px 32px 36px 32px;
+        }
+        .permissoes-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
         }
         .permissoes-header h1 {
-            font-size: 1.3rem;
+            font-size: 2rem;
             color: #3a366b;
-            margin: 0 0 10px 0;
-            font-weight: 700;
-            letter-spacing: 0.2px;
-            text-align: center;
+            margin: 0;
         }
         .tabela-scroll {
             overflow-x: auto;
         }
         .tabela-permissoes {
             width: 100%;
-            min-width: 900px;
-            border-collapse: collapse;
+            min-width: 700px;
+            border-collapse: separate;
+            border-spacing: 0;
             background: #f9f9fb;
-            border-radius: 8px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
         .tabela-permissoes th, .tabela-permissoes td {
-            padding: 10px 10px;
+            padding: 13px 14px;
             text-align: center;
-            white-space: nowrap;
         }
         .tabela-permissoes th {
             background: #ecebfa;
             color: #4a468a;
             font-weight: 600;
-            border-bottom: 1px solid #d5d3f1;
-            font-size: 1rem;
+            border-bottom: 2px solid #d5d3f1;
         }
         .tabela-permissoes tr:nth-child(even) {
             background: #f4f4fa;
@@ -84,37 +114,33 @@ $colunas = array_keys($colunas);
         }
         .tabela-permissoes td {
             color: #3a366b;
-            font-size: 0.97rem;
+            font-size: 1rem;
         }
         .perfil-col {
             font-weight: 600;
             color: #764ba2;
             text-align: left;
-            background: #f6f2ff;
         }
         .btn-salvar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
             border: none;
-            border-radius: 6px;
-            padding: 7px 24px;
-            font-size: 1rem;
+            border-radius: 7px;
+            padding: 10px 28px;
+            font-size: 1.08rem;
             cursor: pointer;
-            margin-top: 16px;
-            font-weight: 600;
+            margin-top: 18px;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: inline-block;
         }
         .btn-salvar:hover {
             background: linear-gradient(135deg, #5a67d8 0%, #6b47b6 100%);
         }
-        input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #764ba2;
-            cursor: pointer;
-        }
-        @media (max-width: 1200px) {
-            .permissoes-container { max-width: 100vw; padding: 8px 2px; }
-            .tabela-permissoes th, .tabela-permissoes td { padding: 7px 4px; font-size: 0.93rem; }
+        @media (max-width: 900px) {
+            .permissoes-container { padding: 12px 4px; }
+            .permissoes-header h1 { font-size: 1.3rem; }
+            .tabela-permissoes th, .tabela-permissoes td { padding: 8px 6px; font-size: 0.95rem; }
         }
     </style>
 </head>

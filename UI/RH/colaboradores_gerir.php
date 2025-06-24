@@ -4,9 +4,20 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admi
     header('Location: ../Comuns/erro.php');
     exit();
 }
+require_once '../../DAL/Admin/DAL_utilizadores.php';
+$dalUtil = new DAL_UtilizadoresAdmin();
+$util = $dalUtil->getUtilizadorById($_SESSION['user_id']);
+$isRhRestrito = ($_SESSION['profile'] === 'rh' && ($util['tipo_rh'] ?? '') === 'restrito');
+
 require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
 $colabBLL = new RHColaboradoresManager();
-$colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
+
+if ($isRhRestrito) {
+    // RH restrito só pode ver colaboradores (apenas perfil 'colaborador')
+    $colaboradores = $colabBLL->getColaboradoresApenasColaboradores();
+} else {
+    $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -15,95 +26,6 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
     <title>Gestão de Colaboradores - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/style.css">
     <link rel="stylesheet" href="../../assets/teste.css">
-    <style>
-        .colaboradores-container {
-            max-width: 1100px;
-            margin: 36px auto 0 auto;
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-            padding: 36px 36px 40px 36px;
-        }
-        .colaboradores-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 28px;
-        }
-        .colaboradores-header h1 {
-            font-size: 2rem;
-            color: #3a366b;
-            margin: 0;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-        .colaboradores-header .btn {
-            padding: 10px 22px;
-            font-size: 1rem;
-            border-radius: 8px;
-        }
-        .tabela-colaboradores {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            background: #f9f9fb;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .tabela-colaboradores th, .tabela-colaboradores td {
-            padding: 14px 16px;
-            text-align: left;
-        }
-        .tabela-colaboradores th {
-            background: #ecebfa;
-            color: #4a468a;
-            font-weight: 600;
-            border-bottom: 2px solid #d5d3f1;
-        }
-        .tabela-colaboradores tr:nth-child(even) {
-            background: #f4f4fa;
-        }
-        .tabela-colaboradores tr:hover {
-            background: #e6e6f7;
-        }
-        .tabela-colaboradores td {
-            color: #3a366b;
-            font-size: 1rem;
-        }
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border: none;
-            border-radius: 7px;
-            padding: 7px 18px;
-            font-size: 0.98rem;
-            cursor: pointer;
-            margin-right: 6px;
-            transition: background 0.2s;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn:hover {
-            background: linear-gradient(135deg, #5a67d8 0%, #6b47b6 100%);
-        }
-        .btn-danger {
-            background: #e53e3e;
-        }
-        .btn-danger:hover {
-            background: #c53030;
-        }
-        .add-colab-btn {
-            margin-top: 24px;
-            padding: 10px 28px;
-            font-size: 1.05rem;
-        }
-        @media (max-width: 900px) {
-            .colaboradores-container { padding: 12px 4px; }
-            .tabela-colaboradores th, .tabela-colaboradores td { padding: 8px 6px; font-size: 0.95rem; }
-            .colaboradores-header h1 { font-size: 1.3rem; }
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -132,11 +54,8 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
             <?php endif; ?>
         </nav>
     </header>
-    <div class="colaboradores-container">
-        <div class="colaboradores-header">
-            <h1>Gestão de Colaboradores</h1>
-            <a href="colaborador_novo.php" class="btn add-colab-btn">+ Novo Colaborador</a>
-        </div>
+    <main>
+        <h1>Gestão de Colaboradores</h1>
         <div class="tabela-colaboradores-wrapper">
             <table class="tabela-colaboradores tabela-colaboradores-compacta">
                 <thead>
@@ -179,9 +98,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                         </td>
                         <td><?php echo htmlspecialchars($col['funcao']); ?></td>
                         <td><?php echo htmlspecialchars($col['equipa']); ?></td>
-                        <td>
-                            <?php echo $col['ativo'] ? '<span style="color:#38a169;font-weight:600;">Ativo</span>' : '<span style="color:#e53e3e;font-weight:600;">Inativo</span>'; ?>
-                        </td>
+                        <td><?php echo $col['ativo'] ? 'Ativo' : 'Inativo'; ?></td>
                         <td>
                             <a href="../Colaborador/ficha_colaborador.php?id=<?php echo $col['id']; ?>" class="btn btn-sm">Ver</a>
                             <a href="#" class="btn btn-danger btn-sm">Remover</a>
@@ -191,7 +108,9 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                 </tbody>
             </table>
         </div>
-    </div>
+        <a href="colaborador_novo.php" class="btn add-colab-btn">Adicionar Novo Colaborador</a>
+    </main>
+
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
       <button id="open-chatbot" style="
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

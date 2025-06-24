@@ -12,8 +12,8 @@ class AdminUtilizadoresManager {
     public function getUtilizadorById($id) {
         return $this->dal->getUtilizadorById($id);
     }
-    public function addUtilizador($nome, $username, $email, $perfil_id, $ativo, $password) {
-        return $this->dal->addUtilizador($nome, $username, $email, $perfil_id, $ativo, $password);
+    public function addUtilizador($nome, $username, $email, $perfil_id, $ativo, $password, $tipo_rh = null) {
+        return $this->dal->addUtilizador($nome, $username, $email, $perfil_id, $ativo, $password, $tipo_rh);
     }
     public function updateUtilizador($id, $nome, $username, $email, $perfil_id, $ativo) {
         return $this->dal->updateUtilizador($id, $nome, $username, $email, $perfil_id, $ativo);
@@ -29,3 +29,4 @@ class AdminUtilizadoresManager {
     }
 }
 ?>
+

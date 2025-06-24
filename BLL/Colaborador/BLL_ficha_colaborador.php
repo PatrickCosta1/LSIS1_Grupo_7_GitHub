@@ -10,7 +10,6 @@ class ColaboradorFichaManager {
         return $this->dal->getColaboradorByUserId($userId);
     }
     public function updateColaboradorByUserId($userId, $dados) {
-        // Aceita comprovativo_estado_civil se existir
         $comprovativo = isset($dados['comprovativo_estado_civil']) ? $dados['comprovativo_estado_civil'] : null;
         return $this->dal->updateColaboradorByUserId($userId, $dados, $comprovativo);
     }
@@ -19,3 +18,4 @@ class ColaboradorFichaManager {
     }
 }
 ?>
+

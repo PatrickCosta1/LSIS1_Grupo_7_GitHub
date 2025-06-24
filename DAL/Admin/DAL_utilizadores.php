@@ -24,16 +24,30 @@ class DAL_UtilizadoresAdmin {
         return $stmt->fetch();
     }
 
-    public function addUtilizador($nome, $username, $email, $perfil_id, $ativo, $password) {
+    public function addUtilizador($nome, $username, $email, $perfil_id, $ativo, $password, $tipo_rh = null) {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare("INSERT INTO utilizadores (username, email, perfil_id, ativo, password) VALUES (?, ?, ?, ?, ?)");
-        $ok = $stmt->execute([$username, $email, $perfil_id, $ativo, $password]);
+        if ($tipo_rh !== null && $this->isRhPerfil($perfil_id)) {
+            $stmt = $pdo->prepare("INSERT INTO utilizadores (username, email, perfil_id, ativo, password, tipo_rh) VALUES (?, ?, ?, ?, ?, ?)");
+            $ok = $stmt->execute([$username, $email, $perfil_id, $ativo, $password, $tipo_rh]);
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO utilizadores (username, email, perfil_id, ativo, password) VALUES (?, ?, ?, ?, ?)");
+            $ok = $stmt->execute([$username, $email, $perfil_id, $ativo, $password]);
+        }
         if ($ok) {
             $id = $pdo->lastInsertId();
+            // Cria colaborador automaticamente com o nome fornecido
             $stmt2 = $pdo->prepare("INSERT INTO colaboradores (utilizador_id, nome) VALUES (?, ?)");
             $stmt2->execute([$id, $nome]);
         }
         return $ok;
+    }
+
+    private function isRhPerfil($perfil_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT nome FROM perfis WHERE id = ?");
+        $stmt->execute([$perfil_id]);
+        $perfil = $stmt->fetchColumn();
+        return strtolower($perfil) === 'rh';
     }
 
     public function updateUtilizador($id, $nome, $username, $email, $perfil_id, $ativo) {
@@ -47,18 +61,11 @@ class DAL_UtilizadoresAdmin {
 
     public function removeUtilizador($id) {
         $pdo = Database::getConnection();
-
-        // Primeiro, remover o colaborador da(s) equipa(s)
-        $stmt = $pdo->prepare("DELETE FROM equipa_colaboradores WHERE colaborador_id = (SELECT id FROM colaboradores WHERE utilizador_id = ?)");
-        $stmt->execute([$id]);
-
-        // Depois, remover o colaborador (se existir)
-        $stmt = $pdo->prepare("DELETE FROM colaboradores WHERE utilizador_id = ?");
-        $stmt->execute([$id]);
-
-        // Por fim, remover o utilizador
-        $stmt = $pdo->prepare("DELETE FROM utilizadores WHERE id = ?");
-        return $stmt->execute([$id]);
+        $stmt1 = $pdo->prepare("DELETE FROM colaboradores WHERE utilizador_id = ?");
+        $stmt2 = $pdo->prepare("DELETE FROM utilizadores WHERE id = ?");
+        $ok1 = $stmt1->execute([$id]);
+        $ok2 = $stmt2->execute([$id]);
+        return $ok1 && $ok2;
     }
 
     public function updatePassword($id, $password) {

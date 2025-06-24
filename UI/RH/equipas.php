@@ -90,10 +90,6 @@ $equipas = $equipasBLL->getAllEquipas();
         .btn-danger:hover {
             background: #c53030;
         }
-        .btn-sm {
-            padding: 5px 12px;
-            font-size: 0.93rem;
-        }
         @media (max-width: 900px) {
             .equipas-container { padding: 12px 4px; }
             .tabela-equipas th, .tabela-equipas td { padding: 8px 6px; font-size: 0.95rem; }
@@ -139,7 +135,7 @@ $equipas = $equipasBLL->getAllEquipas();
                     <th>Equipa</th>
                     <th>Coordenador</th>
                     <th>Nº Colaboradores</th>
-                    <th style="min-width:180px;">Ações</th>
+                    <th style="min-width:120px;">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -149,8 +145,8 @@ $equipas = $equipasBLL->getAllEquipas();
                     <td><?php echo htmlspecialchars($eq['coordenador']); ?></td>
                     <td><?php echo htmlspecialchars($eq['num_colaboradores']); ?></td>
                     <td>
-                        <a href="equipa_colaboradores.php?id=<?php echo $eq['id']; ?>" class="btn btn-sm">Gerir Equipa</a>
-                        <a href="equipa_coordenador.php?id=<?php echo $eq['id']; ?>" class="btn btn-sm">Alterar Coordenador</a>
+                        <a href="equipa_editar.php?id=<?php echo $eq['id']; ?>" class="btn">Editar</a>
+                        <a href="#" class="btn btn-danger">Remover</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

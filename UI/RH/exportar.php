@@ -4,27 +4,15 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admi
     header('Location: ../Comuns/erro.php');
     exit();
 }
-
-if (isset($_GET['export']) && $_GET['export'] === 'colaboradores') {
-    require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
-    $colabBLL = new RHColaboradoresManager();
-    $colaboradores = $colabBLL->getAllColaboradores();
-    header('Content-Type: text/csv');
-    header('Content-Disposition: attachment;filename="colaboradores.csv"');
-    $out = fopen('php://output', 'w');
-    fputcsv($out, ['Nome', 'Função', 'Equipa', 'Email', 'Estado']);
-    foreach ($colaboradores as $col) {
-        fputcsv($out, [$col['nome'], $col['funcao'], $col['equipa'], $col['email'], $col['ativo'] ? 'Ativo' : 'Inativo']);
-    }
-    fclose($out);
-    exit;
-}
+require_once '../../BLL/RH/BLL_relatorios.php';
+$relatoriosBLL = new RHRelatoriosManager();
+$indicadores = $relatoriosBLL->getIndicadoresGlobais();
 ?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Exportar Dados - Portal Tlantic</title>
+    <title>Relatórios - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/teste.css">
 </head>
 <body>
@@ -55,17 +43,34 @@ if (isset($_GET['export']) && $_GET['export'] === 'colaboradores') {
         </nav>
     </header>
     <main>
-        <h1>Exportar Dados</h1>
-        <form>
-            <label>Escolha o tipo de exportação:
-                <select>
-                    <option>Todos os colaboradores</option>
-                    <option>Por equipa</option>
-                    <option>Por perfil</option>
-                </select>
-            </label>
-            <a href="exportar.php?export=colaboradores" class="btn">Exportar para Excel</a>
-        </form>
+        <h1>Relatórios e Dashboards</h1>
+        <section>
+            <h2>Indicadores Gerais</h2>
+            <ul>
+                <li>Total de colaboradores: <?php echo htmlspecialchars($indicadores['total_colaboradores']); ?></li>
+                <li>Colaboradores ativos: <?php echo htmlspecialchars($indicadores['ativos']); ?></li>
+                <li>Colaboradores inativos: <?php echo htmlspecialchars($indicadores['inativos']); ?></li>
+                <li>Total de equipas: <?php echo htmlspecialchars($indicadores['total_equipas']); ?></li>
+            </ul>
+        </section>
+        <section class="dashboard-cards">
+            <div class="card">
+                <h2>Aniversários por Equipa</h2>
+                <a href="#" class="btn">Ver Relatório</a>
+            </div>
+            <div class="card">
+                <h2>Alterações Contratuais</h2>
+                <a href="#" class="btn">Ver Relatório</a>
+            </div>
+            <div class="card">
+                <h2>Vouchers Atribuídos</h2>
+                <a href="#" class="btn">Ver Relatório</a>
+            </div>
+            <div class="card">
+                <h2>Dashboards de Equipa</h2>
+                <a href="#" class="btn">Ver Dashboard</a>
+            </div>
+        </section>
     </main>
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">

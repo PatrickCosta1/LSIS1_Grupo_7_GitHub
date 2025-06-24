@@ -15,17 +15,28 @@ class RHEquipasManager {
     public function getCoordenadores() {
         return $this->dal->getCoordenadores();
     }
-    public function getEquipaById($id) {
-        return $this->dal->getEquipaById($id);
+    public function updateEquipa($id, $nome, $coordenador_utilizador_id) {
+        return $this->dal->updateEquipa($id, $nome, $coordenador_utilizador_id);
     }
-    public function getColaboradoresByEquipa($equipa_id) {
-        return $this->dal->getColaboradoresByEquipa($equipa_id);
+
+    // Adiciona um membro à equipa (retorna true/false)
+    public function adicionarMembroEquipa($equipa_id, $colaborador_id) {
+        return $this->dal->adicionarMembroEquipa($equipa_id, $colaborador_id);
     }
-    public function atualizarColaboradoresEquipa($equipa_id, $colaboradores_ids) {
-        return $this->dal->atualizarColaboradoresEquipa($equipa_id, $colaboradores_ids);
+
+    // Remove um membro da equipa
+    public function removerMembroEquipa($equipa_id, $colaborador_id) {
+        return $this->dal->removerMembroEquipa($equipa_id, $colaborador_id);
     }
-    public function alterarCoordenador($equipa_id, $coordenador_id) {
-        return $this->dal->alterarCoordenador($equipa_id, $coordenador_id);
+
+    // Retorna membros atuais da equipa com nome, perfil e função
+    public function getMembrosEquipaDetalhado($equipa_id) {
+        return $this->dal->getMembrosEquipaDetalhado($equipa_id);
+    }
+
+    // Retorna colaboradores que não estão em nenhuma equipa (com nome, perfil, função)
+    public function getColaboradoresDisponiveisParaEquipa() {
+        return $this->dal->getColaboradoresDisponiveisParaEquipa();
     }
 }
 ?>

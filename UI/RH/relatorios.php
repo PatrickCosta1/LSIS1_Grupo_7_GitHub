@@ -13,6 +13,8 @@ $indicadores = $relatoriosBLL->getIndicadoresGlobais();
 <head>
     <meta charset="UTF-8">
     <title>Relatórios - Portal Tlantic</title>
+    <link rel="stylesheet" href="../../assets/global.css">
+    <link rel="stylesheet" href="../../assets/rh.css">
     <link rel="stylesheet" href="../../assets/teste.css">
 </head>
 <body>
@@ -48,7 +50,7 @@ $indicadores = $relatoriosBLL->getIndicadoresGlobais();
             <h2>Indicadores Gerais</h2>
             <ul>
                 <li>Total de colaboradores: <?php echo htmlspecialchars($indicadores['total_colaboradores']); ?></li>
-                <li>Colaboradores ativos: <?php echo htmlspecialchars($indicadores['ativos']); ?></li>
+                <li>Colaboradores ativos: <?php echo htmlspecialchars($indicadores['ativos']-1); ?></li>
                 <li>Colaboradores inativos: <?php echo htmlspecialchars($indicadores['inativos']); ?></li>
                 <li>Total de equipas: <?php echo htmlspecialchars($indicadores['total_equipas']); ?></li>
             </ul>

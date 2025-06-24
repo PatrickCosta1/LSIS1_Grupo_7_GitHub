@@ -5,69 +5,162 @@ if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'admin') {
     exit();
 }
 require_once '../../BLL/Admin/BLL_alertas.php';
+require_once '../../DAL/Admin/DAL_utilizadores.php';
 $alertasBLL = new AdminAlertasManager();
+$dalUtil = new DAL_UtilizadoresAdmin();
+$perfis = $dalUtil->getPerfis();
+
+$success = '';
+$error = '';
+
+// Adicionar alerta
+if (isset($_POST['add_tipo'], $_POST['add_descricao'], $_POST['add_periodicidade'], $_POST['add_ativo'], $_POST['add_perfis'])) {
+    if ($alertasBLL->addAlerta($_POST['add_tipo'], $_POST['add_descricao'], $_POST['add_periodicidade'], $_POST['add_ativo'], $_POST['add_perfis'])) {
+        $success = "Alerta criado!";
+    } else {
+        $error = "Erro ao criar alerta.";
+    }
+}
+
+// Editar alerta
+if (isset($_POST['edit_id'], $_POST['edit_tipo'], $_POST['edit_descricao'], $_POST['edit_periodicidade'], $_POST['edit_ativo'], $_POST['edit_perfis'])) {
+    if ($alertasBLL->updateAlerta($_POST['edit_id'], $_POST['edit_tipo'], $_POST['edit_descricao'], $_POST['edit_periodicidade'], $_POST['edit_ativo'])) {
+        $alertasBLL->updateAlertasPerfis($_POST['edit_id'], $_POST['edit_perfis']);
+        $success = "Alerta atualizado!";
+    } else {
+        $error = "Erro ao atualizar alerta.";
+    }
+}
+
+// Remover alerta
+if (isset($_GET['remover']) && is_numeric($_GET['remover'])) {
+    if ($alertasBLL->removeAlerta($_GET['remover'])) {
+        $success = "Alerta removido!";
+    } else {
+        $error = "Erro ao remover alerta.";
+    }
+}
+
 $alertas = $alertasBLL->getAllAlertas();
 ?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Gestão de Alertas - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/style.css">
+    <title>Alertas - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/menu_notificacoes.css">
     <style>
-        .alertas-container {
-            max-width: 900px;
-            margin: 36px auto 0 auto;
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-            padding: 36px 36px 40px 36px;
+        body {
+            background: #f4f4fa;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
-        .alertas-header {
+        .campos-container {
+            max-width: 900px;
+            margin: 40px auto 0 auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 6px 32px rgba(102,126,234,0.10), 0 1.5px 6px rgba(118,75,162,0.07);
+            padding: 38px 40px 40px 40px;
+        }
+        .campos-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 24px;
+            margin-bottom: 30px;
         }
-        .alertas-header h1 {
-            font-size: 2rem;
+        .campos-header h1 {
+            font-size: 2.2rem;
             color: #3a366b;
             margin: 0;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
-        .alertas-header .btn {
-            padding: 10px 22px;
+        .success-message, .error-message {
+            text-align: center;
+            margin-bottom: 18px;
+            padding: 10px 0;
+            border-radius: 7px;
+            font-weight: 600;
+            font-size: 1.08rem;
+        }
+        .success-message { background: #e6fffa; color: #2c7a7b; }
+        .error-message { background: #fff5f5; color: #c53030; }
+        form[method="POST"] {
+            background: #ecebfa;
+            border-radius: 12px;
+            padding: 18px 22px 12px 22px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.07);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px 24px;
+            align-items: flex-end;
+        }
+        form[method="POST"] input[type="text"],
+        form[method="POST"] input[type="number"],
+        form[method="POST"] select {
+            padding: 8px 10px;
+            border: 1px solid #d5d3f1;
+            border-radius: 7px;
             font-size: 1rem;
-            border-radius: 8px;
+            background: #f8f8fc;
+            color: #3a366b;
+            margin-bottom: 4px;
+            min-width: 160px;
         }
-        .tabela-alertas {
+        form[method="POST"] input[type="text"]:focus,
+        form[method="POST"] input[type="number"]:focus,
+        form[method="POST"] select:focus {
+            border-color: #764ba2;
+            outline: none;
+        }
+        .perfis-checkbox-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 28px;
+            margin: 6px 0 0 0;
+        }
+        .perfis-checkbox-list label {
+            font-weight: 500;
+            color: #4a468a;
+            margin-right: 10px;
+            cursor: pointer;
+            background: #f4f4fa;
+            border-radius: 6px;
+            padding: 4px 12px 4px 8px;
+            transition: background 0.2s;
+        }
+        .perfis-checkbox-list input[type="checkbox"] {
+            accent-color: #764ba2;
+            margin-right: 5px;
+        }
+        .tabela-campos {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
             background: #f9f9fb;
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(102,126,234,0.06);
         }
-        .tabela-alertas th, .tabela-alertas td {
-            padding: 13px 14px;
+        .tabela-campos th, .tabela-campos td {
+            padding: 14px 16px;
             text-align: left;
         }
-        .tabela-alertas th {
+        .tabela-campos th {
             background: #ecebfa;
             color: #4a468a;
             font-weight: 600;
             border-bottom: 2px solid #d5d3f1;
+            font-size: 1.05rem;
         }
-        .tabela-alertas tr:nth-child(even) {
+        .tabela-campos tr:nth-child(even) {
             background: #f4f4fa;
         }
-        .tabela-alertas tr:hover {
+        .tabela-campos tr:hover {
             background: #e6e6f7;
         }
-        .tabela-alertas td {
+        .tabela-campos td {
             color: #3a366b;
             font-size: 1rem;
         }
@@ -76,10 +169,11 @@ $alertas = $alertasBLL->getAllAlertas();
             color: #fff;
             border: none;
             border-radius: 7px;
-            padding: 7px 18px;
-            font-size: 0.98rem;
+            padding: 8px 22px;
+            font-size: 1rem;
             cursor: pointer;
-            margin-right: 6px;
+            margin-right: 8px;
+            margin-top: 4px;
             transition: background 0.2s;
             text-decoration: none;
             display: inline-block;
@@ -94,9 +188,10 @@ $alertas = $alertasBLL->getAllAlertas();
             background: #c53030;
         }
         @media (max-width: 900px) {
-            .alertas-container { padding: 12px 4px; }
-            .tabela-alertas th, .tabela-alertas td { padding: 8px 6px; font-size: 0.95rem; }
-            .alertas-header h1 { font-size: 1.3rem; }
+            .campos-container { padding: 12px 4px; }
+            .campos-header h1 { font-size: 1.3rem; }
+            form[method="POST"] { flex-direction: column; gap: 10px; }
+            .tabela-campos th, .tabela-campos td { padding: 8px 6px; font-size: 0.95rem; }
         }
     </style>
 </head>
@@ -104,77 +199,112 @@ $alertas = $alertasBLL->getAllAlertas();
     <header>
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
-            <a href="dashboard_admin.php">Dashboard</a>
-            <a href="utilizadores.php">Utilizadores</a>
-            <a href="permissoes.php">Permissões</a>
-            <a href="campos_personalizados.php">Campos Personalizados</a>
-            <a href="alertas.php">Alertas</a>
-            <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-            <a href="../RH/equipas.php">Equipas</a>
-            <a href="../RH/relatorios.php">Relatórios</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
-            <a href="../Comuns/logout.php">Sair</a>
+            <?php
+            // Garantir que $menu está definido para evitar warnings
+            if (!isset($menu)) {
+                $menu = [
+                    'Dashboard' => 'dashboard_admin.php',
+                    'Utilizadores' => 'utilizadores.php',
+                    'Permissões' => 'permissoes.php',
+                    'Campos Personalizados' => 'campos_personalizados.php',
+                    'Alertas' => 'alertas.php',
+                    'Colaboradores' => '../RH/colaboradores_gerir.php',
+                    'Equipas' => '../RH/equipas.php',
+                    'Relatórios' => '../RH/relatorios.php',
+                    'Perfil' => '../Comuns/perfil.php',
+                    'Sair' => '../Comuns/logout.php'
+                ];
+            }
+            foreach ($menu as $label => $url): ?>
+                <a href="<?php echo $url; ?>"><?php echo $label; ?></a>
+            <?php endforeach; ?>
         </nav>
     </header>
-    <div class="alertas-container">
-        <div class="alertas-header">
+    <div class="campos-container">
+        <div class="campos-header">
             <h1>Gestão de Alertas</h1>
-            <a href="alerta_novo.php" class="btn">+ Novo Alerta</a>
         </div>
-        <table class="tabela-alertas">
+        <?php if ($success): ?><div class="success-message"><?php echo $success; ?></div><?php endif; ?>
+        <?php if ($error): ?><div class="error-message"><?php echo $error; ?></div><?php endif; ?>
+
+        <!-- Formulário adicionar alerta -->
+        <form method="POST">
+            <input type="text" name="add_tipo" placeholder="Tipo" required>
+            <input type="text" name="add_descricao" placeholder="Descrição" required>
+            <input type="number" name="add_periodicidade" placeholder="Periodicidade (meses)" min="0" required>
+            <select name="add_ativo">
+                <option value="1">Ativo</option>
+                <option value="0">Inativo</option>
+            </select>
+            <div style="flex:1 1 100%;">
+                <span style="font-weight:600;color:#4a468a;">Destinatários:</span>
+                <div class="perfis-checkbox-list">
+                    <?php foreach ($perfis as $p): ?>
+                        <label>
+                            <input type="checkbox" name="add_perfis[]" value="<?php echo $p['id']; ?>">
+                            <?php echo htmlspecialchars($p['nome']); ?>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+                <small style="color:#764ba2;">Selecione um ou mais perfis que irão receber este alerta.</small>
+            </div>
+            <button type="submit" class="btn" style="margin-top:0;">Adicionar Alerta</button>
+        </form>
+
+        <table class="tabela-campos">
             <thead>
                 <tr>
-                    <th>Tipo de Alerta</th>
-                    <th>Mensagem</th>
-                    <th>Periodicidade</th>
+                    <th>Tipo</th>
+                    <th>Descrição</th>
+                    <th>Periodicidade (meses)</th>
                     <th>Ativo</th>
-                    <th style="min-width:100px;">Ações</th>
+                    <th>Destinatários</th>
+                    <th style="min-width:120px;">Ações</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($alertas as $a): ?>
+                <?php foreach ($alertas as $a): 
+                    $alerta_perfis = $alertasBLL->getPerfisByAlerta($a['id']);
+                    $alerta_perfis_ids = array_column($alerta_perfis, 'id');
+                ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($a['tipo']); ?></td>
-                    <td><?php echo htmlspecialchars($a['mensagem']); ?></td>
-                    <td><?php echo htmlspecialchars($a['periodicidade_meses'] ? $a['periodicidade_meses'].' meses' : ''); ?></td>
-                    <td>
-                        <?php echo $a['ativo'] ? '<span style="color:#38a169;font-weight:600;">Sim</span>' : '<span style="color:#e53e3e;font-weight:600;">Não</span>'; ?>
-                    </td>
-                    <td>
-                        <a href="#" class="btn">Editar</a>
-                        <!-- <a href="#" class="btn btn-danger">Remover</a> -->
-                    </td>
+                    <form method="POST" style="display:inline;">
+                        <td>
+                            <input type="hidden" name="edit_id" value="<?php echo $a['id']; ?>">
+                            <input type="text" name="edit_tipo" value="<?php echo htmlspecialchars($a['tipo']); ?>" required style="width:110px;">
+                        </td>
+                        <td>
+                            <input type="text" name="edit_descricao" value="<?php echo htmlspecialchars($a['descricao']); ?>" required style="width:180px;">
+                        </td>
+                        <td>
+                            <input type="number" name="edit_periodicidade" value="<?php echo htmlspecialchars($a['periodicidade_meses']); ?>" min="0" required style="width:70px;">
+                        </td>
+                        <td>
+                            <select name="edit_ativo">
+                                <option value="1" <?php if ($a['ativo']) echo 'selected'; ?>>Ativo</option>
+                                <option value="0" <?php if (!$a['ativo']) echo 'selected'; ?>>Inativo</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="perfis-checkbox-list">
+                                <?php foreach ($perfis as $p): ?>
+                                    <label>
+                                        <input type="checkbox" name="edit_perfis[]" value="<?php echo $p['id']; ?>"
+                                            <?php if (in_array($p['id'], $alerta_perfis_ids)) echo 'checked'; ?>>
+                                        <?php echo htmlspecialchars($p['nome']); ?>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </td>
+                        <td>
+                            <button type="submit" class="btn">Guardar</button>
+                            <a href="?remover=<?php echo $a['id']; ?>" class="btn btn-danger" onclick="return confirm('Remover este alerta?');">Remover</a>
+                        </td>
+                    </form>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
-    <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
-      <button id="open-chatbot" style="
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border: none;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          font-size: 28px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          ">
-        ?
-      </button>
-      <iframe
-        id="chatbot-iframe"
-        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
-        title="Ajuda Chatbot"
-        width="350"
-        height="500"
-        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-      </iframe>
-    </div>
-    <script src="../../assets/chatbot.js"></script>
 </body>
 </html>
