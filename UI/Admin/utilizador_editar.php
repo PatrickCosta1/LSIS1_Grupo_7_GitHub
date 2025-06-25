@@ -115,6 +115,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
+    <header>
+        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <nav>
+            <a href="dashboard_admin.php">Dashboard</a>
+            <a href="utilizadores.php">Utilizadores</a>
+            <a href="permissoes.php">Permissões</a>
+            <a href="campos_personalizados.php">Campos Personalizados</a>
+            <a href="alertas.php">Alertas</a>
+            <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
+            <a href="../RH/equipas.php">Equipas</a>
+            <a href="../RH/relatorios.php">Relatórios</a>
+            <a href="../Comuns/perfil.php">Perfil</a>
+            <a href="../Comuns/logout.php">Sair</a>
+        </nav>
+    </header>
     <div class="editar-utilizador-container">
         <h1>Editar Utilizador</h1>
         <?php if ($success): ?><div class="success-message"><?php echo $success; ?></div><?php endif; ?>

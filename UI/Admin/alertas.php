@@ -49,7 +49,6 @@ $alertas = $alertasBLL->getAllAlertas();
     <meta charset="UTF-8">
     <title>Alertas - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/teste.css">
-    <link rel="stylesheet" href="../../assets/menu_notificacoes.css">
     <style>
         body {
             background: #f4f4fa;
@@ -199,25 +198,16 @@ $alertas = $alertasBLL->getAllAlertas();
     <header>
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
-            <?php
-            // Garantir que $menu está definido para evitar warnings
-            if (!isset($menu)) {
-                $menu = [
-                    'Dashboard' => 'dashboard_admin.php',
-                    'Utilizadores' => 'utilizadores.php',
-                    'Permissões' => 'permissoes.php',
-                    'Campos Personalizados' => 'campos_personalizados.php',
-                    'Alertas' => 'alertas.php',
-                    'Colaboradores' => '../RH/colaboradores_gerir.php',
-                    'Equipas' => '../RH/equipas.php',
-                    'Relatórios' => '../RH/relatorios.php',
-                    'Perfil' => '../Comuns/perfil.php',
-                    'Sair' => '../Comuns/logout.php'
-                ];
-            }
-            foreach ($menu as $label => $url): ?>
-                <a href="<?php echo $url; ?>"><?php echo $label; ?></a>
-            <?php endforeach; ?>
+            <a href="dashboard_admin.php">Dashboard</a>
+            <a href="utilizadores.php">Utilizadores</a>
+            <a href="permissoes.php">Permissões</a>
+            <a href="campos_personalizados.php">Campos Personalizados</a>
+            <a href="alertas.php">Alertas</a>
+            <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
+            <a href="../RH/equipas.php">Equipas</a>
+            <a href="../RH/relatorios.php">Relatórios</a>
+            <a href="../Comuns/perfil.php">Perfil</a>
+            <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
     <div class="campos-container">
@@ -306,5 +296,33 @@ $alertas = $alertasBLL->getAllAlertas();
             </tbody>
         </table>
     </div>
+
+    <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+      <button id="open-chatbot" style="
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+          font-size: 28px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          ">
+        ?
+      </button>
+      <iframe
+        id="chatbot-iframe"
+        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
+        title="Ajuda Chatbot"
+        width="350"
+        height="500"
+        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+      </iframe>
+    </div>
+    <script src="../../assets/chatbot.js"></script>
 </body>
 </html>

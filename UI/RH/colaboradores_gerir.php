@@ -4,20 +4,9 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admi
     header('Location: ../Comuns/erro.php');
     exit();
 }
-require_once '../../DAL/Admin/DAL_utilizadores.php';
-$dalUtil = new DAL_UtilizadoresAdmin();
-$util = $dalUtil->getUtilizadorById($_SESSION['user_id']);
-$isRhRestrito = ($_SESSION['profile'] === 'rh' && ($util['tipo_rh'] ?? '') === 'restrito');
-
 require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
 $colabBLL = new RHColaboradoresManager();
-
-if ($isRhRestrito) {
-    // RH restrito só pode ver colaboradores (apenas perfil 'colaborador')
-    $colaboradores = $colabBLL->getColaboradoresApenasColaboradores();
-} else {
-    $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
-}
+$colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -64,7 +53,6 @@ if ($isRhRestrito) {
                         <th>Username</th>
                         <th>Email</th>
                         <th>Tipo</th>
-                        <th>Função</th>
                         <th>Equipa</th>
                         <th>Estado</th>
                         <th style="min-width:90px;">Ações</th>
@@ -96,7 +84,6 @@ if ($isRhRestrito) {
                             }
                             ?>
                         </td>
-                        <td><?php echo htmlspecialchars($col['funcao']); ?></td>
                         <td><?php echo htmlspecialchars($col['equipa']); ?></td>
                         <td><?php echo $col['ativo'] ? 'Ativo' : 'Inativo'; ?></td>
                         <td>

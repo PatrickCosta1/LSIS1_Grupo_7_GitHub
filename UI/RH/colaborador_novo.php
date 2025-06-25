@@ -18,47 +18,23 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dados = [
         'nome' => $_POST['nome'] ?? '',
-        'nome_abreviado' => $_POST['nome_abreviado'] ?? '',
-        'morada' => $_POST['morada'] ?? '',
-        'morada_fiscal' => $_POST['morada_fiscal'] ?? '',
-        'localidade' => $_POST['localidade'] ?? '',
-        'codigo_postal' => $_POST['codigo_postal'] ?? '',
-        'estado_civil' => $_POST['estado_civil'] ?? '',
-        'comprovativo_estado_civil' => '', // upload não tratado aqui
-        'habilitacoes' => $_POST['habilitacoes'] ?? '',
-        'curso' => $_POST['curso'] ?? '',
-        'contacto_emergencia' => $_POST['contacto_emergencia'] ?? '',
-        'grau_relacionamento' => $_POST['grau_relacionamento'] ?? '',
-        'contacto_emergencia_numero' => $_POST['contacto_emergencia_numero'] ?? '',
-        'matricula_viatura' => $_POST['matricula_viatura'] ?? '',
-        'data_nascimento' => $_POST['data_nascimento'] ?? '',
-        'data_entrada' => $_POST['data_entrada'] ?? date('Y-m-d'),
-        'data_fim' => $_POST['data_fim'] ?? null,
-        'genero' => $_POST['genero'] ?? '',
-        'funcao' => $_POST['funcao'] ?? '',
-        'geografia' => $_POST['geografia'] ?? '',
-        'nivel_hierarquico' => $_POST['nivel_hierarquico'] ?? '',
-        'remuneracao' => $_POST['remuneracao'] ?? '',
-        'nif' => $_POST['nif'] ?? '',
-        'niss' => $_POST['niss'] ?? '',
-        'cc' => $_POST['cc'] ?? '',
-        'nacionalidade' => $_POST['nacionalidade'] ?? '',
-        'situacao_irs' => $_POST['situacao_irs'] ?? '',
-        'dependentes' => $_POST['dependentes'] ?? '',
-        'irs_jovem' => $_POST['irs_jovem'] ?? '',
-        'primeiro_ano_descontos' => $_POST['primeiro_ano_descontos'] ?? '',
-        'telemovel' => $_POST['telemovel'] ?? '',
-        'iban' => $_POST['iban'] ?? '',
-        'cartao_continente' => $_POST['cartao_continente'] ?? '',
-        'voucher_nos' => $_POST['voucher_nos'] ?? '',
-        'tipo_contrato' => $_POST['tipo_contrato'] ?? '',
-        'regime_horario' => $_POST['regime_horario'] ?? '',
-        // dados de utilizador
         'username' => $_POST['username'] ?? '',
         'email' => $_POST['email'] ?? '',
         'perfil_id' => $_POST['perfil_id'] ?? 0,
         'ativo' => isset($_POST['ativo']) ? 1 : 0,
-        'password' => $_POST['password'] ?? ''
+        'password' => $_POST['password'] ?? '',
+        'cargo' => $_POST['cargo'] ?? '',
+        'morada' => $_POST['morada'] ?? '',
+        'estado_civil' => $_POST['estado_civil'] ?? '',
+        'habilitacoes' => $_POST['habilitacoes'] ?? '',
+        'contacto_emergencia' => $_POST['contacto_emergencia'] ?? '',
+        'matricula_viatura' => $_POST['matricula_viatura'] ?? '',
+        'data_nascimento' => $_POST['data_nascimento'] ?? '',
+        'genero' => $_POST['genero'] ?? '',
+        'data_entrada' => $_POST['data_entrada'] ?? date('Y-m-d'),
+        'geografia' => $_POST['geografia'] ?? '',
+        'nivel_hierarquico' => $_POST['nivel_hierarquico'] ?? '',
+        'remuneracao' => $_POST['remuneracao'] ?? ''
     ];
     if ($colabBLL->addColaborador($dados)) {
         $success = "Colaborador criado com sucesso!";
@@ -100,52 +76,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="text" name="nome" required>
                 </div>
                 <div class="ficha-campo">
-                    <label>Nome Abreviado:</label>
-                    <input type="text" name="nome_abreviado" required>
+                    <label>Username:</label>
+                    <input type="text" name="username" required>
+                </div>
+                <div class="ficha-campo">
+                    <label>Email:</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="ficha-campo">
+                    <label>Perfil:</label>
+                    <select name="perfil_id" required>
+                        <?php foreach ($perfis as $p): ?>
+                            <?php if (in_array(strtolower($p['nome']), ['colaborador', 'coordenador'])): ?>
+                                <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['nome']); ?></option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="ficha-campo">
+                    <label>Ativo:</label>
+                    <input type="checkbox" name="ativo" checked>
+                </div>
+                <div class="ficha-campo">
+                    <label>Password:</label>
+                    <input type="password" name="password" required>
+                </div>
+                <div class="ficha-campo">
+                    <label>Cargo:</label>
+                    <input type="text" name="cargo">
                 </div>
                 <div class="ficha-campo">
                     <label>Morada:</label>
-                    <input type="text" name="morada" required>
-                </div>
-                <div class="ficha-campo">
-                    <label>Morada Fiscal:</label>
-                    <input type="text" name="morada_fiscal" required>
-                </div>
-                <div class="ficha-campo">
-                    <label>Localidade:</label>
-                    <input type="text" name="localidade" required>
-                </div>
-                <div class="ficha-campo">
-                    <label>Código Postal:</label>
-                    <input type="text" name="codigo_postal" required>
+                    <input type="text" name="morada">
                 </div>
                 <div class="ficha-campo">
                     <label>Estado Civil:</label>
                     <input type="text" name="estado_civil">
                 </div>
                 <div class="ficha-campo">
-                    <label>Comprovativo Estado Civil:</label>
-                    <input type="file" name="comprovativo_estado_civil">
-                </div>
-                <div class="ficha-campo">
                     <label>Habilitações:</label>
                     <input type="text" name="habilitacoes">
                 </div>
                 <div class="ficha-campo">
-                    <label>Curso:</label>
-                    <input type="text" name="curso">
-                </div>
-                <div class="ficha-campo">
                     <label>Contacto Emergência:</label>
                     <input type="text" name="contacto_emergencia">
-                </div>
-                <div class="ficha-campo">
-                    <label>Grau de Relacionamento:</label>
-                    <input type="text" name="grau_relacionamento">
-                </div>
-                <div class="ficha-campo">
-                    <label>Número de Contacto Emergência:</label>
-                    <input type="text" name="contacto_emergencia_numero">
                 </div>
                 <div class="ficha-campo">
                     <label>Matrícula Viatura:</label>
@@ -154,14 +128,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="ficha-campo">
                     <label>Data de Nascimento:</label>
                     <input type="date" name="data_nascimento">
-                </div>
-                <div class="ficha-campo">
-                    <label>Data de Entrada:</label>
-                    <input type="date" name="data_entrada" value="<?php echo date('Y-m-d'); ?>">
-                </div>
-                <div class="ficha-campo">
-                    <label>Data de Fim:</label>
-                    <input type="date" name="data_fim">
                 </div>
                 <div class="ficha-campo">
                     <label>Género:</label>
@@ -173,8 +139,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </select>
                 </div>
                 <div class="ficha-campo">
-                    <label>Função:</label>
-                    <input type="text" name="funcao">
+                    <label>Data de Entrada:</label>
+                    <input type="date" name="data_entrada" value="<?php echo date('Y-m-d'); ?>">
                 </div>
                 <div class="ficha-campo">
                     <label>Geografia:</label>
@@ -187,62 +153,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="ficha-campo">
                     <label>Remuneração:</label>
                     <input type="number" name="remuneracao" step="0.01">
-                </div>
-                <div class="ficha-campo">
-                    <label>NIF:</label>
-                    <input type="text" name="nif">
-                </div>
-                <div class="ficha-campo">
-                    <label>NISS:</label>
-                    <input type="text" name="niss">
-                </div>
-                <div class="ficha-campo">
-                    <label>CC:</label>
-                    <input type="text" name="cc">
-                </div>
-                <div class="ficha-campo">
-                    <label>Nacionalidade:</label>
-                    <input type="text" name="nacionalidade">
-                </div>
-                <div class="ficha-campo">
-                    <label>Situação IRS:</label>
-                    <input type="text" name="situacao_irs">
-                </div>
-                <div class="ficha-campo">
-                    <label>Dependentes:</label>
-                    <input type="text" name="dependentes">
-                </div>
-                <div class="ficha-campo">
-                    <label>IRS Jovem:</label>
-                    <input type="text" name="irs_jovem">
-                </div>
-                <div class="ficha-campo">
-                    <label>Primeiro Ano Descontos:</label>
-                    <input type="text" name="primeiro_ano_descontos">
-                </div>
-                <div class="ficha-campo">
-                    <label>Telemóvel:</label>
-                    <input type="text" name="telemovel">
-                </div>
-                <div class="ficha-campo">
-                    <label>IBAN:</label>
-                    <input type="text" name="iban">
-                </div>
-                <div class="ficha-campo">
-                    <label>Cartão Continente:</label>
-                    <input type="text" name="cartao_continente">
-                </div>
-                <div class="ficha-campo">
-                    <label>Voucher NOS:</label>
-                    <input type="text" name="voucher_nos">
-                </div>
-                <div class="ficha-campo">
-                    <label>Tipo de Contrato:</label>
-                    <input type="text" name="tipo_contrato">
-                </div>
-                <div class="ficha-campo">
-                    <label>Regime Horário:</label>
-                    <input type="text" name="regime_horario">
                 </div>
             </div>
             <div style="text-align:center; margin-top: 24px;">

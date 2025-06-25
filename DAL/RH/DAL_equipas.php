@@ -53,7 +53,7 @@ class DAL_Equipas {
 
     public function getMembrosEquipaDetalhado($equipa_id) {
         $pdo = Database::getConnection();
-        $sql = "SELECT c.id, c.nome, c.funcao, p.nome as perfil
+        $sql = "SELECT c.id, c.nome, c.cargo, p.nome as perfil
                 FROM colaboradores c
                 INNER JOIN equipa_colaboradores ec ON c.id = ec.colaborador_id
                 LEFT JOIN utilizadores u ON c.utilizador_id = u.id
@@ -66,7 +66,7 @@ class DAL_Equipas {
 
     public function getColaboradoresDisponiveisParaEquipa() {
         $pdo = Database::getConnection();
-        $sql = "SELECT c.id, c.nome, c.funcao, p.nome as perfil
+        $sql = "SELECT c.id, c.nome, c.cargo, p.nome as perfil
                 FROM colaboradores c
                 LEFT JOIN equipa_colaboradores ec ON c.id = ec.colaborador_id
                 LEFT JOIN utilizadores u ON c.utilizador_id = u.id

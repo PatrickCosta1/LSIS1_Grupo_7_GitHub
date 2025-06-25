@@ -79,14 +79,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Preencha todos os campos obrigatórios.";
     }
 }
+
+// Menu dinâmico: admin tem menu igual ao dashboard admin, rh tem menu de rh
+if ($_SESSION['profile'] === 'admin') {
+    $menu = [
+        'Dashboard' => '../Admin/dashboard_admin.php',
+        'Utilizadores' => '../Admin/utilizadores.php',
+        'Permissões' => '../Admin/permissoes.php',
+        'Campos Personalizados' => '../Admin/campos_personalizados.php',
+        'Alertas' => '../Admin/alertas.php',
+        'Colaboradores' => 'colaboradores_gerir.php',
+        'Equipas' => 'equipas.php',
+        'Relatórios' => 'relatorios.php',
+        'Perfil' => '../Comuns/perfil.php',
+        'Sair' => '../Comuns/logout.php'
+    ];
+} else {
+    $menu = [
+        'Dashboard' => 'dashboard_rh.php',
+        'Colaboradores' => 'colaboradores_gerir.php',
+        'Equipas' => 'equipas.php',
+        'Relatórios' => 'relatorios.php',
+        'Exportar' => 'exportar.php',
+        'Perfil' => '../Comuns/perfil.php',
+        'Sair' => '../Comuns/logout.php'
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Equipa</title>
-    <link rel="stylesheet" href="../../assets/style.css">
+    <title>Editar Equipa - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/teste.css">
+    <!-- Não incluir menu_notificacoes.css para admin/rh -->
     <style>
         body {
             background: #f4f4fa;
@@ -204,14 +230,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <header>
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
-            <a href="dashboard_rh.php">Dashboard</a>
-            <a href="colaboradores_gerir.php">Colaboradores</a>
-            <a href="equipas.php">Equipas</a>
-            <a href="relatorios.php">Relatórios</a>
-            <a href="exportar.php">Exportar</a>
-            <a href="../Comuns/notificacoes.php">Notificações</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
-            <a href="../Comuns/logout.php">Sair</a>
+            <?php foreach ($menu as $label => $url): ?>
+                <a href="<?php echo $url; ?>"><?php echo $label; ?></a>
+            <?php endforeach; ?>
         </nav>
     </header>
     <main>
@@ -252,7 +273,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <tr>
                                     <td><?php echo htmlspecialchars($m['nome']); ?></td>
                                     <td><?php echo isset($m['perfil']) ? htmlspecialchars($m['perfil']) : ''; ?></td>
-                                    <td><?php echo isset($m['funcao']) ? htmlspecialchars($m['funcao']) : ''; ?></td>
+                                    <td><?php echo isset($m['cargo']) ? htmlspecialchars($m['cargo']) : ''; ?></td>
                                     <td>
                                         <a href="equipa_editar.php?id=<?php echo $id; ?>&remover_membro=<?php echo $m['id']; ?>"
                                            class="btn btn-danger"
@@ -290,7 +311,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </td>
                                         <td><?php echo htmlspecialchars($col['nome']); ?></td>
                                         <td><?php echo isset($col['perfil']) ? htmlspecialchars($col['perfil']) : ''; ?></td>
-                                        <td><?php echo htmlspecialchars($col['funcao']); ?></td>
+                                        <td><?php echo htmlspecialchars($col['cargo']); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -313,5 +334,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </main>
 </body>
-</html>
 </html>

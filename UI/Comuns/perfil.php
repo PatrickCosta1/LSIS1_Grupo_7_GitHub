@@ -119,15 +119,38 @@ if ($_SESSION['profile'] === 'coordenador') {
     <title>Meu Perfil - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/style.css">
     <link rel="stylesheet" href="../../assets/teste.css">
-    <link rel="stylesheet" href="../../assets/menu_notificacoes.css">
+    <?php if (!in_array($_SESSION['profile'], ['admin', 'rh'])): ?>
+        <link rel="stylesheet" href="../../assets/menu_notificacoes.css">
+    <?php endif; ?>
 </head>
 <body>
     <header>
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
-            <?php foreach ($menu as $label => $url): ?>
-                <a href="<?php echo $url; ?>"><?php echo $label; ?></a>
-            <?php endforeach; ?>
+            <?php if ($_SESSION['profile'] === 'admin'): ?>
+                <a href="../Admin/dashboard_admin.php">Dashboard</a>
+                <a href="../Admin/utilizadores.php">Utilizadores</a>
+                <a href="../Admin/permissoes.php">Permissões</a>
+                <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
+                <a href="../Admin/alertas.php">Alertas</a>
+                <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
+                <a href="../RH/equipas.php">Equipas</a>
+                <a href="../RH/relatorios.php">Relatórios</a>
+                <a href="perfil.php">Perfil</a>
+                <a href="logout.php">Sair</a>
+            <?php elseif ($_SESSION['profile'] === 'rh'): ?>
+                <a href="../RH/dashboard_rh.php">Dashboard</a>
+                <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
+                <a href="../RH/equipas.php">Equipas</a>
+                <a href="../RH/relatorios.php">Relatórios</a>
+                <a href="../RH/exportar.php">Exportar</a>
+                <a href="perfil.php">Perfil</a>
+                <a href="logout.php">Sair</a>
+            <?php else: ?>
+                <?php foreach ($menu as $label => $url): ?>
+                    <a href="<?php echo $url; ?>"><?php echo $label; ?></a>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </nav>
     </header>
     <main>
