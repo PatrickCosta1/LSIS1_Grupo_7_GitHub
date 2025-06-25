@@ -156,6 +156,8 @@ $colunas = array_keys($colunas);
                     <?php foreach ($colunas as $col): ?>
                         <td>
                             <?php if (isset($perfil['permissoes'][$col])): ?>
+                                <!-- Campo hidden para garantir submissão de 0 se não estiver marcado -->
+                                <input type="hidden" name="permissao[<?php echo $perfil['permissoes'][$col]['id']; ?>]" value="0">
                                 <input type="checkbox" name="permissao[<?php echo $perfil['permissoes'][$col]['id']; ?>]" value="1" <?php if ($perfil['permissoes'][$col]['valor']) echo 'checked'; ?>>
                             <?php else: ?>
                                 <span style="color:#bbb;">—</span>
