@@ -149,87 +149,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "Erro ao atualizar dados.";
     }
 }
-
-// Menu dinâmico com sino
-require_once '../../BLL/Admin/BLL_alertas.php';
-require_once '../../DAL/Admin/DAL_utilizadores.php';
-$alertasBLL = new AdminAlertasManager();
-$dalUtil = new DAL_UtilizadoresAdmin();
-$user_alerta = $dalUtil->getUtilizadorById($_SESSION['user_id']);
-$perfil_id_alerta = $user_alerta['perfil_id'];
-$user_id_alerta = $_SESSION['user_id'];
-$alertas = $alertasBLL->getAlertasParaUtilizador($perfil_id_alerta);
-$tem_nao_lidas = false;
-foreach ($alertas as $a) {
-    if (!$alertasBLL->isAlertaLido($a['id'], $user_id_alerta)) {
-        $tem_nao_lidas = true;
-        break;
-    }
-}
-$icone_sino = '<span style="position:relative;display:inline-block;">
-    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#4a468a" viewBox="0 0 24 24" style="vertical-align:middle;">
-        <path d="M12 2a6 6 0 0 0-6 6v3.586l-.707.707A1 1 0 0 0 5 14h14a1 1 0 0 0 .707-1.707L19 11.586V8a6 6 0 0 0-6-6zm0 20a2.978 2.978 0 0 0 2.816-2H9.184A2.978 2.978 0 0 0 12 22z"/>
-    </svg>';
-if ($tem_nao_lidas) {
-    $icone_sino .= '<span style="position:absolute;top:2px;right:2px;width:10px;height:10px;background:#e53e3e;border-radius:50%;border:2px solid #fff;"></span>';
-}
-$icone_sino .= '</span>';
-
-$menu = [];
-switch ($_SESSION['profile']) {
-    case 'admin':
-        $menu = [
-            'Dashboard' => '../Admin/dashboard_admin.php',
-            'Utilizadores' => '../Admin/utilizadores.php',
-            'Permissões' => '../Admin/permissoes.php',
-            'Campos Personalizados' => '../Admin/campos_personalizados.php',
-            'Alertas' => '../Admin/alertas.php',
-            'Colaboradores' => '../RH/colaboradores_gerir.php',
-            'Equipas' => '../RH/equipas.php',
-            'Relatórios' => '../RH/relatorios.php',
-            'Perfil' => '../Comuns/perfil.php',
-            $icone_sino => '../Comuns/notificacoes.php',
-            'Sair' => '../Comuns/logout.php'
-        ];
-        break;
-    case 'rh':
-        $menu = [
-            'Dashboard' => '../RH/dashboard_rh.php',
-            'Colaboradores' => '../RH/colaboradores_gerir.php',
-            'Equipas' => '../RH/equipas.php',
-            'Relatórios' => '../RH/relatorios.php',
-            'Exportar' => '../RH/exportar.php',
-            $icone_sino => '../Comuns/notificacoes.php',
-            'Perfil' => '../Comuns/perfil.php',
-            'Sair' => '../Comuns/logout.php'
-        ];
-        break;
-    case 'coordenador':
-        $menu = [
-            'Dashboard' => '../Coordenador/dashboard_coordenador.php',
-            'Minha Ficha' => 'ficha_colaborador.php',
-            'Minha Equipa' => '../Coordenador/equipa.php',
-            $icone_sino => '../Comuns/notificacoes.php',
-            'Perfil' => '../Comuns/perfil.php',
-            'Sair' => '../Comuns/logout.php'
-        ];
-        break;
-    case 'colaborador':
-        $menu = [
-            'Dashboard' => 'dashboard_colaborador.php',
-            'Minha Ficha' => 'ficha_colaborador.php',
-            $icone_sino => '../Comuns/notificacoes.php',
-            'Perfil' => '../Comuns/perfil.php',
-            'Sair' => '../Comuns/logout.php'
-        ];
-        break;
-    case 'convidado':
-        $menu = [
-            'Preencher Dados' => '../Convidado/onboarding_convidado.php',
-            'Sair' => '../Comuns/logout.php'
-        ];
-        break;
-}
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -238,15 +157,46 @@ switch ($_SESSION['profile']) {
     <title>Minha Ficha - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/style.css">
     <link rel="stylesheet" href="../../assets/teste.css">
-    <link rel="stylesheet" href="../../assets/menu_notificacoes.css">
 </head>
 <body>
     <header>
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
-            <?php foreach ($menu as $label => $url): ?>
-                <a href="<?php echo $url; ?>"><?php echo $label; ?></a>
-            <?php endforeach; ?>
+            <?php if ($perfil === 'coordenador'): ?>
+                <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
+                <a href="ficha_colaborador.php">Minha Ficha</a>
+                <a href="../Coordenador/equipa.php">Minha Equipa</a>
+                <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
+                <a href="../Comuns/notificacoes.php">Notificações</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php elseif ($perfil === 'rh'): ?>
+                <a href="../RH/dashboard_rh.php">Dashboard</a>
+                <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
+                <a href="../RH/equipas.php">Equipas</a>
+                <a href="../RH/relatorios.php">Relatórios</a>
+                <a href="../RH/exportar.php">Exportar</a>
+                <a href="../Comuns/notificacoes.php">Notificações</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php elseif ($perfil === 'admin'): ?>
+                <a href="../Admin/dashboard_admin.php">Dashboard</a>
+                <a href="../Admin/utilizadores.php">Utilizadores</a>
+                <a href="../Admin/permissoes.php">Permissões</a>
+                <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
+                <a href="../Admin/alertas.php">Alertas</a>
+                <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
+                <a href="../RH/equipas.php">Equipas</a>
+                <a href="../RH/relatorios.php">Relatórios</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php else: ?>
+                <a href="dashboard_colaborador.php">Dashboard</a>
+                <a href="ficha_colaborador.php">Minha Ficha</a>
+                <a href="../Comuns/notificacoes.php">Notificações</a>
+                <a href="../Comuns/perfil.php">Perfil</a>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php endif; ?>
         </nav>
     </header>
     <main>
