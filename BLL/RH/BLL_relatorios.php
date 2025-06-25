@@ -9,5 +9,11 @@ class RHRelatoriosManager {
     public function getIndicadoresGlobais() {
         return $this->dal->getIndicadoresGlobais();
     }
+    public function getEquipasIndicadores() {
+        return $this->dal->getEquipasIndicadores();
+    }
+    public function getAniversariosPorEquipa() {
+        return $this->dal->getAniversariosPorEquipa();
+    }
 }
 ?>

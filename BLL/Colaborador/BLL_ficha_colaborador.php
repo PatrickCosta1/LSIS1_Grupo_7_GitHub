@@ -8,7 +8,7 @@ class ColaboradorFichaManager {
         $this->dal = new DAL_FichaColaborador();
     }
 
-    public function getColaboradorByUserId($userId) {
+        public function getColaboradorByUserId($userId) {
         return $this->dal->getColaboradorByUserId($userId);
     }
 

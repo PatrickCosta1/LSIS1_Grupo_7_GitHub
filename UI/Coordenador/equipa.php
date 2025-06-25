@@ -25,6 +25,15 @@ foreach ($equipas as $e) {
 
 // Corrigir: buscar membros da equipa pelo ID da equipa, não pelo coordenador
 $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
+
+// Definir menu do coordenador
+$menu = [
+    'Dashboard' => 'dashboard_coordenador.php',
+    'Minha Equipa' => 'equipa.php?id=' . $equipaId,
+    'Relatórios Equipa' => 'relatorios_equipa.php?id=' . $equipaId,
+    'Perfil' => '../Comuns/perfil.php',
+    'Sair' => '../Comuns/logout.php'
+];
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -149,7 +158,7 @@ $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
                     <?php foreach ($colaboradores as $c): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($c['nome']); ?></td>
-                        <td><?php echo htmlspecialchars($c['funcao']); ?></td>
+                        <td><?php echo htmlspecialchars($c['cargo']); ?></td>
                         <td><?php echo htmlspecialchars($c['email']); ?></td>
                     </tr>
                     <?php endforeach; ?>

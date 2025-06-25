@@ -15,5 +15,29 @@ class CoordenadorDashboardManager {
     public function getColaboradoresByEquipa($equipaId) {
         return $this->dal->getColaboradoresByEquipa($equipaId);
     }
+    public function getIndicadoresEquipa($equipaId) {
+        return $this->dal->getIndicadoresEquipa($equipaId);
+    }
+    public function getIdadesPorEquipa($equipaId) {
+        return $this->dal->getIdadesPorEquipa($equipaId);
+    }
+    public function getAniversariantesEquipaMes($equipaId) {
+        return $this->dal->getAniversariantesEquipaMes($equipaId);
+    }
+    public function getEmailsTipoPorEquipa($equipaId) {
+        return $this->dal->getEmailsTipoPorEquipa($equipaId);
+    }
+    public function getGenerosPorEquipa($equipaId) {
+        return $this->dal->getGenerosPorEquipa($equipaId);
+    }
+    public function getEvolucaoColaboradores($equipaId) {
+        return $this->dal->getEvolucaoColaboradores($equipaId);
+    }
+    public function getFaltasPorColaborador($equipaId) {
+        return $this->dal->getFaltasPorColaborador($equipaId);
+    }
+    public function getAvaliacoesDesempenhoPorEquipa($equipaId) {
+        return $this->dal->getAvaliacoesDesempenhoPorEquipa($equipaId);
+    }
 }
 ?>
