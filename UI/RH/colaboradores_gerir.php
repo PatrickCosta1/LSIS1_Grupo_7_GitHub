@@ -85,7 +85,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                             }
                             ?>
                         </td>
-                        <td><?php echo htmlspecialchars($col['funcao']); ?></td>
+                        <td><?php echo htmlspecialchars($col['cargo']); ?></td>
                         <td><?php echo htmlspecialchars($col['equipa']); ?></td>
                         <td><?php echo $col['ativo'] ? 'Ativo' : 'Inativo'; ?></td>
                         <td>

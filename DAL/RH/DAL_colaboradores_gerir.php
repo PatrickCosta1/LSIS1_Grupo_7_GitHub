@@ -4,7 +4,7 @@ require_once __DIR__ . '/../Database.php';
 class DAL_ColaboradoresGerir {
     public function getAllColaboradores($excludeUserId = null) {
         $pdo = Database::getConnection();
-        $sql = "SELECT c.id, c.nome, c.funcao, e.nome as equipa, u.email, u.ativo, u.username, p.nome as perfil
+        $sql = "SELECT c.id, c.nome, c.cargo, e.nome as equipa, u.email, u.ativo, u.username, p.nome as perfil
                 FROM colaboradores c
                 LEFT JOIN equipa_colaboradores ec ON c.id = ec.colaborador_id
                 LEFT JOIN equipas e ON ec.equipa_id = e.id
@@ -35,11 +35,11 @@ class DAL_ColaboradoresGerir {
         $userId = $pdo->lastInsertId();
 
         // Criar colaborador
-        $stmtColab = $pdo->prepare("INSERT INTO colaboradores (utilizador_id, nome, funcao, morada, estado_civil, habilitacoes, contacto_emergencia, matricula_viatura, data_nascimento, genero, data_entrada, geografia, nivel_hierarquico, remuneracao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmtColab = $pdo->prepare("INSERT INTO colaboradores (utilizador_id, nome, cargo, morada, estado_civil, habilitacoes, contacto_emergencia, matricula_viatura, data_nascimento, genero, data_entrada, geografia, nivel_hierarquico, remuneracao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         return $stmtColab->execute([
             $userId,
             $dados['nome'],
-            $dados['funcao'],
+            $dados['cargo'],
             $dados['morada'],
             $dados['estado_civil'],
             $dados['habilitacoes'],

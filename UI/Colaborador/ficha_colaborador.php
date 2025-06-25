@@ -421,37 +421,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </fieldset>
 
             <?php if (in_array($perfil, ['rh', 'admin'])): ?>
-                <!-- Secção apenas para RH/Admin -->
-                <fieldset style="margin-top:24px; border:1px solid #e1e5e9; border-radius:10px; padding:18px;">
-                    <legend style="font-weight:600; color:#e67e22;">Gestão RH/Admin</legend>
-                    <div class="ficha-grid">
-                        <div class="ficha-campo">
-                            <label>Cargo:</label>
-                            <input type="text" name="cargo" value="<?php echo htmlspecialchars($colab['cargo'] ?? ''); ?>">
-                        </div>
-                        <div class="ficha-campo">
-                            <label>Nível Hierárquico:</label>
-                            <input type="text" name="nivel_hierarquico" value="<?php echo htmlspecialchars($colab['nivel_hierarquico'] ?? ''); ?>">
-                        </div>
-                        <div class="ficha-campo">
-                            <label>Remuneração:</label>
-                            <input type="text" name="remuneracao" value="<?php echo htmlspecialchars($colab['remuneracao'] ?? ''); ?>">
-                        </div>
-                        <div class="ficha-campo">
-                            <label>Nome Abreviado:</label>
-                            <input type="text" name="nome_abreviado" value="<?php echo htmlspecialchars($colab['nome_abreviado'] ?? ''); ?>">
-                        </div>
-                        <div class="ficha-campo">
-                            <label>Tipo de Contrato:</label>
-                            <input type="text" name="tipo_contrato" value="<?php echo htmlspecialchars($colab['tipo_contrato'] ?? ''); ?>">
-                        </div>
-                        <div class="ficha-campo">
-                            <label>Regime Horário:</label>
-                            <input type="text" name="regime_horario" value="<?php echo htmlspecialchars($colab['regime_horario'] ?? ''); ?>">
-                        </div>
+            <!-- Secção apenas para RH/Admin -->
+            <fieldset style="margin-top:24px; border:1px solid #e1e5e9; border-radius:10px; padding:18px;">
+                <legend style="font-weight:600; color:#e67e22;">Gestão RH/Admin</legend>
+                <div class="ficha-grid">
+                    <div class="ficha-campo">
+                        <label>Cargo:</label>
+                        <select name="cargo">
+                            <option value="">Selecione</option>
+                            <option value="colaborador" <?php if (($colab['cargo'] ?? '') === 'colaborador') echo 'selected'; ?>>Colaborador</option>
+                            <option value="coordenador" <?php if (($colab['cargo'] ?? '') === 'coordenador') echo 'selected'; ?>>Coordenador</option>
+                            <option value="rh" <?php if (($colab['cargo'] ?? '') === 'rh') echo 'selected'; ?>>RH</option>
+                            <option value="admin" <?php if (($colab['cargo'] ?? '') === 'admin') echo 'selected'; ?>>Admin</option>
+                        </select>
                     </div>
-                </fieldset>
-            <?php endif; ?>
+                    <div class="ficha-campo">
+                        <label>Nível Hierárquico:</label>
+                        <select name="nivel_hierarquico">
+                            <option value="">Selecione</option>
+                            <option value="1" <?php if (($colab['nivel_hierarquico'] ?? '') === '1') echo 'selected'; ?>>1</option>
+                            <option value="2" <?php if (($colab['nivel_hierarquico'] ?? '') === '2') echo 'selected'; ?>>2</option>
+                            <option value="3" <?php if (($colab['nivel_hierarquico'] ?? '') === '3') echo 'selected'; ?>>3</option>
+                            <option value="4" <?php if (($colab['nivel_hierarquico'] ?? '') === '4') echo 'selected'; ?>>4</option>
+                        </select>
+                    </div>
+                    <div class="ficha-campo">
+                        <label>Remuneração:</label>
+                        <input type="text" name="remuneracao" value="<?php echo htmlspecialchars($colab['remuneracao'] ?? ''); ?>">
+                    </div>
+                    <div class="ficha-campo">
+                        <label>Nome Abreviado:</label>
+                        <input type="text" name="nome_abreviado" value="<?php echo htmlspecialchars($colab['nome_abreviado'] ?? ''); ?>">
+                    </div>
+                    <div class="ficha-campo">
+                        <label>Tipo de Contrato:</label>
+                        <select name="tipo_contrato">
+                            <option value="">Selecione</option>
+                            <option value="estágio curricular" <?php if (($colab['tipo_contrato'] ?? '') === 'estágio curricular') echo 'selected'; ?>>Estágio Curricular</option>
+                            <option value="estagio IEFP" <?php if (($colab['tipo_contrato'] ?? '') === 'estagio IEFP') echo 'selected'; ?>>Estágio IEFP</option>
+                            <option value="termo certo" <?php if (($colab['tipo_contrato'] ?? '') === 'termo certo') echo 'selected'; ?>>Termo Certo</option>
+                            <option value="termo incerto" <?php if (($colab['tipo_contrato'] ?? '') === 'termo incerto') echo 'selected'; ?>>Termo Incerto</option>
+                            <option value="sem termo" <?php if (($colab['tipo_contrato'] ?? '') === 'sem termo') echo 'selected'; ?>>Sem Termo</option>
+                        </select>
+                    </div>
+                    <div class="ficha-campo">
+                        <label>Regime Horário:</label>
+                        <select name="regime_horario">
+                            <option value="">Selecione</option>
+                            <option value="10%" <?php if (($colab['regime_horario'] ?? '') === '10%') echo 'selected'; ?>>10%</option>
+                            <option value="20%" <?php if (($colab['regime_horario'] ?? '') === '20%') echo 'selected'; ?>>20%</option>
+                            <option value="50%" <?php if (($colab['regime_horario'] ?? '') === '50%') echo 'selected'; ?>>50%</option>
+                        </select>
+                    </div>
+                </div>
+            </fieldset>
+        <?php endif; ?>
 
             <div style="text-align:center; margin-top: 24px;">
                 <button type="submit" class="btn">Guardar Alterações</button>
