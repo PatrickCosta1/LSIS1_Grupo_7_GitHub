@@ -13,8 +13,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
 <head>
     <meta charset="UTF-8">
     <title>Gestão de Colaboradores - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/RH/colaboradores_gerir.css">
 </head>
 <body>
     <header>
@@ -53,6 +52,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                         <th>Username</th>
                         <th>Email</th>
                         <th>Tipo</th>
+                        <th>Função</th>
                         <th>Equipa</th>
                         <th>Estado</th>
                         <th style="min-width:90px;">Ações</th>
@@ -84,6 +84,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                             }
                             ?>
                         </td>
+                        <td><?php echo htmlspecialchars($col['cargo']); ?></td>
                         <td><?php echo htmlspecialchars($col['equipa']); ?></td>
                         <td><?php echo $col['ativo'] ? 'Ativo' : 'Inativo'; ?></td>
                         <td>

@@ -18,9 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $perfil_id = $_POST['perfil_id'];
     $ativo = isset($_POST['ativo']) ? 1 : 0;
     $password = $_POST['password'];
-    $tipo_rh = $_POST['tipo_rh'] ?? null;
 
-    if ($utilBLL->addUtilizador($nome, $username, $email, $perfil_id, $ativo, $password, $tipo_rh)) {
+    if ($utilBLL->addUtilizador($nome, $username, $email, $perfil_id, $ativo, $password)) {
         $success = "Utilizador criado com sucesso!";
     } else {
         $error = "Erro ao criar utilizador.";
@@ -35,21 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../../assets/teste.css">
 </head>
 <body>
-    <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
-        <nav>
-            <a href="dashboard_admin.php">Dashboard</a>
-            <a href="utilizadores.php">Utilizadores</a>
-            <a href="permissoes.php">Permissões</a>
-            <a href="campos_personalizados.php">Campos Personalizados</a>
-            <a href="alertas.php">Alertas</a>
-            <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-            <a href="../RH/equipas.php">Equipas</a>
-            <a href="../RH/relatorios.php">Relatórios</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
-            <a href="../Comuns/logout.php">Sair</a>
-        </nav>
-    </header>
     <h1>Novo Utilizador</h1>
     <?php if ($success): ?><div class="success-message"><?php echo $success; ?></div><?php endif; ?>
     <?php if ($error): ?><div class="error-message"><?php echo $error; ?></div><?php endif; ?>
@@ -58,21 +42,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label>Username: <input type="text" name="username" required></label><br>
         <label>Email: <input type="email" name="email" required></label><br>
         <label>Perfil:
-            <select name="perfil_id" id="perfil_id" required onchange="toggleTipoRh()">
+            <select name="perfil_id" required>
                 <?php foreach ($perfis as $p): ?>
                     <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['nome']); ?></option>
                 <?php endforeach; ?>
             </select>
         </label><br>
-        <div id="tipo-rh-div">
-            <label>Tipo de RH:
-                <select name="tipo_rh">
-                    <option value="">Não aplicável</option>
-                    <option value="restrito">RH Restrito (apenas vê colaboradores)</option>
-                    <option value="completo">RH Completo (vê todos os perfis)</option>
-                </select>
-            </label><br>
-        </div>
         <label>Ativo: <input type="checkbox" name="ativo" checked></label><br>
         <label>Password: <input type="password" name="password" required></label><br>
         <button type="submit" class="btn">Criar</button>
@@ -106,14 +81,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </iframe>
     </div>
     <script src="../../assets/chatbot.js"></script>
-    <script>
-    function toggleTipoRh() {
-        var perfil = document.getElementById('perfil_id');
-        var tipoRhDiv = document.getElementById('tipo-rh-div');
-        var selected = perfil.options[perfil.selectedIndex].text.toLowerCase();
-        tipoRhDiv.style.display = (selected === 'rh') ? 'block' : 'none';
-    }
-    window.onload = toggleTipoRh;
-    </script>
 </body>
 </html>

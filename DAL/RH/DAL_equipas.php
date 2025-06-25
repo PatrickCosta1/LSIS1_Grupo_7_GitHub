@@ -28,53 +28,5 @@ class DAL_Equipas {
         $stmt = $pdo->query($sql);
         return $stmt->fetchAll();
     }
-
-    public function updateEquipa($id, $nome, $coordenador_utilizador_id) {
-        $pdo = Database::getConnection();
-        $stmt = $pdo->prepare("UPDATE equipas SET nome = ?, coordenador_id = ? WHERE id = ?");
-        return $stmt->execute([$nome, $coordenador_utilizador_id, $id]);
-    }
-
-    public function adicionarMembroEquipa($equipa_id, $colaborador_id) {
-        $pdo = Database::getConnection();
-        // Só adiciona se não estiver já em equipa
-        $stmt = $pdo->prepare("SELECT 1 FROM equipa_colaboradores WHERE colaborador_id = ?");
-        $stmt->execute([$colaborador_id]);
-        if ($stmt->fetch()) return false;
-        $stmtAdd = $pdo->prepare("INSERT INTO equipa_colaboradores (equipa_id, colaborador_id) VALUES (?, ?)");
-        return $stmtAdd->execute([$equipa_id, $colaborador_id]);
-    }
-
-    public function removerMembroEquipa($equipa_id, $colaborador_id) {
-        $pdo = Database::getConnection();
-        $stmt = $pdo->prepare("DELETE FROM equipa_colaboradores WHERE equipa_id = ? AND colaborador_id = ?");
-        return $stmt->execute([$equipa_id, $colaborador_id]);
-    }
-
-    public function getMembrosEquipaDetalhado($equipa_id) {
-        $pdo = Database::getConnection();
-        $sql = "SELECT c.id, c.nome, c.cargo, p.nome as perfil
-                FROM colaboradores c
-                INNER JOIN equipa_colaboradores ec ON c.id = ec.colaborador_id
-                LEFT JOIN utilizadores u ON c.utilizador_id = u.id
-                LEFT JOIN perfis p ON u.perfil_id = p.id
-                WHERE ec.equipa_id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$equipa_id]);
-        return $stmt->fetchAll();
-    }
-
-    public function getColaboradoresDisponiveisParaEquipa() {
-        $pdo = Database::getConnection();
-        $sql = "SELECT c.id, c.nome, c.cargo, p.nome as perfil
-                FROM colaboradores c
-                LEFT JOIN equipa_colaboradores ec ON c.id = ec.colaborador_id
-                LEFT JOIN utilizadores u ON c.utilizador_id = u.id
-                LEFT JOIN perfis p ON u.perfil_id = p.id
-                WHERE ec.colaborador_id IS NULL
-                  AND (LOWER(p.nome) = 'colaborador' OR LOWER(p.nome) = 'coordenador')";
-        $stmt = $pdo->query($sql);
-        return $stmt->fetchAll();
-    }
 }
 ?>

@@ -24,30 +24,16 @@ class DAL_UtilizadoresAdmin {
         return $stmt->fetch();
     }
 
-    public function addUtilizador($nome, $username, $email, $perfil_id, $ativo, $password, $tipo_rh = null) {
+    public function addUtilizador($nome, $username, $email, $perfil_id, $ativo, $password) {
         $pdo = Database::getConnection();
-        if ($tipo_rh !== null && $this->isRhPerfil($perfil_id)) {
-            $stmt = $pdo->prepare("INSERT INTO utilizadores (username, email, perfil_id, ativo, password, tipo_rh) VALUES (?, ?, ?, ?, ?, ?)");
-            $ok = $stmt->execute([$username, $email, $perfil_id, $ativo, $password, $tipo_rh]);
-        } else {
-            $stmt = $pdo->prepare("INSERT INTO utilizadores (username, email, perfil_id, ativo, password) VALUES (?, ?, ?, ?, ?)");
-            $ok = $stmt->execute([$username, $email, $perfil_id, $ativo, $password]);
-        }
+        $stmt = $pdo->prepare("INSERT INTO utilizadores (username, email, perfil_id, ativo, password) VALUES (?, ?, ?, ?, ?)");
+        $ok = $stmt->execute([$username, $email, $perfil_id, $ativo, $password]);
         if ($ok) {
             $id = $pdo->lastInsertId();
-            // Cria colaborador automaticamente com o nome fornecido
             $stmt2 = $pdo->prepare("INSERT INTO colaboradores (utilizador_id, nome) VALUES (?, ?)");
             $stmt2->execute([$id, $nome]);
         }
         return $ok;
-    }
-
-    private function isRhPerfil($perfil_id) {
-        $pdo = Database::getConnection();
-        $stmt = $pdo->prepare("SELECT nome FROM perfis WHERE id = ?");
-        $stmt->execute([$perfil_id]);
-        $perfil = $stmt->fetchColumn();
-        return strtolower($perfil) === 'rh';
     }
 
     public function updateUtilizador($id, $nome, $username, $email, $perfil_id, $ativo) {

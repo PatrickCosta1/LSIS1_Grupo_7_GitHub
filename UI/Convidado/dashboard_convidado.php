@@ -7,10 +7,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'convidado') {
 require_once '../../BLL/Convidado/BLL_dashboard_convidado.php';
 $convidadoBLL = new ConvidadoDashboardManager();
 $nome = htmlspecialchars($convidadoBLL->getConvidadoName($_SESSION['user_id']));
-$menu = [
-    'Preencher Dados' => 'onboarding_convidado.php',
-    'Sair' => '../Comuns/logout.php'
-];
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -18,15 +14,13 @@ $menu = [
     <meta charset="UTF-8">
     <title>Onboarding - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/teste.css">
-    <link rel="stylesheet" href="../../assets/menu_notificacoes.css">
 </head>
 <body>
     <header>
         <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
         <nav>
-            <?php foreach ($menu as $label => $url): ?>
-                <a href="<?php echo $url; ?>"><?php echo $label; ?></a>
-            <?php endforeach; ?>
+            <a href="onboarding_convidado.html">Preencher Dados</a>
+            <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
     <main>

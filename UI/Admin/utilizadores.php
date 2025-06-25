@@ -5,44 +5,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'admin') {
     exit();
 }
 require_once '../../BLL/Admin/BLL_utilizadores.php';
-require_once '../../BLL/Admin/BLL_alertas.php';
-require_once '../../DAL/Admin/DAL_utilizadores.php';
-$alertasBLL = new AdminAlertasManager();
-$dalUtil = new DAL_UtilizadoresAdmin();
-$user = $dalUtil->getUtilizadorById($_SESSION['user_id']);
-$perfil_id = $user['perfil_id'];
-$user_id = $_SESSION['user_id'];
-$alertas = $alertasBLL->getAlertasParaUtilizador($perfil_id);
-$tem_nao_lidas = false;
-foreach ($alertas as $a) {
-    if (!$alertasBLL->isAlertaLido($a['id'], $user_id)) {
-        $tem_nao_lidas = true;
-        break;
-    }
-}
-$icone_sino = '<span style="position:relative;display:inline-block;">
-    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#4a468a" viewBox="0 0 24 24" style="vertical-align:middle;">
-        <path d="M12 2a6 6 0 0 0-6 6v3.586l-.707.707A1 1 0 0 0 5 14h14a1 1 0 0 0 .707-1.707L19 11.586V8a6 6 0 0 0-6-6zm0 20a2.978 2.978 0 0 0 2.816-2H9.184A2.978 2.978 0 0 0 12 22z"/>
-    </svg>';
-if ($tem_nao_lidas) {
-    $icone_sino .= '<span style="position:absolute;top:2px;right:2px;width:10px;height:10px;background:#e53e3e;border-radius:50%;border:2px solid #fff;"></span>';
-}
-$icone_sino .= '</span>';
-$menu = [
-    'Dashboard' => 'dashboard_admin.php',
-    'Utilizadores' => 'utilizadores.php',
-    'Permissões' => 'permissoes.php',
-    'Campos Personalizados' => 'campos_personalizados.php',
-    'Alertas' => 'alertas.php',
-    'Colaboradores' => '../RH/colaboradores_gerir.php',
-    'Equipas' => '../RH/equipas.php',
-    'Relatórios' => '../RH/relatorios.php',
-    'Perfil' => '../Comuns/perfil.php',
-    $icone_sino => '../Comuns/notificacoes.php',
-    'Sair' => '../Comuns/logout.php'
-];
-// Certifique-se de que a variável $utilizadores está definida antes do HTML
-require_once '../../BLL/Admin/BLL_utilizadores.php';
 $utilBLL = new AdminUtilizadoresManager();
 $utilizadores = $utilBLL->getAllUtilizadores();
 ?>
