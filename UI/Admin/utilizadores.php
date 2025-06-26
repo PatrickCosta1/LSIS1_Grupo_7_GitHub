@@ -15,6 +15,7 @@ $utilizadores = $utilBLL->getAllUtilizadores();
     <title>Gestão de Utilizadores - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/Admin/base.css">
     <link rel="stylesheet" href="../../assets/CSS/Admin/utilizadores.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
     <style>
         /* Melhoria visual da tabela e botões */
         .utilizadores-container {

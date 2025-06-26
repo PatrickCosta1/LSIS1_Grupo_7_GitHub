@@ -14,6 +14,7 @@ $indicadores = $relatoriosBLL->getIndicadoresGlobais();
     <meta charset="UTF-8">
     <title>Relatórios - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/relatorios.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>

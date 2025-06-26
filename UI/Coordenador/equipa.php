@@ -20,6 +20,7 @@ $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
     <meta charset="UTF-8">
     <title>Minha Equipa - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/Coordenador/equipa.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>

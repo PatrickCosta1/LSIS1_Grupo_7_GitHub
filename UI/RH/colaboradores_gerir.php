@@ -39,6 +39,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                 <a href="../Comuns/notificacoes.php">Notificações</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
+                
             <?php endif; ?>
         </nav>
     </header>

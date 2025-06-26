@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Novo Colaborador</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/colaborador_novo.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>

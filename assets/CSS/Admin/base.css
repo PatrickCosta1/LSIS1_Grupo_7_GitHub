@@ -49,11 +49,7 @@ header nav a {
     margin: 0;
     display: inline-block;
 }
-/* Espaço normal (1px) entre Perfil e Sair, e entre todos os outros */
-header nav a.perfil-link{
-    margin-left: 50px;
 
-}
 
 header nav a:hover,
 header nav a.active {

@@ -44,21 +44,21 @@ $nome = htmlspecialchars($colabBLL->getColaboradorName($_SESSION['user_id']));
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
       <button id="open-chatbot" style="
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border: none;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          font-size: 28px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          ">
+            background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            font-size: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            ">
         ?
-      </button>
+        </button>
       <iframe
         id="chatbot-iframe"
         src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"

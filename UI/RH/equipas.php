@@ -14,6 +14,7 @@ $equipas = $equipasBLL->getAllEquipas();
     <meta charset="UTF-8">
     <title>Gestão de Equipas - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/equipas.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>

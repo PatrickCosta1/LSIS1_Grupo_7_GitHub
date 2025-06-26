@@ -15,6 +15,7 @@ $campos = $camposBLL->getAllCampos();
     <title>Campos Personalizados - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/Admin/base.css">
     <link rel="stylesheet" href="../../assets/CSS/Admin/campos.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
     
 </head>
 <body>

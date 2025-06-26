@@ -36,6 +36,7 @@ $colunas = array_keys($colunas);
     <meta charset="UTF-8">
     <title>Permissões - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/Admin/base.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
     <style>
         .permissoes-container {
             max-width: 1100px;

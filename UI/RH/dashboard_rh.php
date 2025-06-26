@@ -14,6 +14,7 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
     <meta charset="UTF-8">
     <title>Dashboard RH - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/dashboard_rh.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>

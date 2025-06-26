@@ -74,6 +74,7 @@ switch ($_SESSION['profile']) {
     <meta charset="UTF-8">
     <title>Meu Perfil - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/Comuns/perfil.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>

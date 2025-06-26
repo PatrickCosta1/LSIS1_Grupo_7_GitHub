@@ -14,7 +14,10 @@ $alertas = $alertasBLL->getAllAlertas();
     <meta charset="UTF-8">
     <title>Alertas - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/Admin/base.css">
-    <link rel="stylesheet" href="../../assets/CSS/Admin/alertas.css"></head>
+    <link rel="stylesheet" href="../../assets/CSS/Admin/alertas.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
+</head>
+    
 <body>
     <header>
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">

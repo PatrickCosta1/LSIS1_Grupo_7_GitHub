@@ -26,6 +26,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'colaboradores') {
     <meta charset="UTF-8">
     <title>Exportar Dados - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/exportar.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>

@@ -14,6 +14,7 @@ $nome = htmlspecialchars($convidadoBLL->getConvidadoName($_SESSION['user_id']));
     <meta charset="UTF-8">
     <title>Onboarding - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>
