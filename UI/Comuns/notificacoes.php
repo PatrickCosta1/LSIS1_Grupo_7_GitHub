@@ -25,7 +25,7 @@ if (isset($_GET['marcar_lida'])) {
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <?php if ($_SESSION['profile'] === 'coordenador'): ?>
                 <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>

@@ -77,7 +77,7 @@ switch ($_SESSION['profile']) {
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <?php foreach ($menu as $label => $url): ?>
                 <a href="<?php echo $url; ?>"><?php echo $label; ?></a>

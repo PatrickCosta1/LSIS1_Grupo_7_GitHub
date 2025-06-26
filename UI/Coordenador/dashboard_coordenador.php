@@ -18,7 +18,7 @@ $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <a href="dashboard_coordenador.php">Dashboard</a>
             <a href="../Colaborador/ficha_colaborador.php">Minha Ficha</a>

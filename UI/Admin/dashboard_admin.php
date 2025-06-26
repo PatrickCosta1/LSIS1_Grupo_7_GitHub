@@ -13,11 +13,12 @@ $nome = htmlspecialchars($adminBLL->getAdminName($_SESSION['user_id']));
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Administrador - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/Admin/base.css">
+    <link rel="stylesheet" href="../../assets/CSS/Admin/dashboard.css">
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <a href="dashboard_admin.php">Dashboard</a>
             <a href="utilizadores.php">Utilizadores</a>
@@ -27,8 +28,8 @@ $nome = htmlspecialchars($adminBLL->getAdminName($_SESSION['user_id']));
             <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
             <a href="../RH/equipas.php">Equipas</a>
             <a href="../RH/relatorios.php">Relatórios</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
-            <a href="../Comuns/logout.php">Sair</a>
+            <a href="../Comuns/perfil.php" class="perfil-link">Perfil</a>
+            <a href="../Comuns/logout.php" class="sair-link">Sair</a>
         </nav>
     </header>
     <main>

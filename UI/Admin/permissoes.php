@@ -35,8 +35,7 @@ $colunas = array_keys($colunas);
 <head>
     <meta charset="UTF-8">
     <title>Permissões - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/Admin/base.css">
     <style>
         .permissoes-container {
             max-width: 1100px;
@@ -120,7 +119,7 @@ $colunas = array_keys($colunas);
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <a href="dashboard_admin.php">Dashboard</a>
             <a href="utilizadores.php">Utilizadores</a>
@@ -130,8 +129,8 @@ $colunas = array_keys($colunas);
             <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
             <a href="../RH/equipas.php">Equipas</a>
             <a href="../RH/relatorios.php">Relatórios</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
-            <a href="../Comuns/logout.php">Sair</a>
+            <a href="../Comuns/perfil.php" class="perfil-link">Perfil</a>
+            <a href="../Comuns/logout.php" class="sair-link">Sair</a>
         </nav>
     </header>
     <div class="permissoes-container">

@@ -13,11 +13,11 @@ $alertas = $alertasBLL->getAllAlertas();
 <head>
     <meta charset="UTF-8">
     <title>Alertas - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/teste.css">
-</head>
+    <link rel="stylesheet" href="../../assets/CSS/Admin/base.css">
+    <link rel="stylesheet" href="../../assets/CSS/Admin/alertas.css"></head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <a href="dashboard_admin.php">Dashboard</a>
             <a href="utilizadores.php">Utilizadores</a>
@@ -27,8 +27,8 @@ $alertas = $alertasBLL->getAllAlertas();
             <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
             <a href="../RH/equipas.php">Equipas</a>
             <a href="../RH/relatorios.php">Relatórios</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
-            <a href="../Comuns/logout.php">Sair</a>
+            <a href="../Comuns/perfil.php" class="perfil-link">Perfil</a>
+            <a href="../Comuns/logout.php" class="sair-link">Sair</a>
         </nav>
     </header>
     <main>
@@ -53,10 +53,11 @@ $alertas = $alertasBLL->getAllAlertas();
                 <?php endforeach; ?>
             </tbody>
         </table><br>
-        <a href="alerta_novo.php" class="btn">Adicionar Novo Alerta</a>
+        <div class="adicionar-alerta-center">
+            <a href="alerta_novo.php" class="btn">Adicionar Novo Alerta</a>
+        </div>
     </main>
-
-    <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+ <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
       <button id="open-chatbot" style="
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;

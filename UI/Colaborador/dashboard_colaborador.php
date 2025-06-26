@@ -17,7 +17,7 @@ $nome = htmlspecialchars($colabBLL->getColaboradorName($_SESSION['user_id']));
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <a href="dashboard_colaborador.php">Dashboard</a>
             <a href="ficha_colaborador.php">Minha Ficha</a>
