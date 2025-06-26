@@ -16,7 +16,7 @@ header {
     background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
     border-radius: 24px;
     min-height: 100px;
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25);
+    box-shadow: 0 8px 32px rgba(3,96,233,0.18);
     display: flex;
     align-items: center;
     justify-content: flex-start; /* igual ao dashboard */
@@ -53,7 +53,7 @@ header nav a.active {
 
 /* Título principal */
 main h1 {
-    color: #667eea;
+    color: #0360e9;
     text-align: center;
     font-size: 2.2rem;
     font-weight: 700;
@@ -87,7 +87,7 @@ main h1 {
 }
 
 .ficha-campo label {
-    color: #4a468a;
+    color: #0360e9;
     font-weight: 500;
     font-size: 1rem;
 }
@@ -96,16 +96,16 @@ main h1 {
 .ficha-campo input[type="email"],
 .ficha-campo input[type="password"] {
     padding: 8px 10px;
-    border: 1px solid #d5d3f1;
+    border: 1px solid #c3cfe2;
     border-radius: 7px;
     font-size: 1rem;
-    background: #f8f8fc;
-    color: #3a366b;
+    background: #f5f7fa;
+    color: #1c3c69;
     transition: border 0.2s;
 }
 
 .ficha-campo input:focus {
-    border-color: #764ba2;
+    border-color: #0360e9;
     outline: none;
 }
 
@@ -116,7 +116,7 @@ main h1 {
 }
 
 .btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
     color: #fff;
     border: none;
     border-radius: 7px;
@@ -129,7 +129,7 @@ main h1 {
 }
 
 .btn:hover {
-    background: linear-gradient(135deg, #5a67d8 0%, #6b47b6 100%);
+    background: linear-gradient(135deg, #1c3c69 0%, #0360e9 100%);
 }
 
 @media (max-width: 700px) {

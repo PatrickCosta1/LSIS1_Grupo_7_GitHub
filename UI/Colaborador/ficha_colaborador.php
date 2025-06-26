@@ -182,14 +182,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php elseif ($perfil === 'admin'): ?>
-                <a href="../Admin/dashboard_admin.php">Dashboard</a>
                 <a href="../Admin/utilizadores.php">Utilizadores</a>
                 <a href="../Admin/permissoes.php">Permissões</a>
                 <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
                 <a href="../Admin/alertas.php">Alertas</a>
                 <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-                <a href="../RH/equipas.php">Equipas</a>
-                <a href="../RH/relatorios.php">Relatórios</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
@@ -228,19 +225,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="../Comuns/perfil.php">Perfil</a>
             <a href="../Comuns/logout.php">Sair</a>
         <?php elseif ($perfil === 'admin'): ?>
-            <a href="../Admin/dashboard_admin.php">Dashboard</a>
             <a href="../Admin/utilizadores.php">Utilizadores</a>
             <a href="../Admin/permissoes.php">Permissões</a>
             <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
             <a href="../Admin/alertas.php">Alertas</a>
             <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-            <a href="../RH/equipas.php">Equipas</a>
-            <a href="../RH/relatorios.php">Relatórios</a>
             <a href="../Comuns/perfil.php">Perfil</a>
             <a href="../Comuns/logout.php">Sair</a>
         <?php else: ?>
             <a href="dashboard_colaborador.php">Dashboard</a>
-            <a href="ficha_colaborador.php">Minha Ficha</a>
+            <a href="ficha_colaborador.php">A Minha Ficha</a>
             <a href="../Comuns/notificacoes.php">Notificações</a>
             <a href="../Comuns/perfil.php">Perfil</a>
             <a href="../Comuns/logout.php">Sair</a>

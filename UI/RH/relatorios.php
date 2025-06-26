@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admin'])) {
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh'])) {
     header('Location: ../Comuns/erro.php');
     exit();
 }

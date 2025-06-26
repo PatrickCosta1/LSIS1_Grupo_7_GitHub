@@ -16,14 +16,11 @@ $menu = [];
 switch ($_SESSION['profile']) {
     case 'admin':
         $menu = [
-            'Dashboard' => '../Admin/dashboard_admin.php',
             'Utilizadores' => '../Admin/utilizadores.php',
             'Permissões' => '../Admin/permissoes.php',
             'Campos Personalizados' => '../Admin/campos_personalizados.php',
             'Alertas' => '../Admin/alertas.php',
             'Colaboradores' => '../RH/colaboradores_gerir.php',
-            'Equipas' => '../RH/equipas.php',
-            'Relatórios' => '../RH/relatorios.php',
             'Perfil' => '../Comuns/perfil.php',
             'Sair' => '../Comuns/logout.php'
         ];

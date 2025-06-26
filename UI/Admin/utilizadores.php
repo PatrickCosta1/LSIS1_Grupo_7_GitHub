@@ -123,8 +123,6 @@ $utilizadores = $utilBLL->getAllUtilizadores();
             <a href="campos_personalizados.php">Campos Personalizados</a>
             <a href="alertas.php">Alertas</a>
             <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-            <a href="../RH/equipas.php">Equipas</a>
-            <a href="../RH/relatorios.php">Relatórios</a>
             <a href="../Comuns/perfil.php" class="perfil-link">Perfil</a>
             <a href="../Comuns/logout.php" class="sair-link">Sair</a>
         </nav>

@@ -16,10 +16,10 @@ header {
     background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
     border-radius: 24px;
     min-height: 100px;
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25);
+    box-shadow: 0 8px 32px rgba(3,96,233,0.18);
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* igual ao dashboard */
+    justify-content: flex-start;
     padding: 24px 60px;
     z-index: 1000;
 }
@@ -53,7 +53,7 @@ header nav a.active {
 
 /* Título principal */
 main h1 {
-    color: #667eea;
+    color: #0360e9;
     text-align: center;
     font-size: 2.2rem;
     font-weight: 700;
@@ -78,13 +78,13 @@ main h1 {
     border-spacing: 0;
     background: rgba(255,255,255,0.97);
     border-radius: 24px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.10);
+    box-shadow: 0 12px 40px rgba(3,96,233,0.10);
     overflow: hidden;
     font-size: 1rem;
 }
 
 .tabela-colaboradores thead tr {
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, #0360e9 0%, #299cf3 100%);
 }
 
 .tabela-colaboradores th, .tabela-colaboradores td {
@@ -97,7 +97,7 @@ main h1 {
     font-weight: 700;
     font-size: 1.05rem;
     letter-spacing: 0.03em;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid #299cf3;
 }
 
 .tabela-colaboradores tbody tr {
@@ -105,17 +105,17 @@ main h1 {
 }
 
 .tabela-colaboradores tbody tr:nth-child(even) {
-    background: rgba(102,126,234,0.04);
+    background: #e0eaff;
 }
 
 .tabela-colaboradores tbody tr:hover {
-    background: linear-gradient(90deg, #e0eaff 0%, #f5f7fa 100%);
+    background: linear-gradient(90deg, #c3cfe2 0%, #f5f7fa 100%);
 }
 
 .tabela-colaboradores td {
-    color: #4a5568;
+    color: #1c3c69;
     font-weight: 500;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid #c3cfe2;
 }
 
 .tabela-colaboradores tr:last-child td {
@@ -128,10 +128,10 @@ main h1 {
     padding: 10px 22px;
     border-radius: 14px;
     border: none;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
     color: #fff;
     font-weight: 700;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.18);
+    box-shadow: 0 4px 16px rgba(3,96,233,0.18);
     transition: all 0.3s ease;
     cursor: pointer;
     letter-spacing: 0.5px;
@@ -151,10 +151,10 @@ main h1 {
     box-shadow: 0 4px 16px rgba(229, 62, 62, 0.18);
 }
 
-.btn:hover, .btn-sm:hover, .btn-danger:hover {
-    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+.btn:hover, .btn-sm:hover {
+    background: linear-gradient(135deg, #1c3c69 0%, #0360e9 100%);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.22);
+    box-shadow: 0 8px 25px rgba(3,96,233,0.22);
 }
 
 .btn-danger:hover {
@@ -169,15 +169,51 @@ main h1 {
     font-size: 1.1rem;
     padding: 14px 40px;
     border-radius: 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
     color: #fff;
     font-weight: 700;
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 6px 20px rgba(3,96,233,0.3);
     transition: all 0.3s ease;
     cursor: pointer;
     letter-spacing: 0.5px;
     text-align: center;
-    min-height: 100px;
-    padding: 24px 60px;
 }
 
+@media (max-width: 1200px) {
+    header {
+        padding: 18px 5vw;
+        min-height: 80px;
+        width: 95vw;
+        margin: 20px auto 0 auto;
+    }
+    .tabela-colaboradores {
+        font-size: 0.98rem;
+    }
+}
+@media (max-width: 900px) {
+    header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .tabela-colaboradores th, .tabela-colaboradores td {
+        padding: 10px 8px;
+        font-size: 0.95rem;
+    }
+    main h1 {
+        font-size: 1.4rem;
+    }
+}
+@media (max-width: 600px) {
+    header {
+        padding: 10px 2vw;
+        min-height: 60px;
+        border-radius: 14px;
+    }
+    .tabela-colaboradores {
+        font-size: 0.92rem;
+    }
+    .add-colab-btn {
+        font-size: 0.95rem;
+        padding: 10px 10px;
+    }
+}

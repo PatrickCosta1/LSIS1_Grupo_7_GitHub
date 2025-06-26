@@ -20,14 +20,11 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <?php if ($_SESSION['profile'] === 'admin'): ?>
-                <a href="../Admin/dashboard_admin.php">Dashboard</a>
                 <a href="../Admin/utilizadores.php">Utilizadores</a>
                 <a href="../Admin/permissoes.php">Permissões</a>
                 <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
                 <a href="../Admin/alertas.php">Alertas</a>
                 <a href="colaboradores_gerir.php">Colaboradores</a>
-                <a href="equipas.php">Equipas</a>
-                <a href="relatorios.php">Relatórios</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
@@ -39,7 +36,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                 <a href="../Comuns/notificacoes.php">Notificações</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
-                
+
             <?php endif; ?>
         </nav>
     </header>
