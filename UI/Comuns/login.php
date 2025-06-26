@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         break;
                     case 'employee':
                     case 'colaborador':
-                        header('Location: ../Colaborador/dashboard_colaborador.php');
+                        header('Location: ../Colaborador/pagina_inicial_colaborador.php');
                         break;
                     case 'coordinator':
                     case 'coordenador':

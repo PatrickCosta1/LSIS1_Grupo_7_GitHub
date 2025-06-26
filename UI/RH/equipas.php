@@ -18,7 +18,7 @@ $equipas = $equipasBLL->getAllEquipas();
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_RH.php';">
         <nav>
             <?php if ($_SESSION['profile'] === 'admin'): ?>
                 <a href="../Admin/utilizadores.php">Utilizadores</a>
@@ -43,7 +43,6 @@ $equipas = $equipasBLL->getAllEquipas();
     <div class="equipas-container">
         <div class="equipas-header">
             <h1>Gestão de Equipas</h1>
-            <a href="equipa_nova.php" class="btn">+ Nova Equipa</a>
         </div>
         <table class="tabela-equipas">
             <thead>
@@ -68,6 +67,9 @@ $equipas = $equipasBLL->getAllEquipas();
                 <?php endforeach; ?>
             </tbody>
         </table>
+        <div class="nova-equipa-btn">
+            <a href="equipa_nova.php" class="btn">+ Nova Equipa</a>
+        </div>
     </div>
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">

@@ -17,7 +17,7 @@ $nome = htmlspecialchars($colabBLL->getColaboradorName($_SESSION['user_id']));
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_colaborador.php';">
         <nav>
             <a href="dashboard_colaborador.php">Dashboard</a>
             <a href="ficha_colaborador.php">Minha Ficha</a>
@@ -27,19 +27,7 @@ $nome = htmlspecialchars($colabBLL->getColaboradorName($_SESSION['user_id']));
         </nav>
     </header>
     <main>
-        <h1>Olá, <?php echo $nome; ?></h1>
-        <section class="dashboard-cards">
-            <div class="card">
-                <h2>Minha Ficha</h2>
-                <p>Consulte e atualize seus dados pessoais.</p>
-                <a href="ficha_colaborador.php" class="btn">Aceder</a>
-            </div>
-            <div class="card">
-                <h2>Notificações</h2>
-                <p>Veja alertas e mensagens importantes.</p>
-                <a href="../Comuns/notificacoes.php" class="btn">Ver Notificações</a>
-            </div>
-        </section>
+        <h1 style="text-align:center; margin-top:80px;">A CONCLUIR</h1>
     </main>
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">

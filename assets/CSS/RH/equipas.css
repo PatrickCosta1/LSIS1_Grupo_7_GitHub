@@ -68,7 +68,7 @@ header nav a.active {
 }
 
 .equipas-header h1 {
-    color: #667eea;
+    color: #0360e9;
     font-size: 2.2rem;
     font-weight: 700;
     margin: 0;
@@ -93,7 +93,7 @@ header nav a.active {
 }
 
 .equipas-header .btn:hover {
-    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    background: linear-gradient(135deg,  #0360e9 0%, #299cf3 100%);
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
@@ -111,7 +111,7 @@ header nav a.active {
 }
 
 .tabela-equipas thead tr {
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg,  #0360e9 0%, #299cf3 100%);
 }
 
 .tabela-equipas th, .tabela-equipas td {
@@ -155,7 +155,7 @@ header nav a.active {
     padding: 10px 22px;
     border-radius: 14px;
     border: none;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg,  #0360e9 0%, #299cf3 100%);
     color: #fff;
     font-weight: 700;
     box-shadow: 0 4px 16px rgba(102, 126, 234, 0.18);
@@ -267,4 +267,26 @@ header nav a:hover::before,
 .tabela-equipas .btn:hover::before,
 .tabela-equipas .btn-danger:hover::before {
     left: 100%;
+}
+.nova-equipa-btn {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0 0 0;
+}
+.nova-equipa-btn .btn {
+    font-size: 1.15rem;
+    padding: 16px 48px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 6px 24px rgba(102, 126, 234, 0.22);
+    transition: all 0.3s;
+    text-decoration: none;
+    border: none;
+    display: inline-block;
+}
+.nova-equipa-btn .btn:hover {
+    background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%);
+    transform: translateY(-2px) scale(1.04);
 }
