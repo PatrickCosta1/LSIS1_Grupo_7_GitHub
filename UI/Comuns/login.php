@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
     <div class="login-container">
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-img" />
+        <img src="../../assets/tlantic-logo-escuro.png" alt="Logo Tlantic" class="logo-img" />
         <h1 class="welcome-text">Bem-vindo</h1>
         <p class="subtitle">Portal do Colaborador</p>
         <p class="company-info">Tlantic - Unlocking Smart Business</p>
@@ -153,15 +153,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="footer">
             <p>&copy; <?php echo date('Y'); ?> Tlantic. Todos os direitos reservados.</p>
-            <p class="version">Portal de Colaboradores v1.0 | Sistema LSIS1</p>
+            <p class="version">Portal de Colaboradores v1.0 | Sistema ABMP</p>
         </div>
     </div>
     <script src="../../assets/login.js"></script> <!-- Corrigido caminho -->
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
       <button id="open-chatbot" style="
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
+          background: linear-gradient(135deg,rgb(145, 233, 255) 0%,rgb(135, 223, 255) 100%);
+          color: #1c3c69;
           border: none;
           border-radius: 50%;
           width: 60px;
