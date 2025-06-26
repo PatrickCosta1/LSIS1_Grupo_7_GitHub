@@ -32,6 +32,33 @@ if (in_array($perfil, ['rh', 'admin']) && $editColabId) {
     $colab = $colabBLL->getColaboradorByUserId($userId);
 }
 
+// Permissões de edição
+$isColab = ($perfil === 'colaborador');
+$isCoord = ($perfil === 'coordenador');
+$isRH = ($perfil === 'rh');
+$isAdmin = ($perfil === 'admin');
+
+// Só pode editar tudo se for RH/Admin
+$canEditAll = $isRH || $isAdmin;
+
+// Lista de campos que colaborador/coordenador pode editar
+$colabEditable = [
+    'morada_fiscal', 'sexo', 'situacao_irs', 'dependentes', 'iban', 'habilitacoes', 'curso',
+    'telemovel', 'matricula_viatura', 'nome_contacto_emergencia', 'grau_relacionamento',
+    'contacto_emergencia', 'cartao_continente'
+];
+
+// Funções helper para os atributos dos campos
+function fieldAttr($field, $canEditAll, $colabEditable) {
+    return ($canEditAll || in_array($field, $colabEditable)) ? '' : 'readonly';
+}
+function selectAttr($field, $canEditAll, $colabEditable) {
+    return ($canEditAll || in_array($field, $colabEditable)) ? '' : 'disabled';
+}
+function fileAttr($field, $canEditAll, $colabEditable) {
+    return ($canEditAll || in_array($field, $colabEditable)) ? '' : 'style="display:block;"';
+}
+
 $success_message = '';
 $error_message = '';
 
@@ -49,45 +76,55 @@ if (isset($colab['comprovativo_estado_civil']) && $colab['comprovativo_estado_ci
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dados = [
-        // Dados pessoais
-        'nome' => $_POST['nome'] ?? '',
-        'apelido' => $_POST['apelido'] ?? '',
-        'email' => $_POST['email'] ?? '',
-        'telemovel' => $_POST['telemovel'] ?? '',
-        'sexo' => $_POST['sexo'] ?? '',
-        'data_nascimento' => $_POST['data_nascimento'] ?? '',
-        'estado_civil' => $_POST['estado_civil'] ?? '',
-        'habilitacoes' => $_POST['habilitacoes'] ?? '',
-        'matricula_viatura' => $_POST['matricula_viatura'] ?? '',
-        // Morada
-        'morada' => $_POST['morada'] ?? '',
-        'localidade' => $_POST['localidade'] ?? '',
-        'codigo_postal' => $_POST['codigo_postal'] ?? '',
-        // Documentos
-        'cc' => $_POST['cc'] ?? '',
-        'nif' => $_POST['nif'] ?? '',
-        'niss' => $_POST['niss'] ?? '',
-        'iban' => $_POST['iban'] ?? '',
-        // IRS
-        'situacao_irs' => $_POST['situacao_irs'] ?? '',
-        'dependentes' => $_POST['dependentes'] ?? '',
-        'irs_jovem' => $_POST['irs_jovem'] ?? '',
-        'primeiro_ano_descontos' => $_POST['primeiro_ano_descontos'] ?? '',
-        // Contacto de emergência
-        'nome_contacto_emergencia' => $_POST['nome_contacto_emergencia'] ?? '',
-        'grau_relacionamento' => $_POST['grau_relacionamento'] ?? '',
-        'contacto_emergencia' => $_POST['contacto_emergencia'] ?? '',
-        // Vouchers
-        'cartao_continente' => $_POST['cartao_continente'] ?? '',
-        'numero_cliente_nos' => $_POST['numero_cliente_nos'] ?? '',
-        // Só para RH/Admin
-        'cargo' => $_POST['cargo'] ?? '',
-        'nivel_hierarquico' => $_POST['nivel_hierarquico'] ?? '',
-        'remuneracao' => $_POST['remuneracao'] ?? '',
-        'nome_abreviado' => $_POST['nome_abreviado'] ?? '',
-        'tipo_contrato' => $_POST['tipo_contrato'] ?? '',
-        'regime_horario' => $_POST['regime_horario'] ?? ''
-    ];
+    // Dados pessoais
+    'nome' => $_POST['nome'] ?? '',
+    'apelido' => $_POST['apelido'] ?? '',
+    'nome_abreviado' => $_POST['nome_abreviado'] ?? '',
+    'num_mecanografico' => $_POST['num_mecanografico'] ?? '',
+    'data_nascimento' => $_POST['data_nascimento'] ?? '',
+    'morada_fiscal' => $_POST['morada_fiscal'] ?? '',
+    'email' => $_POST['email'] ?? '',
+    'telemovel' => $_POST['telemovel'] ?? '',
+    'sexo' => $_POST['sexo'] ?? '',
+    'estado_civil' => $_POST['estado_civil'] ?? '',
+    'habilitacoes' => $_POST['habilitacoes'] ?? '',
+    'curso' => $_POST['curso'] ?? '',
+    'matricula_viatura' => $_POST['matricula_viatura'] ?? '',
+    // Morada
+    'morada' => $_POST['morada'] ?? '',
+    'localidade' => $_POST['localidade'] ?? '',
+    'codigo_postal' => $_POST['codigo_postal'] ?? '',
+    // Documentos
+    'cc' => $_POST['cc'] ?? '',
+    'nif' => $_POST['nif'] ?? '',
+    'niss' => $_POST['niss'] ?? '',
+    'iban' => $_POST['iban'] ?? '',
+    // IRS
+    'situacao_irs' => $_POST['situacao_irs'] ?? '',
+    'dependentes' => $_POST['dependentes'] ?? '',
+    'irs_jovem' => $_POST['irs_jovem'] ?? '',
+    'primeiro_ano_descontos' => $_POST['primeiro_ano_descontos'] ?? '',
+    // Vouchers
+    'cartao_continente' => $_POST['cartao_continente'] ?? '',
+    'voucher_nos' => $_POST['voucher_nos'] ?? '',
+    // Contacto de emergência
+    'nome_contacto_emergencia' => $_POST['nome_contacto_emergencia'] ?? '',
+    'grau_relacionamento' => $_POST['grau_relacionamento'] ?? '',
+    'contacto_emergencia' => $_POST['contacto_emergencia'] ?? '',
+    // Contratual
+    'cargo' => $_POST['cargo'] ?? '',
+    'nivel_hierarquico' => $_POST['nivel_hierarquico'] ?? '',
+    'data_inicio_contrato' => $_POST['data_inicio_contrato'] ?? '',
+    'data_fim_contrato' => $_POST['data_fim_contrato'] ?? '',
+    'remuneracao' => $_POST['remuneracao'] ?? '',
+    'tipo_contrato' => $_POST['tipo_contrato'] ?? '',
+    'regime_horario' => $_POST['regime_horario'] ?? '',
+    // Comprovativos (ficheiros)
+    'comprovativo_morada_fiscal' => $colab['comprovativo_morada_fiscal'] ?? '',
+    'comprovativo_cc' => $colab['comprovativo_cc'] ?? '',
+    'comprovativo_iban' => $colab['comprovativo_iban'] ?? '',
+    'comprovativo_cartao_continente' => $colab['comprovativo_cartao_continente'] ?? ''
+];
 
     // Upload comprovativo CC
     if (isset($_FILES['comprovativo_cc']) && $_FILES['comprovativo_cc']['error'] === UPLOAD_ERR_OK) {
@@ -122,6 +159,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $dados['comprovativo_estado_civil'] = $filename;
         } else {
             $error_message = "Erro ao fazer upload do comprovativo do Estado Civil.";
+        }
+    }
+
+    // Upload comprovativo Morada Fiscal (Mod. 99)
+    if (isset($_FILES['comprovativo_morada_fiscal']) && $_FILES['comprovativo_morada_fiscal']['error'] === UPLOAD_ERR_OK) {
+        $ext = pathinfo($_FILES['comprovativo_morada_fiscal']['name'], PATHINFO_EXTENSION);
+        $filename = 'comprovativo_morada_fiscal_' . $userId . '_' . time() . '.' . $ext;
+        $dest = $upload_dir . $filename;
+        if (move_uploaded_file($_FILES['comprovativo_morada_fiscal']['tmp_name'], $dest)) {
+            $dados['comprovativo_morada_fiscal'] = $filename;
+        } else {
+            $error_message = "Erro ao fazer upload do comprovativo da Morada Fiscal.";
         }
     }
 
@@ -161,14 +210,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- Container azul arredondado no topo -->
 <div id="header-hero">
     <div class="header-content">
-        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header2">
-  
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header2"
+            <?php if ($perfil === 'admin'): ?>
+                style="cursor:pointer" onclick="window.location.href='../Admin/pagina_inicial_admin.php'"
+            <?php endif; ?>
+        >
         <nav class="nav-links">
             <?php if ($perfil === 'coordenador'): ?>
-                <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
-                <a href="ficha_colaborador.php">Minha Ficha</a>
-                <a href="../Coordenador/equipa.php">Minha Equipa</a>
+                <a href="ficha_colaborador.php">A Minha Ficha</a>
+                <a href="../Coordenador/equipa.php">Equipa</a>
                 <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
+                <a href="../Coordenador/dashboard_coordenador.php">Dashboards</a>
                 <a href="../Comuns/notificacoes.php">Notificações</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
@@ -191,7 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
                 <a href="dashboard_colaborador.php">Dashboard</a>
-                <a href="ficha_colaborador.php">Minha Ficha</a>
+                <a href="ficha_colaborador.php">A Minha Ficha</a>
                 <a href="../Comuns/notificacoes.php">Notificações</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
@@ -247,8 +299,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button type="button" class="menu-link active" data-scroll="#ficha-dados-pessoais">Dados Pessoais</button>
     <button type="button" class="menu-link" data-scroll="#ficha-morada">Morada</button>
     <button type="button" class="menu-link" data-scroll="#ficha-documentos">Documentos</button>
-    <button type="button" class="menu-link" data-scroll="#ficha-fiscais">Inf. Fiscais</button>
-    <button type="button" class="menu-link" data-scroll="#ficha-vouchers">Informações para Vouchers</button>
+    <button type="button" class="menu-link" data-scroll="#ficha-fiscais">Informações Fiscais</button>
+    <button type="button" class="menu-link" data-scroll="#ficha-vouchers">Informações Vouchers</button>
     <button type="button" class="menu-link" data-scroll="#ficha-emergencia">Contacto Emergência</button>
     <button type="button" class="menu-link" data-scroll="#ficha-contratual">Situação Contratual</button>
 </div>
@@ -256,45 +308,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <main>
 <form method="POST" enctype="multipart/form-data">
 
-<!-- Ficha Dados Primários (substitui o conteúdo atual da .ficha-container-primarios por este bloco) -->
 <div id="ficha-dados-pessoais" class="ficha-container ficha-container-primarios">
     <div class="ficha-section-titulo">Dados Pessoais</div>
     <div class="ficha-grid">
         <div class="ficha-campo">
             <label>Primeiro Nome:</label>
-            <input type="text" name="nome" value="<?php echo htmlspecialchars($colab['nome'] ?? ''); ?>">
+            <input type="text" name="nome" value="<?php echo htmlspecialchars($colab['nome'] ?? ''); ?>" <?php echo fieldAttr('nome', $canEditAll, $colabEditable); ?>>
         </div>
         <div class="ficha-campo">
             <label>Apelido:</label>
-            <input type="text" name="apelido" value="<?php echo htmlspecialchars($colab['apelido'] ?? ''); ?>">
+            <input type="text" name="apelido" value="<?php echo htmlspecialchars($colab['apelido'] ?? ''); ?>" <?php echo fieldAttr('apelido', $canEditAll, $colabEditable); ?>>
         </div>
         <div class="ficha-campo">
             <label>Nome Abreviado:</label>
-            <input type="text" name="nome_abreviado" value="<?php echo htmlspecialchars($colab['nome_abreviado'] ?? ''); ?>">
+            <input type="text" name="nome_abreviado" value="<?php echo htmlspecialchars($colab['nome_abreviado'] ?? ''); ?>" <?php echo fieldAttr('nome_abreviado', $canEditAll, $colabEditable); ?>>
         </div>
         <div class="ficha-campo">
             <label>Nº Mecanográfico:</label>
-            <input type="text" name="num_mecanografico" value="<?php echo htmlspecialchars($colab['num_mecanografico'] ?? ''); ?>">
+            <input type="text" name="num_mecanografico" value="<?php echo htmlspecialchars($colab['num_mecanografico'] ?? ''); ?>" <?php echo fieldAttr('num_mecanografico', $canEditAll, $colabEditable); ?>>
         </div>
         <div class="ficha-campo">
             <label>Data de Nascimento:</label>
-            <input type="date" name="data_nascimento" value="<?php echo htmlspecialchars($colab['data_nascimento'] ?? ''); ?>">
+            <input type="date" name="data_nascimento" value="<?php echo htmlspecialchars($colab['data_nascimento'] ?? ''); ?>" <?php echo fieldAttr('data_nascimento', $canEditAll, $colabEditable); ?>>
         </div>
         <div class="ficha-campo">
             <label>Morada Fiscal:</label>
-            <input type="text" name="morada_fiscal" value="<?php echo htmlspecialchars($colab['morada_fiscal'] ?? ''); ?>">
+            <input type="text" name="morada_fiscal" value="<?php echo htmlspecialchars($colab['morada_fiscal'] ?? ''); ?>" <?php echo fieldAttr('morada_fiscal', $canEditAll, $colabEditable); ?>>
         </div>
+       
         <div class="ficha-campo">
             <label>Email Pessoal:</label>
-            <input type="email" name="email" value="<?php echo htmlspecialchars($colab['email'] ?? ''); ?>">
+            <input type="email" name="email" value="<?php echo htmlspecialchars($colab['email'] ?? ''); ?>" <?php echo fieldAttr('email', $canEditAll, $colabEditable); ?>>
         </div>
         <div class="ficha-campo">
             <label>Nº Telemóvel:</label>
-            <input type="text" name="telemovel" value="<?php echo htmlspecialchars($colab['telemovel'] ?? ''); ?>">
+            <input type="text" name="telemovel" value="<?php echo htmlspecialchars($colab['telemovel'] ?? ''); ?>" <?php echo fieldAttr('telemovel', $canEditAll, $colabEditable); ?>>
+        </div>
+
+         <div class="ficha-campo">
+            <label style="font-size:12px;">Comprovativo Morada Fiscal (Mod. 99) (PDF/JPG):</label>
+            <?php if ($canEditAll || in_array('morada_fiscal', $colabEditable)): ?>
+                <input type="file" name="comprovativo_morada_fiscal" accept=".pdf,.jpg,.jpeg,.png">
+            <?php endif; ?>
+            <?php if (!empty($colab['comprovativo_morada_fiscal'])): ?>
+                <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_morada_fiscal']); ?>" target="_blank">Ver comprovativo atual</a>
+            <?php endif; ?>
         </div>
         <div class="ficha-campo">
             <label>Género:</label>
-            <select name="sexo">
+            <select name="sexo" <?php echo selectAttr('sexo', $canEditAll, $colabEditable); ?>>
                 <option value="">Selecione</option>
                 <option value="Masculino" <?php if (($colab['sexo'] ?? '') === 'Masculino') echo 'selected'; ?>>Masculino</option>
                 <option value="Feminino" <?php if (($colab['sexo'] ?? '') === 'Feminino') echo 'selected'; ?>>Feminino</option>
@@ -303,7 +365,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="ficha-campo">
             <label>Estado Civil:</label>
-            <select name="estado_civil">
+            <select name="estado_civil" <?php /* Todos podem editar este campo */ ?>>
                 <option value="">Selecione</option>
                 <option value="Solteiro" <?php if (($colab['estado_civil'] ?? '') === 'Solteiro') echo 'selected'; ?>>Solteiro</option>
                 <option value="Casado" <?php if (($colab['estado_civil'] ?? '') === 'Casado') echo 'selected'; ?>>Casado</option>
@@ -313,7 +375,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="ficha-campo">
             <label>Habilitações Literárias:</label>
-            <select name="habilitacoes">
+            <select name="habilitacoes" <?php echo selectAttr('habilitacoes', $canEditAll, $colabEditable); ?>>
                 <option value="">Selecione</option>
                 <option value="12º ano" <?php if (($colab['habilitacoes'] ?? '') === '12º ano') echo 'selected'; ?>>12º ano</option>
                 <option value="Licenciatura" <?php if (($colab['habilitacoes'] ?? '') === 'Licenciatura') echo 'selected'; ?>>Licenciatura</option>
@@ -323,11 +385,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="ficha-campo">
             <label>Curso:</label>
-            <input type="text" name="curso" value="<?php echo htmlspecialchars($colab['curso'] ?? ''); ?>">
+            <input type="text" name="curso" value="<?php echo htmlspecialchars($colab['curso'] ?? ''); ?>" <?php echo fieldAttr('curso', $canEditAll, $colabEditable); ?>>
         </div>
         <div class="ficha-campo">
             <label>Matrícula do Carro:</label>
-            <input type="text" name="matricula_viatura" value="<?php echo htmlspecialchars($colab['matricula_viatura'] ?? ''); ?>">
+            <input type="text" name="matricula_viatura" value="<?php echo htmlspecialchars($colab['matricula_viatura'] ?? ''); ?>" <?php echo fieldAttr('matricula_viatura', $canEditAll, $colabEditable); ?>>
         </div>
     </div>
 </div>
@@ -337,202 +399,207 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         
 
-        <!-- Ficha Morada -->
-        <div id="ficha-morada" class="ficha-container">
-            <div class="ficha-section-titulo">Morada</div>
-            <div class="ficha-grid">
-                <div class="ficha-campo">
-                    <label>Endereço:</label>
-                    <input type="text" name="morada" value="<?php echo htmlspecialchars($colab['morada'] ?? ''); ?>">
-                </div>
-                <div class="ficha-campo">
-                    <label>Localidade:</label>
-                    <input type="text" name="localidade" value="<?php echo htmlspecialchars($colab['localidade'] ?? ''); ?>">
-                </div>
-                <div class="ficha-campo">
-                    <label>Código Postal:</label>
-                    <input type="text" name="codigo_postal" value="<?php echo htmlspecialchars($colab['codigo_postal'] ?? ''); ?>">
-                </div>
-            </div>
+      <!-- Ficha Morada -->
+<div id="ficha-morada" class="ficha-container">
+    <div class="ficha-section-titulo">Morada</div>
+    <div class="ficha-grid">
+        <div class="ficha-campo">
+            <label>Endereço:</label>
+            <input type="text" name="morada" value="<?php echo htmlspecialchars($colab['morada'] ?? ''); ?>">
         </div>
+        <div class="ficha-campo">
+            <label>Localidade:</label>
+            <input type="text" name="localidade" value="<?php echo htmlspecialchars($colab['localidade'] ?? ''); ?>">
+        </div>
+        <div class="ficha-campo">
+            <label>Código Postal:</label>
+            <input type="text" name="codigo_postal" value="<?php echo htmlspecialchars($colab['codigo_postal'] ?? ''); ?>">
+        </div>
+    </div>
+</div>
 
-        <!-- Ficha Documentos -->
-        <div id="ficha-documentos" class="ficha-container">
-            <div class="ficha-section-titulo">Documentos</div>
-            <div class="ficha-grid">
-                <div class="ficha-campo">
-                    <label>CC (Cartão de Cidadão):</label>
-                    <input type="text" name="cc" value="<?php echo htmlspecialchars($colab['cc'] ?? ''); ?>">
-                    <label style="font-size:12px;">Comprovativo CC (PDF/JPG):</label>
-                    <input type="file" name="comprovativo_cc" accept=".pdf,.jpg,.jpeg,.png">
-                    <?php if (!empty($colab['comprovativo_cc'])): ?>
-                        <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_cc']); ?>" target="_blank">Ver comprovativo atual</a>
-                    <?php endif; ?>
-                </div>
-                <div class="ficha-campo">
-                    <label>NIF:</label>
-                    <input type="text" name="nif" value="<?php echo htmlspecialchars($colab['nif'] ?? ''); ?>">
-                </div>
-                <div class="ficha-campo">
-                    <label>NISS:</label>
-                    <input type="text" name="niss" value="<?php echo htmlspecialchars($colab['niss'] ?? ''); ?>">
-                </div>
-                <div class="ficha-campo">
-                    <label>IBAN:</label>
-                    <input type="text" name="iban" value="<?php echo htmlspecialchars($colab['iban'] ?? ''); ?>">
-                    <label style="font-size:12px;">Comprovativo IBAN (PDF/JPG):</label>
-                    <input type="file" name="comprovativo_iban" accept=".pdf,.jpg,.jpeg,.png">
-                    <?php if (!empty($colab['comprovativo_iban'])): ?>
-                        <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_iban']); ?>" target="_blank">Ver comprovativo atual</a>
-                    <?php endif; ?>
-                </div>
-            </div>
+<!-- Ficha Documentos -->
+<div id="ficha-documentos" class="ficha-container">
+    <div class="ficha-section-titulo">Documentos</div>
+    <div class="ficha-grid">
+        <div class="ficha-campo">
+            <label>CC (Cartão de Cidadão):</label>
+            <input type="text" name="cc" value="<?php echo htmlspecialchars($colab['cc'] ?? ''); ?>" <?php echo fieldAttr('cc', $canEditAll, []); ?>>
+            <label style="font-size:12px;">Comprovativo CC (PDF/JPG):</label>
+            <?php if ($canEditAll || $isColab || $isCoord): ?>
+                <input type="file" name="comprovativo_cc" accept=".pdf,.jpg,.jpeg,.png">
+            <?php endif; ?>
+            <?php if (!empty($colab['comprovativo_cc'])): ?>
+                <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_cc']); ?>" target="_blank">Ver comprovativo atual</a>
+            <?php endif; ?>
         </div>
+        <div class="ficha-campo">
+            <label>NIF:</label>
+            <input type="text" name="nif" value="<?php echo htmlspecialchars($colab['nif'] ?? ''); ?>" <?php echo fieldAttr('nif', $canEditAll, []); ?>>
+        </div>
+        <div class="ficha-campo">
+            <label>NISS:</label>
+            <input type="text" name="niss" value="<?php echo htmlspecialchars($colab['niss'] ?? ''); ?>" <?php echo fieldAttr('niss', $canEditAll, []); ?>>
+        </div>
+        <div class="ficha-campo">
+            <label>IBAN:</label>
+            <input type="text" name="iban" value="<?php echo htmlspecialchars($colab['iban'] ?? ''); ?>" <?php echo fieldAttr('iban', $canEditAll, ['iban']); ?>>
+            <label style="font-size:12px;">Comprovativo IBAN (PDF/JPG):</label>
+            <?php if ($canEditAll || $isColab || $isCoord): ?>
+                <input type="file" name="comprovativo_iban" accept=".pdf,.jpg,.jpeg,.png">
+            <?php endif; ?>
+            <?php if (!empty($colab['comprovativo_iban'])): ?>
+                <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_iban']); ?>" target="_blank">Ver comprovativo atual</a>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
 
-        <!-- Ficha Informações Fiscais -->
-        <div id="ficha-fiscais" class="ficha-container">
-            <div class="ficha-section-titulo">Informações Fiscais (IRS)</div>
-            <div class="ficha-grid">
-                <div class="ficha-campo">
-                    <label>Situação IRS:</label>
-                    <select name="situacao_irs">
-                        <option value="">Selecione</option>
-                        <option value="Solteiro(a), separado(a) ou divorciado(a), sem dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Solteiro(a), separado(a) ou divorciado(a), sem dependentes') echo 'selected'; ?>>Solteiro(a), separado(a) ou divorciado(a), sem dependentes</option>
-                        <option value="Solteiro(a), separado(a) ou divorciado(a), com 1 dependente" <?php if (($colab['situacao_irs'] ?? '') === 'Solteiro(a), separado(a) ou divorciado(a), com 1 dependente') echo 'selected'; ?>>Solteiro(a), separado(a) ou divorciado(a), com 1 dependente</option>
-                        <option value="Solteiro(a), separado(a) ou divorciado(a), com 2 ou mais dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Solteiro(a), separado(a) ou divorciado(a), com 2 ou mais dependentes') echo 'selected'; ?>>Solteiro(a), separado(a) ou divorciado(a), com 2 ou mais dependentes</option>
-                        <option value="Casado(a), 1 titular, sem dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Casado(a), 1 titular, sem dependentes') echo 'selected'; ?>>Casado(a), 1 titular, sem dependentes</option>
-                        <option value="Casado(a), 1 titular, com 1 dependente" <?php if (($colab['situacao_irs'] ?? '') === 'Casado(a), 1 titular, com 1 dependente') echo 'selected'; ?>>Casado(a), 1 titular, com 1 dependente</option>
-                        <option value="Casado(a), 1 titular, com 2 ou mais dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Casado(a), 1 titular, com 2 ou mais dependentes') echo 'selected'; ?>>Casado(a), 1 titular, com 2 ou mais dependentes</option>
-                        <option value="Casado(a), 2 titulares, sem dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Casado(a), 2 titulares, sem dependentes') echo 'selected'; ?>>Casado(a), 2 titulares, sem dependentes</option>
-                        <option value="Casado(a), 2 titulares, com 1 dependente" <?php if (($colab['situacao_irs'] ?? '') === 'Casado(a), 2 titulares, com 1 dependente') echo 'selected'; ?>>Casado(a), 2 titulares, com 1 dependente</option>
-                        <option value="Casado(a), 2 titulares, com 2 ou mais dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Casado(a), 2 titulares, com 2 ou mais dependentes') echo 'selected'; ?>>Casado(a), 2 titulares, com 2 ou mais dependentes</option>
-                        <option value="Viúvo(a), sem dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Viúvo(a), sem dependentes') echo 'selected'; ?>>Viúvo(a), sem dependentes</option>
-                        <option value="Viúvo(a), com 1 dependente" <?php if (($colab['situacao_irs'] ?? '') === 'Viúvo(a), com 1 dependente') echo 'selected'; ?>>Viúvo(a), com 1 dependente</option>
-                        <option value="Viúvo(a), com 2 ou mais dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Viúvo(a), com 2 ou mais dependentes') echo 'selected'; ?>>Viúvo(a), com 2 ou mais dependentes</option>
-                    </select>
-                </div>
-                <div class="ficha-campo">
-                    <label>Nº Dependentes:</label>
-                    <input type="number" name="dependentes" value="<?php echo htmlspecialchars($colab['dependentes'] ?? ''); ?>">
-                </div>
-                <div class="ficha-campo">
-                    <label>IRS Jovem:</label>
-                    <select name="irs_jovem">
-                        <option value="">Selecione</option>
-                        <option value="Sim" <?php if (($colab['irs_jovem'] ?? '') === 'Sim') echo 'selected'; ?>>Sim</option>
-                        <option value="Não" <?php if (($colab['irs_jovem'] ?? '') === 'Não') echo 'selected'; ?>>Não</option>
-                    </select>
-                </div>
-                <div class="ficha-campo">
-                    <label>Ano do Primeiro Desconto:</label>
-                    <input type="number" name="primeiro_ano_descontos" value="<?php echo htmlspecialchars($colab['primeiro_ano_descontos'] ?? ''); ?>">
-                </div>
-            </div>
+<!-- Ficha Informações Fiscais -->
+<div id="ficha-fiscais" class="ficha-container">
+    <div class="ficha-section-titulo">Informações Fiscais (IRS)</div>
+    <div class="ficha-grid">
+        <div class="ficha-campo">
+            <label>Situação IRS:</label>
+            <select name="situacao_irs">
+                <option value="">Selecione</option>
+                <option value="Solteiro(a), separado(a) ou divorciado(a), sem dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Solteiro(a), separado(a) ou divorciado(a), sem dependentes') echo 'selected'; ?>>Solteiro(a), separado(a) ou divorciado(a), sem dependentes</option>
+                <option value="Solteiro(a), separado(a) ou divorciado(a), com 1 dependente" <?php if (($colab['situacao_irs'] ?? '') === 'Solteiro(a), separado(a) ou divorciado(a), com 1 dependente') echo 'selected'; ?>>Solteiro(a), separado(a) ou divorciado(a), com 1 dependente</option>
+                <option value="Solteiro(a), separado(a) ou divorciado(a), com 2 ou mais dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Solteiro(a), separado(a) ou divorciado(a), com 2 ou mais dependentes') echo 'selected'; ?>>Solteiro(a), separado(a) ou divorciado(a), com 2 ou mais dependentes</option>
+                <option value="Casado(a), 1 titular, sem dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Casado(a), 1 titular, sem dependentes') echo 'selected'; ?>>Casado(a), 1 titular, sem dependentes</option>
+                <option value="Casado(a), 1 titular, com 1 dependente" <?php if (($colab['situacao_irs'] ?? '') === 'Casado(a), 1 titular, com 1 dependente') echo 'selected'; ?>>Casado(a), 1 titular, com 1 dependente</option>
+                <option value="Casado(a), 1 titular, com 2 ou mais dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Casado(a), 1 titular, com 2 ou mais dependentes') echo 'selected'; ?>>Casado(a), 1 titular, com 2 ou mais dependentes</option>
+                <option value="Casado(a), 2 titulares, sem dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Casado(a), 2 titulares, sem dependentes') echo 'selected'; ?>>Casado(a), 2 titulares, sem dependentes</option>
+                <option value="Casado(a), 2 titulares, com 1 dependente" <?php if (($colab['situacao_irs'] ?? '') === 'Casado(a), 2 titulares, com 1 dependente') echo 'selected'; ?>>Casado(a), 2 titulares, com 1 dependente</option>
+                <option value="Casado(a), 2 titulares, com 2 ou mais dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Casado(a), 2 titulares, com 2 ou mais dependentes') echo 'selected'; ?>>Casado(a), 2 titulares, com 2 ou mais dependentes</option>
+                <option value="Viúvo(a), sem dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Viúvo(a), sem dependentes') echo 'selected'; ?>>Viúvo(a), sem dependentes</option>
+                <option value="Viúvo(a), com 1 dependente" <?php if (($colab['situacao_irs'] ?? '') === 'Viúvo(a), com 1 dependente') echo 'selected'; ?>>Viúvo(a), com 1 dependente</option>
+                <option value="Viúvo(a), com 2 ou mais dependentes" <?php if (($colab['situacao_irs'] ?? '') === 'Viúvo(a), com 2 ou mais dependentes') echo 'selected'; ?>>Viúvo(a), com 2 ou mais dependentes</option>
+            </select>
         </div>
+        <div class="ficha-campo">
+            <label>Nº Dependentes:</label>
+            <input type="number" name="dependentes" value="<?php echo htmlspecialchars($colab['dependentes'] ?? ''); ?>">
+        </div>
+        <div class="ficha-campo">
+            <label>IRS Jovem:</label>
+            <select name="irs_jovem">
+                <option value="">Selecione</option>
+                <option value="Sim" <?php if (($colab['irs_jovem'] ?? '') === 'Sim') echo 'selected'; ?>>Sim</option>
+                <option value="Não" <?php if (($colab['irs_jovem'] ?? '') === 'Não') echo 'selected'; ?>>Não</option>
+            </select>
+        </div>
+        <div class="ficha-campo">
+            <label>Ano do Primeiro Desconto:</label>
+            <input type="number" name="primeiro_ano_descontos" value="<?php echo htmlspecialchars($colab['primeiro_ano_descontos'] ?? ''); ?>">
+        </div>
+    </div>
+</div>
 
-        <!-- Ficha Vouchers -->
-        <div id="ficha-vouchers" class="ficha-container">
-            <div class="ficha-section-titulo">Informações para Vouchers</div>
-            <div class="ficha-grid">
-                <div class="ficha-campo">
-                    <label>Nº Cartão Continente:</label>
-                    <input type="text" name="cartao_continente" value="<?php echo htmlspecialchars($colab['cartao_continente'] ?? ''); ?>">
-                    <label style="font-size:12px;">Comprovativo Cartão Continente (PDF/JPG):</label>
-                    <input type="file" name="comprovativo_cartao_continente" accept=".pdf,.jpg,.jpeg,.png">
-                    <?php if (!empty($colab['comprovativo_cartao_continente'])): ?>
-                        <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_cartao_continente']); ?>" target="_blank">Ver comprovativo atual</a>
-                    <?php endif; ?>
-                </div>
-                <div class="ficha-campo">
-                    <label>Nº Cliente NOS:</label>
-                    <input type="text" name="numero_cliente_nos" value="<?php echo htmlspecialchars($colab['numero_cliente_nos'] ?? ''); ?>">
-                </div>
-            </div>
+<!-- Ficha Vouchers -->
+<div id="ficha-vouchers" class="ficha-container">
+    <div class="ficha-section-titulo">Informações Vouchers</div>
+    <div class="ficha-grid">
+        <div class="ficha-campo">
+            <label>Nº Cartão Continente:</label>
+            <input type="text" name="cartao_continente" value="<?php echo htmlspecialchars($colab['cartao_continente'] ?? ''); ?>">
+            <label style="font-size:12px;">Comprovativo Cartão Continente (PDF/JPG):</label>
+            <input type="file" name="comprovativo_cartao_continente" accept=".pdf,.jpg,.jpeg,.png">
+            <?php if (!empty($colab['comprovativo_cartao_continente'])): ?>
+                <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_cartao_continente']); ?>" target="_blank">Ver comprovativo atual</a>
+            <?php endif; ?>
         </div>
+        <div class="ficha-campo">
+            <label>Voucher NOS (Data):</label>
+            <input type="date" name="voucher_nos" value="<?php echo htmlspecialchars($colab['voucher_nos'] ?? ''); ?>" <?php echo fieldAttr('voucher_nos', $canEditAll, []); ?>>
+        </div>
+    </div>
+</div>
 
-        <!-- Ficha Contacto Emergência -->
-        <div id="ficha-emergencia" class="ficha-container">
-            <div class="ficha-section-titulo">Contacto de Emergência</div>
-            <div class="ficha-grid">
-                <div class="ficha-campo">
-                    <label>Nome do Contacto:</label>
-                    <input type="text" name="nome_contacto_emergencia" value="<?php echo htmlspecialchars($colab['nome_contacto_emergencia'] ?? ''); ?>">
-                </div>
-                <div class="ficha-campo">
-                    <label>Grau de Parentesco:</label>
-                    <select name="grau_relacionamento">
-                        <option value="">Selecione</option>
-                        <option value="Pai" <?php if (($colab['grau_relacionamento'] ?? '') === 'Pai') echo 'selected'; ?>>Pai</option>
-                        <option value="Mãe" <?php if (($colab['grau_relacionamento'] ?? '') === 'Mãe') echo 'selected'; ?>>Mãe</option>
-                        <option value="Filho" <?php if (($colab['grau_relacionamento'] ?? '') === 'Filho') echo 'selected'; ?>>Filho</option>
-                        <option value="Filha" <?php if (($colab['grau_relacionamento'] ?? '') === 'Filha') echo 'selected'; ?>>Filha</option>
-                        <option value="Irmão" <?php if (($colab['grau_relacionamento'] ?? '') === 'Irmão') echo 'selected'; ?>>Irmão</option>
-                        <option value="Irmã" <?php if (($colab['grau_relacionamento'] ?? '') === 'Irmã') echo 'selected'; ?>>Irmã</option>
-                        <option value="Avô" <?php if (($colab['grau_relacionamento'] ?? '') === 'Avô') echo 'selected'; ?>>Avô</option>
-                        <option value="Avó" <?php if (($colab['grau_relacionamento'] ?? '') === 'Avó') echo 'selected'; ?>>Avó</option>
-                        <option value="Neto" <?php if (($colab['grau_relacionamento'] ?? '') === 'Neto') echo 'selected'; ?>>Neto</option>
-                        <option value="Neta" <?php if (($colab['grau_relacionamento'] ?? '') === 'Neta') echo 'selected'; ?>>Neta</option>
-                        <option value="Tio" <?php if (($colab['grau_relacionamento'] ?? '') === 'Tio') echo 'selected'; ?>>Tio</option>
-                        <option value="Tia" <?php if (($colab['grau_relacionamento'] ?? '') === 'Tia') echo 'selected'; ?>>Tia</option>
-                        <option value="Sobrinho" <?php if (($colab['grau_relacionamento'] ?? '') === 'Sobrinho') echo 'selected'; ?>>Sobrinho</option>
-                        <option value="Sobrinha" <?php if (($colab['grau_relacionamento'] ?? '') === 'Sobrinha') echo 'selected'; ?>>Sobrinha</option>
-                        <option value="Primo" <?php if (($colab['grau_relacionamento'] ?? '') === 'Primo') echo 'selected'; ?>>Primo</option>
-                        <option value="Prima" <?php if (($colab['grau_relacionamento'] ?? '') === 'Prima') echo 'selected'; ?>>Prima</option>
-                        <option value="Cônjuge" <?php if (($colab['grau_relacionamento'] ?? '') === 'Cônjuge') echo 'selected'; ?>>Cônjuge</option>
-                        <option value="Companheiro(a)" <?php if (($colab['grau_relacionamento'] ?? '') === 'Companheiro(a)') echo 'selected'; ?>>Companheiro(a)</option>
-                        <option value="Outro" <?php if (($colab['grau_relacionamento'] ?? '') === 'Outro') echo 'selected'; ?>>Outro</option>
-                    </select>
-                </div>
-                <div class="ficha-campo">
-                    <label>Número de Contacto:</label>
-                    <input type="text" name="contacto_emergencia" value="<?php echo htmlspecialchars($colab['contacto_emergencia'] ?? ''); ?>">
-                </div>
-            </div>
+<!-- Ficha Contacto Emergência -->
+<div id="ficha-emergencia" class="ficha-container">
+    <div class="ficha-section-titulo">Contacto de Emergência</div>
+    <div class="ficha-grid">
+        <div class="ficha-campo">
+            <label>Nome do Contacto:</label>
+            <input type="text" name="nome_contacto_emergencia" value="<?php echo htmlspecialchars($colab['nome_contacto_emergencia'] ?? ''); ?>">
         </div>
+        <div class="ficha-campo">
+            <label>Grau de Parentesco:</label>
+            <select name="grau_relacionamento">
+                <option value="">Selecione</option>
+                <option value="Pai" <?php if (($colab['grau_relacionamento'] ?? '') === 'Pai') echo 'selected'; ?>>Pai</option>
+                <option value="Mãe" <?php if (($colab['grau_relacionamento'] ?? '') === 'Mãe') echo 'selected'; ?>>Mãe</option>
+                <option value="Filho" <?php if (($colab['grau_relacionamento'] ?? '') === 'Filho') echo 'selected'; ?>>Filho</option>
+                <option value="Filha" <?php if (($colab['grau_relacionamento'] ?? '') === 'Filha') echo 'selected'; ?>>Filha</option>
+                <option value="Irmão" <?php if (($colab['grau_relacionamento'] ?? '') === 'Irmão') echo 'selected'; ?>>Irmão</option>
+                <option value="Irmã" <?php if (($colab['grau_relacionamento'] ?? '') === 'Irmã') echo 'selected'; ?>>Irmã</option>
+                <option value="Avô" <?php if (($colab['grau_relacionamento'] ?? '') === 'Avô') echo 'selected'; ?>>Avô</option>
+                <option value="Avó" <?php if (($colab['grau_relacionamento'] ?? '') === 'Avó') echo 'selected'; ?>>Avó</option>
+                <option value="Neto" <?php if (($colab['grau_relacionamento'] ?? '') === 'Neto') echo 'selected'; ?>>Neto</option>
+                <option value="Neta" <?php if (($colab['grau_relacionamento'] ?? '') === 'Neta') echo 'selected'; ?>>Neta</option>
+                <option value="Tio" <?php if (($colab['grau_relacionamento'] ?? '') === 'Tio') echo 'selected'; ?>>Tio</option>
+                <option value="Tia" <?php if (($colab['grau_relacionamento'] ?? '') === 'Tia') echo 'selected'; ?>>Tia</option>
+                <option value="Sobrinho" <?php if (($colab['grau_relacionamento'] ?? '') === 'Sobrinho') echo 'selected'; ?>>Sobrinho</option>
+                <option value="Sobrinha" <?php if (($colab['grau_relacionamento'] ?? '') === 'Sobrinha') echo 'selected'; ?>>Sobrinha</option>
+                <option value="Primo" <?php if (($colab['grau_relacionamento'] ?? '') === 'Primo') echo 'selected'; ?>>Primo</option>
+                <option value="Prima" <?php if (($colab['grau_relacionamento'] ?? '') === 'Prima') echo 'selected'; ?>>Prima</option>
+                <option value="Cônjuge" <?php if (($colab['grau_relacionamento'] ?? '') === 'Cônjuge') echo 'selected'; ?>>Cônjuge</option>
+                <option value="Companheiro(a)" <?php if (($colab['grau_relacionamento'] ?? '') === 'Companheiro(a)') echo 'selected'; ?>>Companheiro(a)</option>
+                <option value="Outro" <?php if (($colab['grau_relacionamento'] ?? '') === 'Outro') echo 'selected'; ?>>Outro</option>
+            </select>
+        </div>
+        <div class="ficha-campo">
+            <label>Número de Contacto:</label>
+            <input type="text" name="contacto_emergencia" value="<?php echo htmlspecialchars($colab['contacto_emergencia'] ?? ''); ?>">
+        </div>
+    </div>
+</div>
 
-        <!-- Ficha Situação Contratual -->
-        <div id="ficha-contratual" class="ficha-container ficha-container-contratual">
-            <div class="ficha-section-titulo">Situação Contratual</div>
-            <div class="ficha-grid">
-                <div class="ficha-campo">
-                    <label>Cargo:</label>
-                    <input type="text" name="cargo" value="<?php echo htmlspecialchars($colab['cargo'] ?? ''); ?>">
-                </div>
-                <div class="ficha-campo">
-                    <label>Nível Hierárquico:</label>
-                    <input type="text" name="nivel_hierarquico" value="<?php echo htmlspecialchars($colab['nivel_hierarquico'] ?? ''); ?>">
-                </div>
-                <div class="ficha-campo">
-                    <label>Data de Início do Contrato:</label>
-                    <input type="date" name="data_inicio_contrato" value="<?php echo htmlspecialchars($colab['data_inicio_contrato'] ?? ''); ?>">
-                </div>
-                <div class="ficha-campo">
-                    <label>Remuneração:</label>
-                    <input type="text" name="remuneracao" value="<?php echo htmlspecialchars($colab['remuneracao'] ?? ''); ?>">
-                </div>
-                <div class="ficha-campo">
-                    <label>Tipo de Contrato:</label>
-                    <select name="tipo_contrato">
-                        <option value="">Selecione</option>
-                        <option value="estágio curricular" <?php if (($colab['tipo_contrato'] ?? '') === 'estágio curricular') echo 'selected'; ?>>Estágio Curricular</option>
-                        <option value="estagio IEFP" <?php if (($colab['tipo_contrato'] ?? '') === 'estagio IEFP') echo 'selected'; ?>>Estágio IEFP</option>
-                        <option value="termo certo" <?php if (($colab['tipo_contrato'] ?? '') === 'termo certo') echo 'selected'; ?>>Termo Certo</option>
-                        <option value="termo incerto" <?php if (($colab['tipo_contrato'] ?? '') === 'termo incerto') echo 'selected'; ?>>Termo Incerto</option>
-                        <option value="sem termo" <?php if (($colab['tipo_contrato'] ?? '') === 'sem termo') echo 'selected'; ?>>Sem Termo</option>
-                    </select>
-                </div>
-                <div class="ficha-campo">
-                    <label>Regime Horário:</label>
-                    <select name="regime_horario">
-                        <option value="">Selecione</option>
-                        <option value="10%" <?php if (($colab['regime_horario'] ?? '') === '10%') echo 'selected'; ?>>10%</option>
-                        <option value="20%" <?php if (($colab['regime_horario'] ?? '') === '20%') echo 'selected'; ?>>20%</option>
-                        <option value="50%" <?php if (($colab['regime_horario'] ?? '') === '50%') echo 'selected'; ?>>50%</option>
-                        <option value="100%" <?php if (($colab['regime_horario'] ?? '') === '100%') echo 'selected'; ?>>100%</option>
-                    </select>
-                </div>
-            </div>
+       <!-- Ficha Situação Contratual -->
+<div id="ficha-contratual" class="ficha-container ficha-container-contratual">
+    <div class="ficha-section-titulo">Situação Contratual</div>
+    <div class="ficha-grid">
+        <div class="ficha-campo">
+            <label>Cargo:</label>
+            <input type="text" name="cargo" value="<?php echo htmlspecialchars($colab['cargo'] ?? ''); ?>" <?php echo fieldAttr('cargo', $canEditAll, []); ?>>
         </div>
+    
+        <div class="ficha-campo">
+            <label>Data de Início do Contrato:</label>
+            <input type="date" name="data_inicio_contrato" value="<?php echo htmlspecialchars($colab['data_inicio_contrato'] ?? ''); ?>" <?php echo fieldAttr('data_inicio_contrato', $canEditAll, []); ?>>
+        </div>
+        <div class="ficha-campo">
+            <label>Data de Fim do Contrato:</label>
+            <input type="date" name="data_fim_contrato" value="<?php echo htmlspecialchars($colab['data_fim_contrato'] ?? ''); ?>" <?php echo fieldAttr('data_fim_contrato', $canEditAll, []); ?>>
+        </div>
+        <div class="ficha-campo">
+            <label>Remuneração:</label>
+            <input type="text" name="remuneracao" value="<?php echo htmlspecialchars($colab['remuneracao'] ?? ''); ?>" <?php echo fieldAttr('remuneracao', $canEditAll, []); ?>>
+        </div>
+        <div class="ficha-campo">
+            <label>Tipo de Contrato:</label>
+            <select name="tipo_contrato" <?php echo selectAttr('tipo_contrato', $canEditAll, []); ?>>
+                <option value="">Selecione</option>
+                <option value="estágio curricular" <?php if (($colab['tipo_contrato'] ?? '') === 'estágio curricular') echo 'selected'; ?>>Estágio Curricular</option>
+                <option value="estagio IEFP" <?php if (($colab['tipo_contrato'] ?? '') === 'estagio IEFP') echo 'selected'; ?>>Estágio IEFP</option>
+                <option value="termo certo" <?php if (($colab['tipo_contrato'] ?? '') === 'termo certo') echo 'selected'; ?>>Termo Certo</option>
+                <option value="termo incerto" <?php if (($colab['tipo_contrato'] ?? '') === 'termo incerto') echo 'selected'; ?>>Termo Incerto</option>
+                <option value="sem termo" <?php if (($colab['tipo_contrato'] ?? '') === 'sem termo') echo 'selected'; ?>>Sem Termo</option>
+            </select>
+        </div>
+        <div class="ficha-campo">
+            <label>Regime Horário:</label>
+            <select name="regime_horario" <?php echo selectAttr('regime_horario', $canEditAll, []); ?>>
+                <option value="">Selecione</option>
+                <option value="10%" <?php if (($colab['regime_horario'] ?? '') === '10%') echo 'selected'; ?>>10%</option>
+                <option value="20%" <?php if (($colab['regime_horario'] ?? '') === '20%') echo 'selected'; ?>>20%</option>
+                <option value="50%" <?php if (($colab['regime_horario'] ?? '') === '50%') echo 'selected'; ?>>50%</option>
+                <option value="100%" <?php if (($colab['regime_horario'] ?? '') === '100%') echo 'selected'; ?>>100%</option>
+            </select>
+        </div>
+    </div>
+</div>
        
 
             <div id="btn-flutuante-guardar">
