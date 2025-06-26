@@ -13,8 +13,7 @@ $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
 <head>
     <meta charset="UTF-8">
     <title>Relatórios Equipa - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/Coordenador/relatorios_equipa.css">
 </head>
 <body>
     <header>

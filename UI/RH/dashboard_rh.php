@@ -13,7 +13,7 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
 <head>
     <meta charset="UTF-8">
     <title>Dashboard RH - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/RH/dashboard_rh.css">
 </head>
 <body>
     <header>

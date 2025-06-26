@@ -13,7 +13,7 @@ $indicadores = $relatoriosBLL->getIndicadoresGlobais();
 <head>
     <meta charset="UTF-8">
     <title>Relatórios - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/RH/relatorios.css">
 </head>
 <body>
     <header>

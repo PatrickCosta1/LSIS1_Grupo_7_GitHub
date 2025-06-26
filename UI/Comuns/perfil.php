@@ -73,8 +73,7 @@ switch ($_SESSION['profile']) {
 <head>
     <meta charset="UTF-8">
     <title>Meu Perfil - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/perfil.css">
 </head>
 <body>
     <header>
@@ -89,7 +88,8 @@ switch ($_SESSION['profile']) {
         <h1>Meu Perfil</h1>
         <?php if ($success_message): ?><div class="success-message"><?php echo $success_message; ?></div><?php endif; ?>
         <?php if ($error_message): ?><div class="error-message"><?php echo $error_message; ?></div><?php endif; ?>
-        <form class="ficha-form ficha-form-moderna" method="POST">
+        <div class="perfil-edit-container">
+        <form class="perfil-edit-form" method="POST">
             <div class="ficha-grid">
                 <div class="ficha-campo">
                     <label>Nome:</label>
@@ -108,10 +108,11 @@ switch ($_SESSION['profile']) {
                     <input type="password" name="nova_password">
                 </div>
             </div>
-            <div style="text-align:center; margin-top: 24px;">
+            <div class="perfil-edit-actions">
                 <button type="submit" class="btn">Guardar Alterações</button>
             </div>
         </form>
+        </div>
     </main>
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">

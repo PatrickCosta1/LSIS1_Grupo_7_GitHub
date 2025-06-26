@@ -14,8 +14,7 @@ $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Coordenador - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/Coordenador/dashboard_coordenador.css">
 </head>
 <body>
     <header>

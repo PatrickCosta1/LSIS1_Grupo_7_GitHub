@@ -13,7 +13,7 @@ $nome = htmlspecialchars($colabBLL->getColaboradorName($_SESSION['user_id']));
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Colaborador - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/Colaborador/dashboard_colaborador.css">
 </head>
 <body>
     <header>

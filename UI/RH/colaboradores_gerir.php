@@ -13,8 +13,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
 <head>
     <meta charset="UTF-8">
     <title>Gestão de Colaboradores - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/RH/colaboradores_gerir.css">
 </head>
 <body>
     <header>
