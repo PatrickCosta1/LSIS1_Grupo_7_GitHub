@@ -41,4 +41,3 @@ class DAL_Login {
     }
 }
 
-

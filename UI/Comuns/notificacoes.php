@@ -21,12 +21,11 @@ if (isset($_GET['marcar_lida'])) {
 <head>
     <meta charset="UTF-8">
     <title>Notificações - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/notificacoes.css">
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <?php if ($_SESSION['profile'] === 'coordenador'): ?>
                 <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>

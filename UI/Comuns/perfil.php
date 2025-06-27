@@ -16,14 +16,11 @@ $menu = [];
 switch ($_SESSION['profile']) {
     case 'admin':
         $menu = [
-            'Dashboard' => '../Admin/dashboard_admin.php',
             'Utilizadores' => '../Admin/utilizadores.php',
             'Permissões' => '../Admin/permissoes.php',
             'Campos Personalizados' => '../Admin/campos_personalizados.php',
             'Alertas' => '../Admin/alertas.php',
             'Colaboradores' => '../RH/colaboradores_gerir.php',
-            'Equipas' => '../RH/equipas.php',
-            'Relatórios' => '../RH/relatorios.php',
             'Perfil' => '../Comuns/perfil.php',
             'Sair' => '../Comuns/logout.php'
         ];
@@ -73,12 +70,12 @@ switch ($_SESSION['profile']) {
 <head>
     <meta charset="UTF-8">
     <title>Meu Perfil - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/perfil.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <?php foreach ($menu as $label => $url): ?>
                 <a href="<?php echo $url; ?>"><?php echo $label; ?></a>
@@ -89,7 +86,8 @@ switch ($_SESSION['profile']) {
         <h1>Meu Perfil</h1>
         <?php if ($success_message): ?><div class="success-message"><?php echo $success_message; ?></div><?php endif; ?>
         <?php if ($error_message): ?><div class="error-message"><?php echo $error_message; ?></div><?php endif; ?>
-        <form class="ficha-form ficha-form-moderna" method="POST">
+        <div class="perfil-edit-container">
+        <form class="perfil-edit-form" method="POST">
             <div class="ficha-grid">
                 <div class="ficha-campo">
                     <label>Nome:</label>
@@ -108,10 +106,11 @@ switch ($_SESSION['profile']) {
                     <input type="password" name="nova_password">
                 </div>
             </div>
-            <div style="text-align:center; margin-top: 24px;">
+            <div class="perfil-edit-actions">
                 <button type="submit" class="btn">Guardar Alterações</button>
             </div>
         </form>
+        </div>
     </main>
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">

@@ -35,15 +35,15 @@ $colunas = array_keys($colunas);
 <head>
     <meta charset="UTF-8">
     <title>Permissões - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/Admin/base.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
     <style>
         .permissoes-container {
             max-width: 1100px;
             margin: 36px auto 0 auto;
             background: #fff;
             border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 24px rgba(3,96,233,0.08);
             padding: 32px 32px 36px 32px;
         }
         .permissoes-header {
@@ -54,7 +54,7 @@ $colunas = array_keys($colunas);
         }
         .permissoes-header h1 {
             font-size: 2rem;
-            color: #3a366b;
+            color: #0360e9;
             margin: 0;
         }
         .tabela-scroll {
@@ -65,38 +65,38 @@ $colunas = array_keys($colunas);
             min-width: 700px;
             border-collapse: separate;
             border-spacing: 0;
-            background: #f9f9fb;
+            background: #f5f7fa;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(3,96,233,0.04);
         }
         .tabela-permissoes th, .tabela-permissoes td {
             padding: 13px 14px;
             text-align: center;
         }
         .tabela-permissoes th {
-            background: #ecebfa;
-            color: #4a468a;
+            background: linear-gradient(90deg, #0360e9 0%, #299cf3 100%);
+            color: #fff;
             font-weight: 600;
-            border-bottom: 2px solid #d5d3f1;
+            border-bottom: 2px solid #299cf3;
         }
         .tabela-permissoes tr:nth-child(even) {
-            background: #f4f4fa;
+            background: #e0eaff;
         }
         .tabela-permissoes tr:hover {
-            background: #e6e6f7;
+            background: #c3cfe2;
         }
         .tabela-permissoes td {
-            color: #3a366b;
+            color: #1c3c69;
             font-size: 1rem;
         }
         .perfil-col {
             font-weight: 600;
-            color: #764ba2;
+            color: #0360e9;
             text-align: left;
         }
         .btn-salvar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
             color: #fff;
             border: none;
             border-radius: 7px;
@@ -107,9 +107,11 @@ $colunas = array_keys($colunas);
             transition: background 0.2s;
             text-decoration: none;
             display: inline-block;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(3,96,233,0.08);
         }
         .btn-salvar:hover {
-            background: linear-gradient(135deg, #5a67d8 0%, #6b47b6 100%);
+            background: linear-gradient(135deg, #1c3c69 0%, #0360e9 100%);
         }
         @media (max-width: 900px) {
             .permissoes-container { padding: 12px 4px; }
@@ -120,18 +122,17 @@ $colunas = array_keys($colunas);
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <a href="pagina_inicial_admin.php">
+            <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
+        </a>        
         <nav>
-            <a href="dashboard_admin.php">Dashboard</a>
             <a href="utilizadores.php">Utilizadores</a>
             <a href="permissoes.php">Permissões</a>
             <a href="campos_personalizados.php">Campos Personalizados</a>
             <a href="alertas.php">Alertas</a>
             <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-            <a href="../RH/equipas.php">Equipas</a>
-            <a href="../RH/relatorios.php">Relatórios</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
-            <a href="../Comuns/logout.php">Sair</a>
+            <a href="../Comuns/perfil.php" class="perfil-link">Perfil</a>
+            <a href="../Comuns/logout.php" class="sair-link">Sair</a>
         </nav>
     </header>
     <div class="permissoes-container">
@@ -156,8 +157,6 @@ $colunas = array_keys($colunas);
                     <?php foreach ($colunas as $col): ?>
                         <td>
                             <?php if (isset($perfil['permissoes'][$col])): ?>
-                                <!-- Campo hidden para garantir submissão de 0 se não estiver marcado -->
-                                <input type="hidden" name="permissao[<?php echo $perfil['permissoes'][$col]['id']; ?>]" value="0">
                                 <input type="checkbox" name="permissao[<?php echo $perfil['permissoes'][$col]['id']; ?>]" value="1" <?php if ($perfil['permissoes'][$col]['valor']) echo 'checked'; ?>>
                             <?php else: ?>
                                 <span style="color:#bbb;">—</span>

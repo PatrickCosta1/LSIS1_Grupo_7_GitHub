@@ -13,22 +13,18 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
 <head>
     <meta charset="UTF-8">
     <title>Gestão de Colaboradores - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/RH/colaboradores_gerir.css">
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <?php if ($_SESSION['profile'] === 'admin'): ?>
-                <a href="../Admin/dashboard_admin.php">Dashboard</a>
                 <a href="../Admin/utilizadores.php">Utilizadores</a>
                 <a href="../Admin/permissoes.php">Permissões</a>
                 <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
                 <a href="../Admin/alertas.php">Alertas</a>
                 <a href="colaboradores_gerir.php">Colaboradores</a>
-                <a href="equipas.php">Equipas</a>
-                <a href="relatorios.php">Relatórios</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
@@ -40,6 +36,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                 <a href="../Comuns/notificacoes.php">Notificações</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
+
             <?php endif; ?>
         </nav>
     </header>
@@ -85,7 +82,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                             }
                             ?>
                         </td>
-                        <td><?php echo htmlspecialchars($col['funcao']); ?></td>
+                        <td><?php echo htmlspecialchars($col['cargo']); ?></td>
                         <td><?php echo htmlspecialchars($col['equipa']); ?></td>
                         <td><?php echo $col['ativo'] ? 'Ativo' : 'Inativo'; ?></td>
                         <td>

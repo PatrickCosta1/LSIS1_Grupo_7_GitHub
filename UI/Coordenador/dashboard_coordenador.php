@@ -14,12 +14,12 @@ $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Coordenador - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/Coordenador/dashboard_coordenador.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <a href="dashboard_coordenador.php">Dashboard</a>
             <a href="../Colaborador/ficha_colaborador.php">Minha Ficha</a>

@@ -19,7 +19,7 @@ class DAL_DashboardCoordenador {
 
     public function getColaboradoresByEquipa($equipaId) {
         $pdo = Database::getConnection();
-        $sql = "SELECT c.id, c.nome, c.funcao, u.email
+        $sql = "SELECT c.id, c.nome, c.cargo, u.email
                 FROM colaboradores c
                 LEFT JOIN equipa_colaboradores ec ON c.id = ec.colaborador_id
                 LEFT JOIN utilizadores u ON c.utilizador_id = u.id

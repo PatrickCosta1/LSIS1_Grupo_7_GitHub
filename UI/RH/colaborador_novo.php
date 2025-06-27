@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'perfil_id' => $_POST['perfil_id'] ?? 0,
         'ativo' => isset($_POST['ativo']) ? 1 : 0,
         'password' => $_POST['password'] ?? '',
-        'funcao' => $_POST['funcao'] ?? '',
+        'cargo' => $_POST['cargo'] ?? '',
         'morada' => $_POST['morada'] ?? '',
         'estado_civil' => $_POST['estado_civil'] ?? '',
         'habilitacoes' => $_POST['habilitacoes'] ?? '',
@@ -48,12 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Novo Colaborador</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/RH/colaborador_novo.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <a href="dashboard_rh.php">Dashboard</a>
             <a href="colaboradores_gerir.php">Colaboradores</a>
@@ -102,8 +102,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="password" name="password" required>
                 </div>
                 <div class="ficha-campo">
-                    <label>Função:</label>
-                    <input type="text" name="funcao">
+                    <label>Cargo:</label>
+                    <input type="text" name="cargo">
                 </div>
                 <div class="ficha-campo">
                     <label>Morada:</label>

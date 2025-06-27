@@ -1,0 +1,219 @@
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    /* aumenta o padding-top para compensar o header mais largo e com margem */
+    padding-top: calc(100px + 2cm); /* 100px altura header + 0.5cm top + 0.5cm bottom */
+}
+header {
+    position: fixed;
+    top: 0.5cm;
+    left: 0.5cm;
+    right: 0.5cm;
+    width: auto;
+    margin: 0;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 24px;
+    min-height: 100px;
+    box-shadow: 0 8px 32px rgba(3,96,233,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 60px;
+    z-index: 1000;
+}
+.logo-header {
+    width: 120px;
+    height: auto;
+}
+header nav {
+    display: flex;
+    gap: 1px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+header nav a {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+}
+header nav a:hover,
+header nav a.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+/* Título principal */
+main h1 {
+    color: #0360e9;
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 40px 0 32px 0;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+/* Tabela de colaboradores */
+.tabela-colaboradores-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+}
+
+.tabela-colaboradores {
+    width: 98%;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: rgba(255,255,255,0.97);
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(3,96,233,0.10);
+    overflow: hidden;
+    font-size: 1rem;
+}
+
+.tabela-colaboradores thead tr {
+    background: linear-gradient(90deg, #0360e9 0%, #299cf3 100%);
+}
+
+.tabela-colaboradores th, .tabela-colaboradores td {
+    padding: 16px 18px;
+    text-align: left;
+}
+
+.tabela-colaboradores th {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid #299cf3;
+}
+
+.tabela-colaboradores tbody tr {
+    transition: background 0.2s;
+}
+
+.tabela-colaboradores tbody tr:nth-child(even) {
+    background: #e0eaff;
+}
+
+.tabela-colaboradores tbody tr:hover {
+    background: linear-gradient(90deg, #c3cfe2 0%, #f5f7fa 100%);
+}
+
+.tabela-colaboradores td {
+    color: #1c3c69;
+    font-weight: 500;
+    border-bottom: 1px solid #c3cfe2;
+}
+
+.tabela-colaboradores tr:last-child td {
+    border-bottom: none;
+}
+
+/* Botões */
+.btn, .btn-sm, .btn-danger {
+    font-size: 1rem;
+    padding: 10px 22px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(3,96,233,0.18);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-sm {
+    font-size: 0.92rem;
+    padding: 7px 14px;
+    border-radius: 10px;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(229, 62, 62, 0.18);
+}
+
+.btn:hover, .btn-sm:hover {
+    background: linear-gradient(135deg, #1c3c69 0%, #0360e9 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(3,96,233,0.22);
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c53030 0%, #e53e3e 100%);
+    box-shadow: 0 8px 25px rgba(229, 62, 62, 0.22);
+}
+
+.add-colab-btn {
+    max-width: 300px;
+    display: block;
+    margin: 0 auto 40px auto;
+    font-size: 1.1rem;
+    padding: 14px 40px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(3,96,233,0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+@media (max-width: 1200px) {
+    header {
+        padding: 18px 5vw;
+        min-height: 80px;
+        width: 95vw;
+        margin: 20px auto 0 auto;
+    }
+    .tabela-colaboradores {
+        font-size: 0.98rem;
+    }
+}
+@media (max-width: 900px) {
+    header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .tabela-colaboradores th, .tabela-colaboradores td {
+        padding: 10px 8px;
+        font-size: 0.95rem;
+    }
+    main h1 {
+        font-size: 1.4rem;
+    }
+}
+@media (max-width: 600px) {
+    header {
+        padding: 10px 2vw;
+        min-height: 60px;
+        border-radius: 14px;
+    }
+    .tabela-colaboradores {
+        font-size: 0.92rem;
+    }
+    .add-colab-btn {
+        font-size: 0.95rem;
+        padding: 10px 10px;
+    }
+}
