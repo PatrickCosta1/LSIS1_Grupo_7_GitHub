@@ -1,0 +1,204 @@
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    /* aumenta o padding-top para compensar o header mais largo e com margem */
+    padding-top: calc(100px + 2cm); /* 100px altura header + 0.5cm top + 0.5cm bottom */
+}
+header {
+    position: fixed;
+    top: 0.5cm;
+    left: 0.5cm;
+    right: 0.5cm;
+    width: auto;
+    margin: 0;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 24px;
+    min-height: 100px;
+    box-shadow: 0 8px 32px rgba(3,96,233,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* igual ao dashboard */
+    padding: 24px 60px;
+    z-index: 1000;
+}
+.logo-header {
+    width: 120px;
+    height: auto;
+}
+header nav {
+    display: flex;
+    gap: 1px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+header nav a {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+}
+header nav a:hover,
+header nav a.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+/* Título principal */
+main h1 {
+    color: #0360e9;
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 40px 0 32px 0;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.perfil-edit-container {
+    margin: 0 auto;
+    max-width: 440px;
+}
+
+.perfil-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.ficha-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 24px;
+    margin-bottom: 18px;
+}
+
+.ficha-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ficha-campo label {
+    color: #0360e9;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.ficha-campo input[type="text"],
+.ficha-campo input[type="email"],
+.ficha-campo input[type="password"] {
+    padding: 8px 10px;
+    border: 1px solid #c3cfe2;
+    border-radius: 7px;
+    font-size: 1rem;
+    background: #f5f7fa;
+    color: #1c3c69;
+    transition: border 0.2s;
+}
+
+.ficha-campo input:focus {
+    border-color: #0360e9;
+    outline: none;
+}
+
+.perfil-edit-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.btn {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 28px;
+    font-size: 1.08rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-weight: 500;
+    margin: 0 8px;
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, #1c3c69 0%, #0360e9 100%);
+}
+
+@media (max-width: 700px) {
+    main {
+        padding: 12px 4px;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .ficha-grid {
+        grid-template-columns: 1fr;
+        gap: 16px 0;
+    }
+    .perfil-edit-container {
+        max-width: 100%;
+    }
+}
+
+.dropdown-perfil {
+    position: relative;
+    display: inline-block;
+}
+
+.perfil-link {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.seta-baixo {
+    font-size: 0.8em;
+    margin-left: 3px;
+    transition: transform 0.2s;
+}
+
+.dropdown-perfil:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;  /* aumenta o padding à esquerda */
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;            /* garante alinhamento à esquerda */
+}
+
+.dropdown-menu a:hover {
+    background: #a3bfff;
+    color: #000000 !important;          /* texto branco ao passar o rato */
+}
+
+.dropdown-perfil:hover .dropdown-menu {
+    display: block;
+}

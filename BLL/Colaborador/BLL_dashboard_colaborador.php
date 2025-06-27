@@ -9,5 +9,15 @@ class ColaboradorDashboardManager {
     public function getColaboradorName($userId) {
         return $this->dal->getColaboradorName($userId);
     }
+
+    public function getDashboardData($user_id) {
+        // Exemplo: substitui por lógica real de BD
+        return [
+            'faltas' => 2,
+            'ferias' => 10,
+            'horas_extra' => 5,
+            'proxima_folga' => '2024-07-01'
+        ];
+    }
 }
 ?>

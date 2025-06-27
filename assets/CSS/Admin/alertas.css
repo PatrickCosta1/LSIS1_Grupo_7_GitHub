@@ -1,0 +1,57 @@
+main > h1 {
+    text-align: center;
+    margin-top: 32px;
+    margin-bottom: 24px;
+    font-size: 2rem;
+    color: #3a366b;
+    font-weight: 700;
+}
+
+.tabela-colaboradores {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 18px;
+    width: 60%;              /* reduz a largura da tabela */
+    background: #f9f9fb;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 320px;        /* garante que não fica demasiado pequena */
+    max-width: 600px;
+}
+
+.tabela-colaboradores th, .tabela-colaboradores td {
+    padding: 14px 16px;
+    text-align: left;
+}
+
+
+.tabela-colaboradores th {
+    background: #ecebfa;
+    color: #4a468a;
+    font-weight: 600;
+    border-bottom: 2px solid #d5d3f1;
+}
+
+.tabela-colaboradores tr:nth-child(even) {
+    background: #f4f4fa;
+}
+
+.tabela-colaboradores tr:hover {
+    background: #e6e6f7;
+}
+
+.tabela-colaboradores td {
+    color: #3a366b;
+    font-size: 1rem;
+}
+.adicionar-alerta-center {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+}
+@media (max-width: 900px) {
+    .alertas-container { padding: 12px 4px; }
+    .alertas-header h1 { font-size: 1.2rem; }
+}

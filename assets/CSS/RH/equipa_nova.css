@@ -1,0 +1,293 @@
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    /* aumenta o padding-top para compensar o header mais largo e com margem */
+    padding-top: calc(100px + 2cm); /* 100px altura header + 0.5cm top + 0.5cm bottom */
+}
+header {
+    position: fixed;
+    top: 0.5cm;
+    left: 0.5cm;
+    right: 0.5cm;
+    width: auto;
+    margin: 0;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 24px;
+    min-height: 100px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* igual ao dashboard */
+    padding: 24px 60px;
+    z-index: 1000;
+}
+.logo-header {
+    width: 120px;
+    height: auto;
+}
+header nav {
+    display: flex;
+    gap: 1px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+header nav a {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+}
+header nav a:hover,
+header nav a.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+/* Título principal */
+main h1 {
+    color: #0360e9;
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 40px 0 32px 0;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+/* Mensagens de sucesso/erro */
+.success-message, .error-message {
+    max-width: 500px;
+    margin: 0 auto 24px auto;
+    padding: 16px 24px;
+    border-radius: 14px;
+    font-weight: 600;
+    text-align: center;
+    font-size: 1rem;
+}
+.success-message {
+    background: linear-gradient(90deg, #38a169 0%, #68d391 100%);
+    color: #fff;
+}
+.error-message {
+    background: linear-gradient(90deg, #e53e3e 0%, #c53030 100%);
+    color: #fff;
+}
+
+/* Formulário moderno */
+.ficha-form-moderna {
+    background: rgba(255,255,255,0.97);
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.10);
+    padding: 40px 48px;
+    max-width: 600px;
+    margin: 0 auto 32px auto;
+    border: 1px solid rgba(255,255,255,0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.ficha-form-moderna::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 24px 24px 0 0;
+}
+
+/* Grid dos campos */
+.ficha-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 32px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.ficha-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+/* Torna as opções do select do coordenador a preto */
+.ficha-campo select[name="coordenador_id"] option {
+    color: #111 !important;
+    background: #fff;
+}
+
+.ficha-campo label {
+    color: #4a5568;
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
+}
+
+.ficha-campo input,
+.ficha-campo select {
+    background: rgba(255,255,255,0.8);
+    border: 2px solid #e2e8f0;
+    color: #2d3748;
+    border-radius: 12px;
+    font-size: 0.97rem;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    backdrop-filter: blur(10px);
+}
+
+.ficha-campo select option {
+    background: #fff;
+    color: #2d3748;
+    padding: 8px;
+}
+
+.ficha-campo input:focus,
+.ficha-campo select:focus {
+    border: 2px solid #0360e9;
+    background: rgba(255,255,255,0.95);
+    outline: none;
+    color: #2d3748;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Botões */
+.btn {
+    font-size: 1.1rem;
+    padding: 14px 40px;
+    border-radius: 16px;
+    border: none;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-align: center;
+    margin: 0 8px;
+    display: inline-block;
+}
+
+.btn:hover {
+    background: linear-gradient(135deg,#0360e9 0%, #299cf3 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    header {
+        padding: 18px 5vw;
+        min-height: 100px;
+        width: 95vw;
+        margin: 20px auto 0 auto;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .logo-header { width: 90px; }
+    main h1 { font-size: 2rem; margin: 28px 0 18px 0; }
+    .ficha-form-moderna { max-width: 95vw; padding: 32px 24px; }
+}
+
+@media (max-width: 900px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 14px 3vw;
+        min-height: 80px;
+    }
+    .logo-header { width: 70px; }
+    header nav { gap: 6px; }
+    header nav a { padding: 8px 10px; font-size: 0.9rem; }
+    main h1 { font-size: 1.5rem; }
+    .ficha-form-moderna { padding: 20px 10px; }
+    .ficha-grid { grid-template-columns: 1fr; gap: 16px 8px; }
+}
+
+@media (max-width: 600px) {
+    header {
+        border-radius: 14px;
+        padding: 10px 2vw;
+        min-height: 60px;
+    }
+    .logo-header { width: 50px; }
+    header nav a { font-size: 0.8rem; padding: 7px 6px; }
+    main h1 { font-size: 1.1rem; margin: 18px 0 10px 0; }
+    .ficha-form-moderna { font-size: 0.92rem; padding: 10px 4px; }
+    .ficha-grid { grid-template-columns: 1fr; gap: 10px 0; }
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg,#0360e9 0%, #299cf3 100%);
+}
+
+/* Efeitos de hover suaves */
+header nav a, .btn {
+    position: relative;
+    overflow: hidden;
+}
+header nav a::before, .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+header nav a:hover::before, .btn:hover::before {
+    left: 100%;
+}
+
+.ficha-campo select[multiple] {
+    min-height: 120px;
+    background: #f7faff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+}
+/* Acrescenta ao equipa_nova.css */
+.lista-colaboradores {
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f7faff;
+    padding: 12px 16px;
+}
+.lista-colaboradores label {
+    font-weight: 500;
+    color: #2d3748;
+    cursor: pointer;
+}

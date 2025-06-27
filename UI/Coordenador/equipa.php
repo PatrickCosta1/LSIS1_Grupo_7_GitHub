@@ -19,12 +19,12 @@ $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
 <head>
     <meta charset="UTF-8">
     <title>Minha Equipa - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/Coordenador/equipa.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <a href="dashboard_coordenador.php">Dashboard</a>
             <a href="../Colaborador/ficha_colaborador.php">Minha Ficha</a>
@@ -49,7 +49,7 @@ $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
                 <?php foreach ($colaboradores as $c): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($c['nome']); ?></td>
-                    <td><?php echo htmlspecialchars($c['funcao']); ?></td>
+                    <td><?php echo htmlspecialchars($c['cargo']); ?></td>
                     <td><?php echo htmlspecialchars($c['email']); ?></td>
                 </tr>
                 <?php endforeach; ?>
