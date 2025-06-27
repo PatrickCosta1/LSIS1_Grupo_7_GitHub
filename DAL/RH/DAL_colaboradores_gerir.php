@@ -23,34 +23,24 @@ class DAL_ColaboradoresGerir {
     public function addColaborador($dados) {
         $pdo = Database::getConnection();
         // Criar utilizador
-        $stmtUser = $pdo->prepare("INSERT INTO utilizadores (username, email, perfil_id, ativo, password) VALUES (?, ?, ?, ?, ?)");
+        $stmtUser = $pdo->prepare("INSERT INTO utilizadores (username, email, ativo, password, perfil_id) VALUES (?, ?, ?, ?, ?)");
         $okUser = $stmtUser->execute([
             $dados['username'],
             $dados['email'],
-            $dados['perfil_id'],
             $dados['ativo'],
-            $dados['password']
+            $dados['password'],
+            $dados['perfil_id'] // este valor tem de vir do formulário/processamento
         ]);
         if (!$okUser) return false;
         $userId = $pdo->lastInsertId();
 
         // Criar colaborador
-        $stmtColab = $pdo->prepare("INSERT INTO colaboradores (utilizador_id, nome, cargo, morada, estado_civil, habilitacoes, contacto_emergencia, matricula_viatura, data_nascimento, genero, data_entrada, geografia, nivel_hierarquico, remuneracao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmtColab = $pdo->prepare("INSERT INTO colaboradores (utilizador_id, nome, cargo, nivel_hierarquico) VALUES (?, ?, ?, ?)");
         return $stmtColab->execute([
             $userId,
             $dados['nome'],
             $dados['cargo'],
-            $dados['morada'],
-            $dados['estado_civil'],
-            $dados['habilitacoes'],
-            $dados['contacto_emergencia'],
-            $dados['matricula_viatura'],
-            $dados['data_nascimento'],
-            $dados['genero'],
-            $dados['data_entrada'],
-            $dados['geografia'],
-            $dados['nivel_hierarquico'],
-            $dados['remuneracao']
+            $dados['nivel_hierarquico']
         ]);
     }
 }

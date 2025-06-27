@@ -46,8 +46,8 @@ $nmr_notificacoes = isset($dados['notificacoes_novas']) ? (int)$dados['notificac
         Atualiza os teus <strong>dados</strong>, recebe <strong>notificações</strong>, consulta informações importantes e gere a tua ligação com a empresa de forma <strong>simples e segura</strong>.
     </p>
     <div class="botoes-atalho">
-        <a href="ficha_colaborador.php" class="botao-atalho roxo">Ficha Colaborador</a>
-        <a href="#" class="botao-atalho laranja">Recibos</a>
+        <a href="#" class="botao-atalho roxo">Recibos</a>
+        <a href="ficha_colaborador.php#" class="botao-atalho laranja">Ficha Colaborador</a>
         <a href="#" class="botao-atalho verde">Férias</a>
     </div>
     <div class="dash-carousel-container">

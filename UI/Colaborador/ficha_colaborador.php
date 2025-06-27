@@ -214,11 +214,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             src="../../assets/tlantic-logo2.png"
             alt="Logo Tlantic"
             class="logo-header2"
-            style="cursor:pointer;"
             <?php if ($perfil === 'colaborador'): ?>
-                onclick="window.location.href='pagina_inicial_colaborador.php';"
-            <?php elseif ($perfil === 'coordenador'): ?>
-                onclick="window.location.href='../Coordenador/pagina_inicial_coordenador.php';"
+                style="cursor:pointer;" onclick="window.location.href='pagina_inicial_colaborador.php';"
+            <?php endif; ?>
+            <?php if ($perfil === 'coordenador'): ?>
+                style="cursor:pointer;" onclick="window.location.href='../Coordenador/pagina_inicial_coordenador.php';"
             <?php endif; ?>
         >
         <nav class="nav-links">
@@ -239,18 +239,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
-                <img
-            src="../../assets/tlantic-logo2.png"
-            alt="Logo Tlantic"
-            class="logo-header2"
-            <?php if ($perfil === 'coordenador' ): ?>
-                style="cursor:pointer;" onclick="window.location.href='pagina_inicial_coordenador.php';"
-            <?php endif; ?>
-        >
             <?php elseif ($perfil === 'coordenador'): ?>
+                <?php
+                    // Corrigir link da equipa para incluir o id da equipa do coordenador
+                    require_once '../../BLL/Coordenador/BLL_dashboard_coordenador.php';
+                    $coordBLL = new CoordenadorDashboardManager();
+                    $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
+                    $equipaLink = "../Coordenador/equipa.php";
+                    if (!empty($equipas) && isset($equipas[0]['id'])) {
+                        $equipaLink = "../Coordenador/equipa.php?id=" . urlencode($equipas[0]['id']);
+                    }
+                ?>
                 <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
                 <a href="ficha_colaborador.php">A Minha Ficha</a>
-                <a href="../Coordenador/equipa.php">Equipa</a>
+                <a href="<?php echo $equipaLink; ?>">Equipa</a>
                 <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
                 <a href="../Comuns/notificacoes.php">Notificações</a>
                 <a href="../Comuns/perfil.php">Perfil</a>

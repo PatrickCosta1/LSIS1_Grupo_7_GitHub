@@ -24,7 +24,6 @@ $campos = $camposBLL->getAllCampos();
             <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         </a>        
         <nav>
-            <a href="dashboard_admin.php">Dashboard</a>
             <a href="utilizadores.php">Utilizadores</a>
             <a href="permissoes.php">Permissões</a>
             <a href="campos_personalizados.php">Campos Personalizados</a>

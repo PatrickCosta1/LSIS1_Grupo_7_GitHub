@@ -28,5 +28,7 @@ class DAL_DashboardCoordenador {
         $stmt->execute([$equipaId]);
         return $stmt->fetchAll();
     }
+    
+    
 }
 ?>

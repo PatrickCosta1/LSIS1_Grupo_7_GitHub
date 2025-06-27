@@ -45,9 +45,19 @@ if (isset($_GET['marcar_lida'])) {
         </a>
         <nav>
             <?php if ($_SESSION['profile'] === 'coordenador'): ?>
+                <?php
+                    // Corrigir link da equipa para incluir o id da equipa do coordenador
+                    require_once '../../BLL/Coordenador/BLL_dashboard_coordenador.php';
+                    $coordBLL = new CoordenadorDashboardManager();
+                    $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
+                    $equipaLink = "../Coordenador/equipa.php";
+                    if (!empty($equipas) && isset($equipas[0]['id'])) {
+                        $equipaLink = "../Coordenador/equipa.php?id=" . urlencode($equipas[0]['id']);
+                    }
+                ?>
                 <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
                 <a href="../Colaborador/ficha_colaborador.php">Minha Ficha</a>
-                <a href="../Coordenador/equipa.php">Equipa</a>
+                <a href="<?php echo $equipaLink; ?>">Equipa</a>
                 <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
                 <a href="../Comuns/notificacoes.php">Notificações</a>
                 <div class="dropdown-perfil">
