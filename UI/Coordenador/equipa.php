@@ -28,7 +28,7 @@ $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
         <nav>
             <a href="dashboard_coordenador.php">Dashboard</a>
             <a href="../Colaborador/ficha_colaborador.php">Minha Ficha</a>
-            <a href="equipa.php?id=<?php echo urlencode($equipaId); ?>">Minha Equipa</a>
+            <a href="equipa.php?id=<?php echo urlencode($equipaId); ?>">Equipa</a>
             <a href="relatorios_equipa.php">Relatórios Equipa</a>
             <a href="../Comuns/notificacoes.php">Notificações</a>
             <a href="../Comuns/perfil.php">Perfil</a>
