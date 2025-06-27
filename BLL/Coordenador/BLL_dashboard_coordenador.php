@@ -15,5 +15,6 @@ class CoordenadorDashboardManager {
     public function getColaboradoresByEquipa($equipaId) {
         return $this->dal->getColaboradoresByEquipa($equipaId);
     }
+   
 }
 ?>
