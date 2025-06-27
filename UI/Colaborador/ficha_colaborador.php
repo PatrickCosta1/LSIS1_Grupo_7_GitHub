@@ -203,20 +203,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Minha Ficha - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/Colaborador/ficha_colaborador.css">
 </head>
 <body>
+    
 <!-- Container azul arredondado no topo -->
 <div id="header-hero">
     <div class="header-content">
-        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header2"
-            <?php if ($perfil === 'admin'): ?>
-                style="cursor:pointer" onclick="window.location.href='../Admin/pagina_inicial_admin.php'"
+        <img
+            src="../../assets/tlantic-logo2.png"
+            alt="Logo Tlantic"
+            class="logo-header2"
+            <?php if ($perfil === 'colaborador'): ?>
+                style="cursor:pointer;" onclick="window.location.href='pagina_inicial_colaborador.php';"
             <?php endif; ?>
         >
         <nav class="nav-links">
-            <?php if ($perfil === 'coordenador'): ?>
+            <?php if ($perfil === 'colaborador'): ?>
+                <a href="ficha_colaborador.php">A Minha Ficha</a>
+                <a href="../Comuns/notificacoes.php">Notificações</a>
+                <div class="dropdown-perfil">
+                    <a href="../Comuns/perfil.php" class="perfil-link">
+                        Perfil
+                        <span class="seta-baixo">&#9662;</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="ficha_colaborador.php">Ficha Colaborador</a>
+                        <a href="beneficios.php">Benefícios</a>
+                        <a href="ferias.php">Férias</a>
+                        <a href="formacoes.php">Formações</a>
+                        <a href="recibos.php">Recibos</a>
+                    </div>
+                </div>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php elseif ($perfil === 'coordenador'): ?>
                 <a href="ficha_colaborador.php">A Minha Ficha</a>
                 <a href="../Coordenador/equipa.php">Equipa</a>
                 <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
@@ -241,23 +261,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
-            <?php else: ?>
-                <a href="dashboard_colaborador.php">Dashboard</a>
-                <a href="ficha_colaborador.php">A Minha Ficha</a>
-                <a href="../Comuns/notificacoes.php">Notificações</a>
-                <a href="../Comuns/perfil.php">Perfil</a>
-                <a href="../Comuns/logout.php">Sair</a>
             <?php endif; ?>
         </nav>
     </div>
-    <div class="header-title">
-        A Tua Ficha de Colaborador
-    </div>
+    
 </div>
 
 <!-- Barra sticky branca (aparece ao fazer scroll) -->
 <div id="header-sticky">
-    <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header-small">
+    <img src="../../assets/tlantic-logo-escuro.png" alt="Logo Tlantic" class="logo-header-small logo-sticky-branco">
+    <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header-small logo-sticky-azul">
     <nav class="nav-links">
         <?php if ($perfil === 'coordenador'): ?>
             <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
@@ -638,7 +651,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     window.addEventListener('scroll', function() {
         const sticky = document.getElementById('header-sticky');
         const hero = document.getElementById('header-hero');
-        if (window.scrollY > (hero.offsetHeight - 40)) {
+        if (window.scrollY > (hero.offsetHeight - 1)) {
             sticky.style.display = 'flex';
         } else {
             sticky.style.display = 'none';
@@ -684,5 +697,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
     });
     </script>
+
+
+<script>
+window.addEventListener('scroll', function() {
+    const sticky = document.getElementById('header-sticky');
+    const hero = document.getElementById('header-hero');
+    if (window.scrollY > 0) {
+        sticky.style.display = 'flex';
+        // Muda para azul quando passa o container azul
+        if (window.scrollY > (hero.offsetHeight - 1)) {
+            sticky.classList.add('azul');
+        } else {
+            sticky.classList.remove('azul');
+        }
+    } else {
+        sticky.style.display = 'none';
+        sticky.classList.remove('azul');
+    }
+});
+</script>
+
+
 </body>
+
+
 </html>

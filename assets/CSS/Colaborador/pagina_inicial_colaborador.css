@@ -90,7 +90,7 @@ header nav a.active {
 main h1 {
     color: #fff;
     text-align: left; /* Alinha à esquerda */
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 700;
     margin: 32px 0 18px 0;
     letter-spacing: 0.5px;
@@ -99,8 +99,126 @@ main h1 {
     padding-left: 330px;     /* Remove qualquer padding extra à esquerda */
 }
 
+.descricao-inicial {
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 400;
+    margin: 0 0 24px 0;
+    text-align: left;
+    width: 100%;
+    max-width: 50ch;      /* Limita a largura a ~50 caracteres */
+    margin-left: 165px;       /* Encosta à esquerda do main */
+    align-self: flex-start; /* Só este elemento fica à esquerda */
+    letter-spacing: 0.01em;
+}
+
+.botoes-atalho {
+    display: flex;
+    flex-direction: row;
+    gap: 11px;
+    margin-bottom: 32px;
+    margin-left: 165px;       /* Encosta à esquerda do main */
+    align-self: flex-start; /* Só este elemento fica à esquerda */
+}
+
+.botao-atalho {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 26px;      /* ainda mais baixo na vertical */
+    border-radius: 22px;    /* menos arredondado, mais "pílula" */
+    font-size: 0.80rem;
+    font-weight: 600; 
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    transition: filter 0.18s, box-shadow 0.18s;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    letter-spacing: 0.03em;
+    text-align: center;
+    height: 60px;  
+    min-width: 110px;       /* podes reduzir se quiseres botões mais curtos */
+    text-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.botao-atalho.roxo {
+    background: linear-gradient(135deg, #9a0acb 0%, #d558ff 100%);
+}
+.botao-atalho.laranja {
+    background: linear-gradient(135deg, #ff6f00 0%, #ffb347 100%);
+}
+.botao-atalho.verde {
+    background: linear-gradient(135deg, #009933 0%, #1fde5f 100%);
+}
+
+.botao-atalho:hover {
+    filter: brightness(1.08) saturate(1.2);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.13);
+}
 
 
+.dash-carousel-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70px;
+    margin: 60px 0 0 0;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.03em;
+    position: relative;
+    height: 70px;
+    width: 100%;
+}
+
+.dash-topic {
+    opacity: 0;
+    position: absolute;
+    left: 50%;
+    bottom: 200%;
+    transform: translate(-50%, -50%) scale(0.95);
+    transition:
+        opacity 0.7s cubic-bezier(.77,0,.18,1),
+        transform 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+    white-space: nowrap;
+    pointer-events: none;
+    margin-left: 500px; 
+}
+
+.dash-topic.active {
+    opacity: 1;
+    pointer-events: auto;
+    color: #ffffff;
+    text-shadow: 0 4px 24px rgba(3,96,233,0.13);
+}
+
+
+@media (max-width: 600px) {
+    .dash-carousel-container {
+        max-width: 98vw;
+        min-height: 80px;
+    }
+    .dash-card {
+        font-size: 1rem;
+        padding: 18px 8px;
+    }
+}
+
+.dash-img {
+    position: absolute;
+    max-width: 450px;
+    max-height: 400px;
+    transition: opacity 1s;
+    background: none;
+    left: 100%;
+    margin-left: 275px; 
+
+}
+
+.dash-img.fade {
+    opacity: 0;
+}
 
 @media (max-width: 600px) {
     .azul-container {
@@ -123,4 +241,60 @@ main h1 {
     }
     .logo-header { width: 70px; }
     main h1 { font-size: 1.3rem; margin: 18px 0 12px 0; }
+}
+
+.dropdown-perfil {
+    position: relative;
+    display: inline-block;
+}
+
+.perfil-link {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.seta-baixo {
+    font-size: 0.8em;
+    margin-left: 3px;
+    transition: transform 0.2s;
+}
+
+.dropdown-perfil:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;  /* aumenta o padding à esquerda */
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;            /* garante alinhamento à esquerda */
+}
+
+.dropdown-menu a:hover {
+    background: #a3bfff;
+    color: #000000 !important;          /* texto branco ao passar o rato */
+}
+
+.dropdown-perfil:hover .dropdown-menu {
+    display: block;
 }
