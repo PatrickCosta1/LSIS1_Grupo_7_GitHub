@@ -14,10 +14,11 @@ $nome = htmlspecialchars($convidadoBLL->getConvidadoName($_SESSION['user_id']));
     <meta charset="UTF-8">
     <title>Onboarding - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/teste.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <a href="onboarding_convidado.html">Preencher Dados</a>
             <a href="../Comuns/logout.php">Sair</a>

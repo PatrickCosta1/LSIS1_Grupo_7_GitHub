@@ -14,14 +14,22 @@ $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
     <meta charset="UTF-8">
     <title>Relatórios Equipa - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/Coordenador/relatorios_equipa.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_coordenador.php';">
         <nav>
             <a href="dashboard_coordenador.php">Dashboard</a>
             <a href="../Colaborador/ficha_colaborador.php">Minha Ficha</a>
-            <a href="equipa.php">Minha Equipa</a>
+            <?php
+                // Corrigir link da equipa para incluir o id da equipa do coordenador
+                $equipaLink = "equipa.php";
+                if (!empty($equipas) && isset($equipas[0]['id'])) {
+                    $equipaLink = "equipa.php?id=" . urlencode($equipas[0]['id']);
+                }
+            ?>
+            <a href="<?php echo $equipaLink; ?>">Equipa</a>
             <a href="relatorios_equipa.php">Relatórios Equipa</a>
             <a href="../Comuns/notificacoes.php">Notificações</a>
             <a href="../Comuns/perfil.php">Perfil</a>

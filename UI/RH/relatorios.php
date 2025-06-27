@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admin'])) {
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh'])) {
     header('Location: ../Comuns/erro.php');
     exit();
 }
@@ -14,10 +14,11 @@ $indicadores = $relatoriosBLL->getIndicadoresGlobais();
     <meta charset="UTF-8">
     <title>Relatórios - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/relatorios.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_RH.php';">
         <nav>
             <?php if ($_SESSION['profile'] === 'admin'): ?>
                 <a href="../Admin/dashboard_admin.php">Dashboard</a>
@@ -43,15 +44,35 @@ $indicadores = $relatoriosBLL->getIndicadoresGlobais();
         </nav>
     </header>
     <main>
-        <h1>Relatórios e Dashboards</h1>
+        <h1 class="relatorios-titulo">Relatórios e Dashboards</h1>
         <section>
-            <h2>Indicadores Gerais</h2>
-            <ul>
-                <li>Total de colaboradores: <?php echo htmlspecialchars($indicadores['total_colaboradores']); ?></li>
-                <li>Colaboradores ativos: <?php echo htmlspecialchars($indicadores['ativos']); ?></li>
-                <li>Colaboradores inativos: <?php echo htmlspecialchars($indicadores['inativos']); ?></li>
-                <li>Total de equipas: <?php echo htmlspecialchars($indicadores['total_equipas']); ?></li>
-            </ul>
+            <div class="indicadores-titulo">Indicadores Gerais</div>
+            <table class="indicadores-table">                   
+                        <thead>
+                            <tr>
+                                <th>Indicador</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total de colaboradores</td>
+                                <td><?php echo htmlspecialchars($indicadores['total_colaboradores']); ?></td>
+                            </tr>
+                            <tr>
+                                <td>Colaboradores ativos</td>
+                                <td><?php echo htmlspecialchars($indicadores['ativos']); ?></td>
+                            </tr>
+                            <tr>
+                                <td>Colaboradores inativos</td>
+                                <td><?php echo htmlspecialchars($indicadores['inativos']); ?></td>
+                            </tr>
+                            <tr>
+                                <td>Total de equipas</td>
+                                <td><?php echo htmlspecialchars($indicadores['total_equipas']); ?></td>
+                            </tr>
+                        </tbody>
+                    </table>
         </section>
         <section class="dashboard-cards">
             <div class="card">

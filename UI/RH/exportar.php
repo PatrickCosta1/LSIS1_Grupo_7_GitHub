@@ -26,10 +26,11 @@ if (isset($_GET['export']) && $_GET['export'] === 'colaboradores') {
     <meta charset="UTF-8">
     <title>Exportar Dados - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/exportar.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_RH.php';">
         <nav>
             <?php if ($_SESSION['profile'] === 'admin'): ?>
                 <a href="../Admin/dashboard_admin.php">Dashboard</a>

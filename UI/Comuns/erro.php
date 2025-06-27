@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <title>Erro - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/Comuns/erro.css">
+    
 </head>
 <body>
     <main>

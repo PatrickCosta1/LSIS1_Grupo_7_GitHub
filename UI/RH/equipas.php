@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admin'])) {
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh'])) {
     header('Location: ../Comuns/erro.php');
     exit();
 }
@@ -14,20 +14,18 @@ $equipas = $equipasBLL->getAllEquipas();
     <meta charset="UTF-8">
     <title>Gestão de Equipas - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/equipas.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_RH.php';">
         <nav>
             <?php if ($_SESSION['profile'] === 'admin'): ?>
-                <a href="../Admin/dashboard_admin.php">Dashboard</a>
                 <a href="../Admin/utilizadores.php">Utilizadores</a>
                 <a href="../Admin/permissoes.php">Permissões</a>
                 <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
                 <a href="../Admin/alertas.php">Alertas</a>
                 <a href="colaboradores_gerir.php">Colaboradores</a>
-                <a href="equipas.php">Equipas</a>
-                <a href="relatorios.php">Relatórios</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
@@ -45,7 +43,6 @@ $equipas = $equipasBLL->getAllEquipas();
     <div class="equipas-container">
         <div class="equipas-header">
             <h1>Gestão de Equipas</h1>
-            <a href="equipa_nova.php" class="btn">+ Nova Equipa</a>
         </div>
         <table class="tabela-equipas">
             <thead>
@@ -70,6 +67,9 @@ $equipas = $equipasBLL->getAllEquipas();
                 <?php endforeach; ?>
             </tbody>
         </table>
+        <div class="nova-equipa-btn">
+            <a href="equipa_nova.php" class="btn">+ Nova Equipa</a>
+        </div>
     </div>
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">

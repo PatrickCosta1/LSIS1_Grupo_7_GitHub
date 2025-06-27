@@ -8,17 +8,20 @@ require_once '../../BLL/RH/BLL_equipas.php';
 $equipasBLL = new RHEquipasManager();
 
 $coordenadores = $equipasBLL->getCoordenadores();
+$colaboradores = $equipasBLL->getColaboradores(); // Adiciona este método na BLL para buscar todos os colaboradores
 $success = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = trim($_POST['nome'] ?? '');
     $coordenador_id = $_POST['coordenador_id'] ?? null;
+    $elementos = $_POST['elementos'] ?? [];
     if ($nome && $coordenador_id) {
-        if ($equipasBLL->addEquipa($nome, $coordenador_id)) {
+        $resultado = $equipasBLL->addEquipa($nome, $coordenador_id, $elementos);
+        if ($resultado === true) {
             $success = "Equipa criada com sucesso!";
         } else {
-            $error = "Erro ao criar equipa.";
+            $error = "Erro ao criar equipa: " . $resultado;
         }
     } else {
         $error = "Preencha todos os campos obrigatórios.";
@@ -31,10 +34,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Nova Equipa</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/equipa_nova.css">
+    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>
-        <img src="../../assets/tlantic-logo.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_RH.php';">
         <nav>
             <a href="dashboard_rh.php">Dashboard</a>
             <a href="colaboradores_gerir.php">Colaboradores</a>
@@ -65,7 +69,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php endforeach; ?>
                     </select>
                 </div>
-            </div>
+                <div class="ficha-campo">
+                    <label>Elementos da Equipa:</label>
+                    <div class="lista-colaboradores">
+                        <?php foreach ($colaboradores as $col): ?>
+                            <label style="display:block; margin-bottom:6px;">
+                                <input type="checkbox" name="elementos[]" value="<?php echo $col['colaborador_id']; ?>">
+                                <?php echo htmlspecialchars($col['nome']); ?>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                    <small>Selecione os colaboradores que vão pertencer à equipa.</small>
+                </div>
             <div style="text-align:center; margin-top: 24px;">
                 <button type="submit" class="btn">Criar Equipa</button>
             </div>

@@ -12,9 +12,8 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard RH - Portal Tlantic</title>
-    <link rel="stylesheet" href="../../assets/CSS/RH/dashboard_rh.css">
-    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
+    <title>Página Inicial RH - Portal Tlantic</title>
+    <link rel="stylesheet" href="../../assets/CSS/RH/pagina_inicial.css">
 </head>
 <body>
     <header>
@@ -44,7 +43,25 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
         </nav>
     </header>
     <main>
-        <h1 style="text-align:center; margin-top:80px;">A CONCLUIR</h1>
+        <h1 style="text-align:center; margin-top:40px;">Bem-vindo, <?php echo $nome; ?>!</h1>
+        <div class="dashboard-cards" style="display:flex; flex-wrap:wrap; justify-content:center; gap:32px; margin-top:40px;">
+            <a href="colaboradores_gerir.php" class="dashboard-card">
+                <h2>Gestão de Colaboradores</h2>
+                <p>Gerir, adicionar e editar colaboradores.</p>
+            </a>
+            <a href="equipas.php" class="dashboard-card">
+                <h2>Gestão de Equipas</h2>
+                <p>Criar e gerir equipas de trabalho.</p>
+            </a>
+            <a href="relatorios.php" class="dashboard-card">
+                <h2>Relatórios</h2>
+                <p>Consultar e exportar relatórios.</p>
+            </a>
+            <a href="exportar.php" class="dashboard-card">
+                <h2>Exportação</h2>
+                <p>Exportar dados para outros formatos.</p>
+            </a>
+        </div>
     </main>
 </body>
 </html>

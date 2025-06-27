@@ -85,7 +85,7 @@ main h1 {
 
 /* Tabela de colaboradores */
 .tabela-colaboradores {
-    width: 95%;
+    width: 45%;
     max-width: 900px;
     margin: 0 auto 40px auto;
     border-collapse: separate;
