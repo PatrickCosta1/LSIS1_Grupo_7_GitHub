@@ -269,7 +269,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- Barra sticky branca (aparece ao fazer scroll) -->
 <div id="header-sticky">
-    <img src="../../assets/tlantic-logo-escuro.png" alt="Logo Tlantic" class="logo-header-small logo-sticky-branco">
+    <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header-small logo-sticky-branco">
     <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header-small logo-sticky-azul">
     <nav class="nav-links">
         <?php if ($perfil === 'coordenador'): ?>

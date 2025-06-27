@@ -1,4 +1,9 @@
 /* Fundo geral */
+body, html {
+    height: 100vh;
+    overflow: hidden; /* Impede scroll vertical */
+}
+
 body {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -10,14 +15,14 @@ body {
 /* Retângulo azul 16:9 que engloba tudo */
 .azul-container {
     background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
-    border-radius: 28px;
-    margin: 0.5cm;
-    height: 870px; /* altura fixa */
-    box-shadow: 0 8px 32px rgba(3, 96, 233, 0.13);
+    border-radius: 50px;   /* Mantém as bordas arredondadas */
+    margin: 20px;          /* Margem igual em todos os lados */
+    height: calc(100vh - 40px); /* Garante espaço para mostrar todas as bordas */
+    overflow: hidden;
+    box-shadow: none;
     display: flex;
     gap: 150px;
     flex-direction: column;
-    overflow: hidden;
     position: relative;
     justify-content: flex-start;
 }
@@ -125,7 +130,7 @@ main h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2px 26px;      /* ainda mais baixo na vertical */
+    padding: 20px;      /* ainda mais baixo na vertical */
     border-radius: 22px;    /* menos arredondado, mais "pílula" */
     font-size: 0.80rem;
     font-weight: 600; 
@@ -136,8 +141,7 @@ main h1 {
     box-shadow: 0 2px 10px rgba(0,0,0,0.07);
     letter-spacing: 0.03em;
     text-align: center;
-    height: 60px;  
-    min-width: 110px;       /* podes reduzir se quiseres botões mais curtos */
+    min-width: 50px;       /* podes reduzir se quiseres botões mais curtos */
     text-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
@@ -158,11 +162,8 @@ main h1 {
 
 
 .dash-carousel-container {
-    display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 70px;
-    margin: 60px 0 0 0;
     font-size: 3rem;
     font-weight: 700;
     color: #ffffff;
@@ -170,20 +171,22 @@ main h1 {
     position: relative;
     height: 70px;
     width: 100%;
+    margin-top: -15%;
+    margin-left: 25%;
+    align-self: flex-start;
 }
 
 .dash-topic {
     opacity: 0;
     position: absolute;
     left: 50%;
-    bottom: 200%;
+    bottom: 50%;
     transform: translate(-50%, -50%) scale(0.95);
     transition:
         opacity 0.7s cubic-bezier(.77,0,.18,1),
         transform 0.7s cubic-bezier(.68,-0.55,.27,1.55);
     white-space: nowrap;
     pointer-events: none;
-    margin-left: 500px; 
 }
 
 .dash-topic.active {
@@ -193,26 +196,13 @@ main h1 {
     text-shadow: 0 4px 24px rgba(3,96,233,0.13);
 }
 
-
-@media (max-width: 600px) {
-    .dash-carousel-container {
-        max-width: 98vw;
-        min-height: 80px;
-    }
-    .dash-card {
-        font-size: 1rem;
-        padding: 18px 8px;
-    }
-}
-
 .dash-img {
     position: absolute;
     max-width: 450px;
     max-height: 400px;
     transition: opacity 1s;
     background: none;
-    left: 100%;
-    margin-left: 275px; 
+    right: 35%;
 
 }
 

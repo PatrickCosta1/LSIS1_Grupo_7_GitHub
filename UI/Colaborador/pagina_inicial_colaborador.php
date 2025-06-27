@@ -49,7 +49,7 @@ $nmr_notificacoes = isset($dados['notificacoes_novas']) ? (int)$dados['notificac
         <a href="ficha_colaborador.php" class="botao-atalho roxo">Ficha Colaborador</a>
         <a href="#" class="botao-atalho laranja">Recibos</a>
         <a href="#" class="botao-atalho verde">Férias</a>
-
+    </div>
     <div class="dash-carousel-container">
         <span class="dash-topic active">Marcação de Férias</span>
         <span class="dash-topic">Consulta de Benefícios</span>
