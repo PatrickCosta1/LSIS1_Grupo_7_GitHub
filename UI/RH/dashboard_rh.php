@@ -110,7 +110,7 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
         </nav>
     </header>
     <main>
-        <h1>Dashboards</h1>
+        <h1>Olá, <?php echo $nome; ?></h1>
         <section class="dashboard-cards">
             <div class="card">
                 <h2><i class="fa fa-users" style="color:#667eea;"></i>Pessoas por Equipa</h2>
@@ -130,15 +130,17 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                         <?php foreach ($nivel_labels as $i => $nivel): ?>
                             <li>
                                 <span class="pie-color" style="background:<?php echo $pie_colors[$i % count($pie_colors)]; ?>"></span>
-                                <span style="font-weight:bold;"><?php echo htmlspecialchars($nivel); ?></span>
-                                <?php if (!empty($nivel_cargos_count[$i])): ?>
-                                    - <?php
+                                <?php
+                                    // Mostrar apenas os cargos (sem número)
+                                    if (!empty($nivel_cargos_count[$i])) {
                                         $cargosOnly = array_map(function($str) {
                                             return preg_replace('/\s*\(\d+\)$/', '', $str);
                                         }, $nivel_cargos_count[$i]);
                                         echo htmlspecialchars(implode(', ', $cargosOnly));
-                                    ?>
-                                <?php endif; ?>
+                                    } else {
+                                        echo htmlspecialchars($nivel);
+                                    }
+                                ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>
@@ -274,7 +276,7 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
 
                 // Estatísticas para idade média (pico)
                 if (typeof ss !== "undefined" && equipasIdadeMediaPico.length > 0 && equipasIdadeMediaPico.some(x => x > 0)) {
-                    const min = ss.min(equipasIdadeMediaPico.filter(x => x > 0));
+                    const min = ss.min(equipasIdadeMediaPico.filter(x => x >= 0));
                     const max = ss.max(equipasIdadeMediaPico.filter(x => x > 0));
                     const avg = ss.mean(equipasIdadeMediaPico.filter(x => x > 0));
                     const med = ss.median(equipasIdadeMediaPico.filter(x => x > 0));
@@ -313,7 +315,8 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                     },
                     data: [{
                         type: "pie",
-                        indexLabel: "{label}: {y}",
+                        // Mostra apenas o valor (quantidade), não o label
+                        indexLabel: "{y}",
                         showInLegend: false,
                         dataPoints: dataPointsNivel,
                         indexLabelLineThickness: 0
@@ -323,7 +326,7 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
 
                 // Estatísticas para nível hierárquico
                 if (typeof ss !== "undefined" && nivelData.length > 0 && nivelData.some(x => x > 0)) {
-                    const min = ss.min(nivelData.filter(x => x > 0));
+                    const min = ss.min(nivelData.filter(x => x >= 0));
                     const max = ss.max(nivelData.filter(x => x > 0));
                     const avg = ss.mean(nivelData.filter(x => x > 0));
                     const med = ss.median(nivelData.filter(x => x > 0));
