@@ -12,8 +12,24 @@ class CoordenadorDashboardManager {
     public function getEquipasByCoordenador($userId) {
         return $this->dal->getEquipasByCoordenador($userId);
     }
+    public function getEquipasComMembros($userId) {
+        return $this->dal->getEquipasComMembros($userId);
+    }
+    public function getIdadesColaboradoresPorEquipa($userId) {
+        return $this->dal->getIdadesColaboradoresPorEquipa($userId);
+    }
+    public function getDistribuicaoNivelHierarquico($userId) {
+        return $this->dal->getDistribuicaoNivelHierarquico($userId);
+    }
+    public function getCargosPorNivelHierarquico($userId) {
+        return $this->dal->getCargosPorNivelHierarquico($userId);
+    }
+    public function getTemposNaEmpresaPorEquipa($userId) {
+        return $this->dal->getTemposNaEmpresaPorEquipa($userId);
+    }
     public function getColaboradoresByEquipa($equipaId) {
         return $this->dal->getColaboradoresByEquipa($equipaId);
     }
 }
+
 ?>

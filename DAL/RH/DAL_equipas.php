@@ -12,19 +12,44 @@ class DAL_Equipas {
         return $stmt->fetchAll();
     }
 
-    public function addEquipa($nome, $coordenador_utilizador_id) {
-        $pdo = Database::getConnection();
+    public function addEquipa($nome, $coordenador_utilizador_id, $elementos = []) {
+    $pdo = Database::getConnection();
+    $pdo->beginTransaction();
+    try {
         $stmt = $pdo->prepare("INSERT INTO equipas (nome, coordenador_id) VALUES (?, ?)");
-        return $stmt->execute([$nome, $coordenador_utilizador_id]);
-    }
+        $stmt->execute([$nome, $coordenador_utilizador_id]);
+        $equipa_id = $pdo->lastInsertId();
 
+        // Inserir elementos na tabela equipa_colaboradores
+        if (!empty($elementos)) {
+            $stmtElem = $pdo->prepare("INSERT INTO equipa_colaboradores (equipa_id, colaborador_id) VALUES (?, ?)");
+            foreach ($elementos as $colab_id) {
+                $stmtElem->execute([$equipa_id, $colab_id]);
+            }
+        }
+        $pdo->commit();
+        return true;
+    } catch (\Exception $e) { // <-- FECHO DE CHAVE ANTES DO CATCH!
+        $pdo->rollBack();
+        return $e->getMessage();
+    }
+}
     public function getCoordenadores() {
         $pdo = Database::getConnection();
-        $sql = "SELECT c.nome, u.id as utilizador_id
+        $sql = "SELECT c.nome, c.utilizador_id
                 FROM colaboradores c
                 INNER JOIN utilizadores u ON c.utilizador_id = u.id
-                INNER JOIN perfis p ON u.perfil_id = p.id
-                WHERE LOWER(p.nome) = 'coordenador'";
+                WHERE u.perfil_id = 3";
+        $stmt = $pdo->query($sql);
+        return $stmt->fetchAll();
+    }
+
+    public function getColaboradores() {
+        $pdo = Database::getConnection();
+        $sql = "SELECT c.id as colaborador_id, c.nome
+                FROM colaboradores c
+                INNER JOIN utilizadores u ON c.utilizador_id = u.id
+                WHERE u.perfil_id = 2 AND u.ativo = 1";
         $stmt = $pdo->query($sql);
         return $stmt->fetchAll();
     }

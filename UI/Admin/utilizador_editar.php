@@ -40,78 +40,102 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Editar Utilizador</title>
     <link rel="stylesheet" href="../../assets/teste.css">
     <style>
-        .editar-utilizador-container {
-            max-width: 480px;
-            margin: 40px auto 0 auto;
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.09);
-            padding: 36px 32px 32px 32px;
-        }
-        .editar-utilizador-container h1 {
-            font-size: 1.7rem;
-            color: #3a366b;
-            margin-bottom: 22px;
-            text-align: center;
-        }
-        .editar-utilizador-container label {
-            display: block;
-            margin-bottom: 12px;
-            color: #4a468a;
-            font-weight: 500;
-        }
-        .editar-utilizador-container input[type="text"],
-        .editar-utilizador-container input[type="email"],
-        .editar-utilizador-container select {
-            width: 100%;
-            padding: 8px 10px;
-            margin-top: 3px;
-            margin-bottom: 18px;
-            border: 1px solid #d5d3f1;
-            border-radius: 7px;
-            font-size: 1rem;
-            background: #f8f8fc;
-            color: #3a366b;
-            transition: border 0.2s;
-        }
-        .editar-utilizador-container input[type="text"]:focus,
-        .editar-utilizador-container input[type="email"]:focus,
-        .editar-utilizador-container select:focus {
-            border-color: #764ba2;
-            outline: none;
-        }
-        .editar-utilizador-container input[type="checkbox"] {
-            margin-right: 7px;
-        }
-        .editar-utilizador-container .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border: none;
-            border-radius: 7px;
-            padding: 8px 22px;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-right: 8px;
-            margin-top: 10px;
-            transition: background 0.2s;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .editar-utilizador-container .btn:hover {
-            background: linear-gradient(135deg, #5a67d8 0%, #6b47b6 100%);
-        }
-        .success-message, .error-message {
-            text-align: center;
-            margin-bottom: 18px;
-            padding: 8px 0;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-        .success-message { background: #e6fffa; color: #2c7a7b; }
-        .error-message { background: #fff5f5; color: #c53030; }
-        @media (max-width: 600px) {
-            .editar-utilizador-container { padding: 12px 4px; }
-        }
+    .editar-utilizador-container {
+        max-width: 480px;
+        margin: 40px auto 0 auto;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(3,96,233,0.10);
+        padding: 36px 32px 32px 32px;
+    }
+
+    .editar-utilizador-container h1 {
+        font-size: 1.7rem;
+        color: #0360e9;
+        margin-bottom: 22px;
+        text-align: center;
+        font-weight: 700;
+    }
+
+    .editar-utilizador-container label {
+        display: block;
+        margin-bottom: 14px;
+        color: #0360e9;
+        font-weight: 500;
+        font-size: 1rem;
+    }
+
+    .editar-utilizador-container input[type="text"],
+    .editar-utilizador-container input[type="email"],
+    .editar-utilizador-container select {
+        width: 100%;
+        padding: 10px 12px;
+        margin-top: 5px;
+        margin-bottom: 18px;
+        border: 1px solid #c3cfe2;
+        border-radius: 8px;
+        font-size: 1rem;
+        background: #f5f7fa;
+        color: #1c3c69;
+        transition: border 0.2s;
+    }
+
+    .editar-utilizador-container input[type="text"]:focus,
+    .editar-utilizador-container input[type="email"]:focus,
+    .editar-utilizador-container select:focus {
+        border-color: #0360e9;
+        outline: none;
+    }
+
+    .editar-utilizador-container input[type="checkbox"] {
+        accent-color: #0360e9;
+        margin-right: 7px;
+    }
+
+    .editar-utilizador-container .btn {
+        background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 28px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-right: 8px;
+        margin-top: 10px;
+        transition: background 0.2s;
+        text-decoration: none;
+        display: inline-block;
+        box-shadow: 0 2px 8px rgba(3,96,233,0.08);
+    }
+
+    .editar-utilizador-container .btn:hover {
+        background: linear-gradient(135deg, #1c3c69 0%, #0360e9 100%);
+    }
+
+    .success-message, .error-message {
+        text-align: center;
+        margin-bottom: 18px;
+        padding: 12px 0;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+    .success-message {
+        background: #e6fffa;
+        color: #0360e9;
+        border: 1px solid #36b3e9;
+    }
+    .error-message {
+        background: #ffeaea;
+        color: #e53e3e;
+        border: 1px solid #e53e3e;
+    }
+
+    @media (max-width: 600px) {
+        .editar-utilizador-container { padding: 12px 4px; }
+        .editar-utilizador-container h1 { font-size: 1.2rem; }
+    }
     </style>
 </head>
 <body>

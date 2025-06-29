@@ -1,0 +1,383 @@
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    /* aumenta o padding-top para compensar o header mais largo e com margem */
+    padding-top: calc(100px + 2cm); /* 100px altura header + 0.5cm top + 0.5cm bottom */
+}
+header {
+    position: fixed;
+    top: 0.5cm;
+    left: 0.5cm;
+    right: 0.5cm;
+    width: auto;
+    margin: 0;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 24px;
+    min-height: 100px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* igual ao dashboard */
+    padding: 24px 60px;
+    z-index: 1000;
+}
+.logo-header {
+    width: 120px;
+    height: auto;
+}
+header nav {
+    display: flex;
+    gap: 1px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+header nav a {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+}
+header nav a:hover,
+header nav a.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+/* Título principal */
+main h1 {
+    color: #667eea;
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 40px 0 24px 0;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+/* Título secundário */
+main h2 {
+    color: #764ba2;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 32px 0 12px 0;
+    text-align: center;
+    letter-spacing: 0.2px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Container dos relatórios */
+main {
+    max-width: 900px;
+    margin: 0 auto 40px auto;
+    padding: 0 16px;
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* Bloco de relatório */
+.relatorio-container {
+    background: rgba(255,255,255,0.95);
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.10);
+    padding: 32px 36px;
+    margin: 24px 0;
+    border: 1px solid rgba(255,255,255,0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.relatorio-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 24px 24px 0 0;
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    header {
+        padding: 18px 5vw;
+        min-height: 100px;
+        width: 95vw;
+        margin: 20px auto 0 auto;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .logo-header { width: 90px; }
+    main h1 { font-size: 2rem; margin: 28px 0 18px 0; }
+    main { max-width: 98vw; }
+    .relatorio-container { padding: 24px 16px; }
+}
+
+@media (max-width: 900px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 14px 3vw;
+        min-height: 80px;
+    }
+    .logo-header { width: 70px; }
+    header nav { gap: 6px; }
+    header nav a { padding: 8px 10px; font-size: 0.9rem; }
+    main h1 { font-size: 1.5rem; }
+    main h2 { font-size: 1.1rem; }
+    .relatorio-container { padding: 16px 8px; }
+}
+
+@media (max-width: 600px) {
+    header {
+        border-radius: 14px;
+        padding: 10px 2vw;
+        min-height: 60px;
+    }
+    .logo-header { width: 50px; }
+    header nav a { font-size: 0.8rem; padding: 7px 6px; }
+    main h1 { font-size: 1.1rem; margin: 18px 0 10px 0; }
+    main h2 { font-size: 1rem; }
+    .relatorio-container { font-size: 0.92rem; padding: 10px 4px; }
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+/* Efeitos de hover suaves */
+header nav a {
+    position: relative;
+    overflow: hidden;
+}
+header nav a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+header nav a:hover::before {
+    left: 100%;
+}
+
+.dropdown-perfil {
+    position: relative;
+    display: inline-block;
+}
+
+.perfil-link {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.seta-baixo {
+    font-size: 0.8em;
+    margin-left: 3px;
+    transition: transform 0.2s;
+}
+
+.dropdown-perfil:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;  /* aumenta o padding à esquerda */
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;            /* garante alinhamento à esquerda */
+}
+
+.dropdown-menu a:hover {
+    background: #a3bfff;
+    color: #000000 !important;          /* texto branco ao passar o rato */
+}
+
+.dropdown-perfil:hover .dropdown-menu {
+    display: block;
+}
+
+/* Dropdown Equipa */
+.dropdown-equipa {
+    position: relative;
+    display: inline-block;
+}
+.equipa-link {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+.equipa-link:hover,
+.equipa-link:focus {
+    background: rgba(255,255,255,0.15);
+}
+.seta-baixo {
+    margin-left: 6px;
+    font-size: 0.9em;
+}
+.dropdown-equipa .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+.dropdown-equipa .dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;  /* aumenta o padding à esquerda */
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;     
+}
+.dropdown-equipa .dropdown-menu a:hover {
+    background: #f0f4ff;
+}
+.dropdown-equipa:hover .dropdown-menu,
+.dropdown-equipa:focus-within .dropdown-menu {
+    display: block;
+}
+
+/* Tabela de relatórios em tons de azul */
+.relatorio-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 24px 0 12px 0;
+    background: #e9f0fb;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(102, 126, 234, 0.07);
+}
+.relatorio-table th, .relatorio-table td {
+    padding: 14px 18px;
+    text-align: center;
+    font-size: 1rem;
+}
+.relatorio-table th {
+    background: linear-gradient(90deg, #0360e9 0%, #299cf3 100%);
+    color: #fff;
+    font-weight: 600;
+    border-bottom: 2px solid #b2d0f7;
+}
+.relatorio-table tr:nth-child(even) {
+    background: #f0f4ff;
+}
+.relatorio-table tr:hover {
+    background: #d6e6fa;
+    transition: background 0.2s;
+}
+.relatorio-table td {
+    color: #23408e;
+    border-bottom: 1px solid #b2d0f7;
+}
+
+/* Estado em azul */
+.estado-azul {
+    color: #0360e9;
+    font-weight: 600;
+    background: #e3f0ff;
+    padding: 4px 14px;
+    border-radius: 8px;
+    font-size: 0.98em;
+}
+
+/* Botão azul */
+.btn-azul {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    color: #fff !important;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 22px;
+    font-weight: 600;
+    font-size: 1em;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(51,102,204,0.10);
+    transition: background 0.2s, box-shadow 0.2s;
+    display: inline-block;
+}
+.btn-azul:hover {
+    background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%);
+    box-shadow: 0 4px 16px rgba(51,102,204,0.13);
+}
+
+/* Lista de relatórios em azul */
+.relatorio-list {
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 0 0;
+    width: 100%;
+    max-width: 700px;
+}
+.relatorio-list li {
+    background: #f7faff;
+    margin-bottom: 10px;
+    padding: 14px 22px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.07);
+    color: #0360e9;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background 0.18s;
+}
+.relatorio-list li:hover {
+    background: #e9f0fb;
+}

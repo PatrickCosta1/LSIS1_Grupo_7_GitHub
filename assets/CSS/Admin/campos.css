@@ -1,0 +1,40 @@
+.campos-container {
+    max-width: 900px;
+    margin: 40px auto 0 auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 32px 36px 36px 36px;
+}
+.campos-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+.campos-header h1 {
+    font-size: 2rem;
+    color: #3a366b;
+    margin: 0;
+}
+.campo-item {
+    background: #f9f9fb;
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    color: #3a366b;
+    font-size: 1.05rem;
+}
+.campo-item.obrigatorio {
+    border-left: 6px solid #e67e22;
+    background: #fff7e6;
+}
+.campo-item.opcional {
+    border-left: 6px solid #299df3;
+    background: #e6f7ff;
+}
+@media (max-width: 900px) {
+    .campos-container { padding: 12px 4px; }
+    .campos-header h1 { font-size: 1.2rem; }
+}
