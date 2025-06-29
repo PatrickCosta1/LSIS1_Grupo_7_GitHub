@@ -86,18 +86,7 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
     <header>
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
-            <?php if ($_SESSION['profile'] === 'admin'): ?>
-                <a href="../Admin/dashboard_admin.php">Dashboard</a>
-                <a href="../Admin/utilizadores.php">Utilizadores</a>
-                <a href="../Admin/permissoes.php">Permissões</a>
-                <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
-                <a href="../Admin/alertas.php">Alertas</a>
-                <a href="colaboradores_gerir.php">Colaboradores</a>
-                <a href="equipas.php">Equipas</a>
-                <a href="relatorios.php">Relatórios</a>
-                <a href="../Comuns/perfil.php">Perfil</a>
-                <a href="../Comuns/logout.php">Sair</a>
-            <?php else: ?>
+            
                 <a href="dashboard_rh.php">Dashboard</a>
                 <a href="colaboradores_gerir.php">Colaboradores</a>
                 <a href="equipas.php">Equipas</a>
@@ -106,25 +95,44 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                 <a href="../Comuns/notificacoes.php">Notificações</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
-            <?php endif; ?>
+            
         </nav>
     </header>
     <main>
         <h1>Dashboards</h1>
+        <div class="dashboard-graph-tabs">
+            <button class="tab-btn active" data-target="card-equipa">Pessoas por Equipa</button>
+            <button class="tab-btn" data-target="card-idade">Idade Média por Equipa</button>
+            <button class="tab-btn" data-target="card-nivel">Nível Hierárquico/Cargo</button>
+        </div>
+        
         <section class="dashboard-cards">
-            <div class="card">
-                <h2><i class="fa fa-users" style="color:#667eea;"></i>Pessoas por Equipa</h2>
-                <div id="chartContainer" style="height: 320px;"></div>
-                <div id="statsContainer"></div>
+            <div class="card dashboard-equipa" id="card-equipa" style="display: flex; flex-direction: column; align-items: center;">
+                <h2><i style="color:#667eea;"></i>Pessoas por Equipa</h2>
+                <div class="dashboard-desc">
+                    Aqui podes analisar o número de Colaboradores por Equipa. Para além dessa informação, tens ainda acesso ao número mínimo, máximo, a média, mediana destes valores.
+                </div>
+                <div id="chartContainer" class="chart-equipa"></div>
+                <div id="statsContainer" class="stats-equipa"></div>
             </div>
-            <div class="card">
-                <h2><i class="fa fa-birthday-cake" style="color:#764ba2;"></i>Idade Média por Equipa</h2>
-                <div id="chartIdadeMedia" style="height: 320px;"></div>
-                <div id="statsIdadeMedia"></div>
+
+            <!-- Idade Média por Equipa -->
+            <div class="card dashboard-idade" id="card-idade" style="display:none; flex-direction: column; align-items: center;">
+                <h2><i style="color:#764ba2;"></i>Idade Média por Equipa</h2>
+                <div class="dashboard-desc">
+                    Aqui podes analisar a idade média por Equipa. Para além dessa informação, tens ainda acesso ao mínimo, máximo, a média, mediana destes valores.
+                </div>
+                <div id="chartIdadeMedia" class="chart-idade"></div>
+                <div id="statsIdadeMedia" class="stats-idade"></div>
             </div>
-            <div class="card">
+
+            <!-- Nível Hierárquico/Cargo -->
+            <div class="card dashboard-nivel" id="card-nivel" style="display:none; flex-direction: column; align-items: center;">
                 <h2><i class="fa fa-sitemap" style="color:#36a2eb;"></i>Nível Hirárquico/Cargo</h2>
-                <div class="nivel-legenda">
+                <div class="dashboard-desc">
+                    Aqui podes analisar a distribuição dos níveis hirárquicos e a sua legenda, bem como o cargo com menos trabalhadores (mínimo) e o que tem mais trabalhadores (máximo)
+                </div>
+                <div class="nivel-legenda legenda-nivel">
                     <strong>Legenda:</strong>
                     <ul>
                         <?php foreach ($nivel_labels as $i => $nivel): ?>
@@ -143,10 +151,57 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                         <?php endforeach; ?>
                     </ul>
                 </div>
-                <div id="chartNivelHierarquico" style="height: 320px;"></div>
-                <div id="statsNivelHierarquico"></div>
+                <div id="chartNivelHierarquico" class="chart-nivel"></div>
+                <div id="statsNivelHierarquico" class="stats-nivel"></div>
             </div>
         </section>
+
+        <script>
+            // Tabs dos gráficos - garantir display: flex SEMPRE
+            
+            // Ativar a primeira aba por padrão
+            document.querySelector('.tab-btn.active').click();
+
+            // Gráfico de Nível Hierárquico
+            if (typeof CanvasJS !== "undefined" && document.getElementById("chartNivelHierarquico")) {
+                var dataPointsNivel = [];
+                for (let i = 0; i < nivelLabels.length; i++) {
+                    dataPointsNivel.push({
+                        label: nivelLabels[i],
+                        y: nivelData[i],
+                        color: pieColors[i % pieColors.length],
+                        indexLabel: String(nivelData[i]) // mostra o valor em cima da barra
+                    });
+                }
+                var chartNivel = new CanvasJS.Chart("chartNivelHierarquico", {
+                    animationEnabled: true,
+                    backgroundColor: "transparent",
+                    theme: "light2",
+                    title: { text: "" },
+                    axisX: {
+                        labelFontSize: 14,
+                        labelAngle: -20,
+                        interval: 1,
+                        labelFontColor: "#3a366b"
+                    },
+                    axisY: { 
+                        title: "", // sem escala
+                        interval: null,
+                        minimum: 0,
+                        labelFontColor: "#3a366b",
+                        gridColor: "#ecebfa",
+                        labelFormatter: function() { return ""; }
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: dataPointsNivel
+                    }]
+                });
+                chartNivel.render();
+            }
+
+            
+        </script>
     </main>
     <script>
         const equipasLabels = <?php echo json_encode($equipas_labels); ?>;
@@ -158,6 +213,10 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
         const nivelCargosCount = <?php echo json_encode($nivel_cargos_count); ?>;
         const pieColors = <?php echo json_encode($pie_colors); ?>;
         const temDados = <?php echo $tem_dados ? 'true' : 'false'; ?>;
+
+        // Tamanho fixo para todos os gráficos
+        const CHART_WIDTH = 335;
+        const CHART_HEIGHT = 230;
 
         document.addEventListener("DOMContentLoaded", function () {
             // Pessoas por equipa
@@ -171,10 +230,15 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                         label: equipasLabels[i],
                         y: equipasMembros[i],
                         color: "#667eea",
-                        indexLabel: String(equipasMembros[i]) // mostra o valor em cima da barra
+                        indexLabel: String(equipasMembros[i])
                     });
                 }
+                // Forçar tamanho do canvas
+                document.getElementById("chartContainer").style.width = CHART_WIDTH + "px";
+                document.getElementById("chartContainer").style.height = CHART_HEIGHT + "px";
                 var chart = new CanvasJS.Chart("chartContainer", {
+                    width: CHART_WIDTH,
+                    height: CHART_HEIGHT,
                     animationEnabled: true,
                     backgroundColor: "transparent",
                     theme: "light2",
@@ -186,7 +250,7 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                         labelFontColor: "#3a366b"
                     },
                     axisY: { 
-                        title: "", // sem escala
+                        title: "",
                         interval: null,
                         minimum: 0,
                         labelFontColor: "#3a366b",
@@ -217,7 +281,7 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                 }
             }
 
-            // Idade média por equipa (mostrar apenas o valor do pico da coluna)
+            // Idade média por equipa
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartIdadeMedia")) {
                 var dataPointsIdade = [];
                 for (let i = 0; i < equipasLabels.length; i++) {
@@ -234,12 +298,16 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                     return arr.indexOf(val) === idx && val > 0;
                 }).sort(function(a, b) { return a - b; });
 
-                // Definir o máximo da escala como o maior valor de idade média + 30%
                 var maxY = Math.max.apply(null, axisYLabels.concat([0]));
                 var yPadding = Math.ceil(maxY * 0.30);
                 var yMaxFinal = maxY + (yPadding > 0 ? yPadding : 1);
 
+                // Forçar tamanho do canvas
+                document.getElementById("chartIdadeMedia").style.width = CHART_WIDTH + "px";
+                document.getElementById("chartIdadeMedia").style.height = CHART_HEIGHT + "px";
                 var chartIdade = new CanvasJS.Chart("chartIdadeMedia", {
+                    width: CHART_WIDTH,
+                    height: CHART_HEIGHT,
                     animationEnabled: true,
                     backgroundColor: "transparent",
                     theme: "light2",
@@ -258,7 +326,6 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                         labelFontColor: "#3a366b",
                         gridColor: "#ecebfa",
                         labelFormatter: function(e) {
-                            // Só mostra os valores da idade média calculada
                             if (axisYLabels.includes(e.value)) {
                                 return e.value;
                             }
@@ -289,7 +356,7 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                 }
             }
 
-            // Gráfico circular para Nível Hierárquico (apenas fatias, sem cargos/contagem no label)
+            // Gráfico circular para Nível Hierárquico
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartNivelHierarquico")) {
                 var dataPointsNivel = [];
                 for (let i = 0; i < nivelLabels.length; i++) {
@@ -299,7 +366,12 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                         color: pieColors[i % pieColors.length]
                     });
                 }
+                // Forçar tamanho do canvas
+                document.getElementById("chartNivelHierarquico").style.width = CHART_WIDTH + "px";
+                document.getElementById("chartNivelHierarquico").style.height = CHART_HEIGHT + "px";
                 var chartNivel = new CanvasJS.Chart("chartNivelHierarquico", {
+                    width: CHART_WIDTH,
+                    height: CHART_HEIGHT,
                     animationEnabled: true,
                     backgroundColor: "transparent",
                     theme: "light2",
@@ -337,6 +409,19 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                     document.getElementById('statsNivelHierarquico').innerHTML = "<span style='color:#888;'>Sem dados para estatísticas.</span>";
                 }
             }
+        });
+
+        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.dashboard-cards .card').forEach(c => c.style.display = 'none');
+                document.getElementById(this.dataset.target).style.display = 'flex';
+                this.classList.add('active');
+                // Scroll automático para o gráfico
+                setTimeout(() => {
+                    document.getElementById(this.dataset.target).scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }, 100);
+            });
         });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>

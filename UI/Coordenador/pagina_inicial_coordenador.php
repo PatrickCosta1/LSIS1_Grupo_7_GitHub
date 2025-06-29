@@ -21,8 +21,6 @@ $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
     <header>
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_coordenador.php';">
         <nav>
-            <a href="dashboard_coordenador.php">Dashboard</a>
-            <a href="../Colaborador/ficha_colaborador.php">Minha Ficha</a>
             <?php
                 // Corrigir link da equipa para incluir o id da equipa do coordenador
                 $equipaLink = "equipa.php";
@@ -30,22 +28,43 @@ $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
                     $equipaLink = "equipa.php?id=" . urlencode($equipas[0]['id']);
                 }
             ?>
-            <a href="<?php echo $equipaLink; ?>">Equipa</a>
-            <a href="relatorios_equipa.php">Relatórios Equipa</a>
+            <div class="dropdown-equipa">
+                <a href="<?php echo $equipaLink; ?>" class="equipa-link">
+                    Equipa
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="dashboard_coordenador.php">Dashboard</a>
+                    <a href="relatorios_equipa.php">Relatórios Equipa</a>
+                </div>
+            </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                        <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
+                    <a href="beneficios.php">Benefícios</a>
+                    <a href="ferias.php">Férias</a>
+                    <a href="formacoes.php">Formações</a>
+                    <a href="recibos.php">Recibos</a>
+                    <!-- Adiciona mais opções se quiseres -->
+                </div>
+            </div>
             <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
     <main>
         <h1>Bem-vindo, <?php echo $nome; ?>!</h1>
         <p class="descricao-inicial">
-            Aqui pode gerir a sua equipa, consultar relatórios, aceder à sua ficha e acompanhar notificações importantes.
+            Gere a tua Equipa através da consulta de relatórios e dashboards, acede à tua Ficha de Colaborador, recebe notificações importantes e muito mais!
         </p>
         <div class="botoes-atalho">
-            <a href="equipa.php" class="botao-atalho roxo">Minha Equipa</a>
+            <a href="equipa.php" class="botao-atalho roxo">A Minha Equipa</a>
             <a href="relatorios_equipa.php" class="botao-atalho laranja">Relatórios</a>
-            <a href="../Colaborador/ficha_colaborador.php" class="botao-atalho verde">Minha Ficha</a>
+            <a href="../Colaborador/ficha_colaborador.php" class="botao-atalho verde">A Minha Ficha</a>
         </div>
         <div class="dash-carousel-container">
             <span class="dash-topic active">Gestão de Equipa</span>

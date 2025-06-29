@@ -27,11 +27,11 @@ $error_message = '';
         if ($_SESSION['profile'] === 'colaborador') {
             $logoLink = "../Colaborador/pagina_inicial_colaborador.php";
         } elseif ($_SESSION['profile'] === 'coordenador') {
-            $logoLink = "../Coordenador/dashboard_coordenador.php";
+            $logoLink = "../Coordenador/pagina_inicial_coordenador.php";
         } elseif ($_SESSION['profile'] === 'admin') {
             $logoLink = "../Admin/dashboard_admin.php";
         } elseif ($_SESSION['profile'] === 'rh') {
-            $logoLink = "../RH/dashboard_rh.php";
+            $logoLink = "../RH/pagina_inicial_RH.php";
         } else {
             $logoLink = "../Convidado/onboarding_convidado.php";
         }
@@ -41,13 +41,43 @@ $error_message = '';
     </a>
     <nav>
         <?php if ($_SESSION['profile'] === 'coordenador'): ?>
-            <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
-            <a href="../Colaborador/ficha_colaborador.php">A Minha Ficha</a>
-            <a href="../Coordenador/equipa.php">A Minha Equipa</a>
-            <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
-            <a href="../Comuns/notificacoes.php">Notificações</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
-            <a href="../Comuns/logout.php">Sair</a>
+            <?php
+                    // Corrigir link da equipa para incluir o id da equipa do coordenador
+                    require_once '../../BLL/Coordenador/BLL_dashboard_coordenador.php';
+                    $coordBLL = new CoordenadorDashboardManager();
+                    $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
+                    $equipaLink = "../Coordenador/equipa.php";
+                    if (!empty($equipas) && isset($equipas[0]['id'])) {
+                        $equipaLink = "../Coordenador/equipa.php?id=" . urlencode($equipas[0]['id']);
+                    }
+                ?>
+                <div class="dropdown-equipa">
+                    <a href="<?php echo $equipaLink; ?>" class="equipa-link">
+                        Equipa
+                        <span class="seta-baixo">&#9662;</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
+                        <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
+                    </div>
+                </div>
+                <a href="../Comuns/notificacoes.php">Notificações</a>
+                <div class="dropdown-perfil">
+                    <a href="../Comuns/perfil.php" class="perfil-link">
+                        Perfil
+                        <span class="seta-baixo">&#9662;</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
+                        <a href="../Colaborador/beneficios.php">Benefícios</a>
+                        <a href="../Colaborador/ferias.php">Férias</a>
+                        <a href="../Colaborador/formacoes.php">Formações</a>
+                        <a href="../Colaborador/recibos.php">Recibos</a>
+                        <!-- Adiciona mais opções se quiseres -->
+                    </div>
+                </div>
+                <a href="../Comuns/logout.php">Sair</a>
+        
         <?php elseif ($_SESSION['profile'] === 'colaborador'): ?>
             <a href="../Colaborador/ficha_colaborador.php">A Minha Ficha</a>
             <a href="../Comuns/notificacoes.php">Notificações</a>

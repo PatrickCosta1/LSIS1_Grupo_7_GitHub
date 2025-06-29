@@ -8,6 +8,11 @@ require_once '../../BLL/Comuns/BLL_notificacoes.php';
 $notBLL = new NotificacoesManager();
 $notificacoes = $notBLL->getNotificacoesByUserId($_SESSION['user_id']);
 
+
+require_once '../../BLL/Comuns/BLL_mensagens.php';
+$mensagemBLL = new MensagensManager();
+$mensagensRecebidas = $mensagemBLL->getMensagensParaUtilizador($_SESSION['user_id']);
+
 // Marcar notificação como lida
 if (isset($_GET['marcar_lida'])) {
     $notificacaoId = $_GET['marcar_lida'];
@@ -31,11 +36,11 @@ if (isset($_GET['marcar_lida'])) {
             if ($_SESSION['profile'] === 'colaborador') {
                 $logoLink = "../Colaborador/pagina_inicial_colaborador.php";
             } elseif ($_SESSION['profile'] === 'coordenador') {
-                $logoLink = "../Coordenador/dashboard_coordenador.php";
+                $logoLink = "../Coordenador/pagina_inicial_coordenador.php";
             } elseif ($_SESSION['profile'] === 'admin') {
                 $logoLink = "../Admin/dashboard_admin.php";
             } elseif ($_SESSION['profile'] === 'rh') {
-                $logoLink = "../RH/dashboard_rh.php";
+                $logoLink = "../RH/pagina_inicial_RH.php";
             } else {
                 $logoLink = "../Convidado/onboarding_convidado.php";
             }
@@ -45,10 +50,27 @@ if (isset($_GET['marcar_lida'])) {
         </a>
         <nav>
             <?php if ($_SESSION['profile'] === 'coordenador'): ?>
-                <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
-                <a href="../Colaborador/ficha_colaborador.php">Minha Ficha</a>
-                <a href="../Coordenador/equipa.php">A Minha Equipa</a>
-                <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
+                
+                <?php
+                    // Corrigir link da equipa para incluir o id da equipa do coordenador
+                    require_once '../../BLL/Coordenador/BLL_dashboard_coordenador.php';
+                    $coordBLL = new CoordenadorDashboardManager();
+                    $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
+                    $equipaLink = "../Coordenador/equipa.php";
+                    if (!empty($equipas) && isset($equipas[0]['id'])) {
+                        $equipaLink = "../Coordenador/equipa.php?id=" . urlencode($equipas[0]['id']);
+                    }
+                ?>
+                <div class="dropdown-equipa">
+                    <a href="<?php echo $equipaLink; ?>" class="equipa-link">
+                        Equipa
+                        <span class="seta-baixo">&#9662;</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
+                        <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
+                    </div>
+                </div>
                 <a href="../Comuns/notificacoes.php">Notificações</a>
                 <div class="dropdown-perfil">
                     <a href="../Comuns/perfil.php" class="perfil-link">
@@ -61,9 +83,11 @@ if (isset($_GET['marcar_lida'])) {
                         <a href="../Colaborador/ferias.php">Férias</a>
                         <a href="../Colaborador/formacoes.php">Formações</a>
                         <a href="../Colaborador/recibos.php">Recibos</a>
+                        <!-- Adiciona mais opções se quiseres -->
                     </div>
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
+        
             <?php elseif ($_SESSION['profile'] === 'colaborador'): ?>
                 <a href="../Colaborador/ficha_colaborador.php">A Minha Ficha</a>
                 <a href="../Comuns/notificacoes.php">Notificações</a>
@@ -134,6 +158,28 @@ if (isset($_GET['marcar_lida'])) {
     <main>
         <h1>Notificações</h1>
             <div class="notificacoes-container">
+
+            <?php if (!empty($mensagensRecebidas)): ?>
+                <h2 style="margin-top:32px;">Mensagens Recebidas</h2>
+                <ul class="notificacoes-lista">
+                    <?php foreach ($mensagensRecebidas as $msg): ?>
+                        <li class="notificacao<?php if (!$msg['lida']) echo ' unread'; ?>">
+                            <span class="titulo"><?php echo htmlspecialchars($msg['assunto']); ?></span>
+                            <span class="mensagem"><?php echo nl2br(htmlspecialchars($msg['mensagem'])); ?></span>
+                            <span class="data"><?php echo date('d/m/Y H:i', strtotime($msg['data_envio'])); ?></span>
+                            <div class="detalhes">
+                                <strong>Enviada por:</strong> <?php echo htmlspecialchars($msg['remetente_nome']); ?><br>
+                                <strong>Mensagem:</strong> <?php echo nl2br(htmlspecialchars($msg['mensagem'])); ?><br>
+                                <?php if ($msg['anexo']): ?>
+                                    <strong>Anexo:</strong> <a href="../Uploads/Mensagens/<?php echo htmlspecialchars($msg['anexo']); ?>" target="_blank">Ver ficheiro</a><br>
+                                <?php endif; ?>
+                                <strong>Data/Hora:</strong> <?php echo date('d/m/Y H:i', strtotime($msg['data_envio'])); ?>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+
                 <ul class="notificacoes-lista">
             <li class="notificacao unread" data-titulo="Nova Mensagem" data-perfil="RH" data-mensagem="Tens uma nova mensagem da equipa de RH." data-data="2024-06-27 10:15">
                 <span class="titulo">Nova Mensagem</span>
