@@ -207,8 +207,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if ($colabBLL->updateColaboradorByUserId($targetUserId, $dados)) {
-        $success_message = "Dados atualizados com sucesso!";
+    if ($colabBLL->updateColaboradorByUserId($targetUserId, $dados, $perfil)) {
+        if ($canEditAll) {
+            $success_message = "Dados atualizados com sucesso!";
+        } else {
+            // Notificar RH
+            require_once '../../BLL/Comuns/BLL_notificacoes.php';
+            $notBLL = new NotificacoesManager();
+            if (in_array($perfil, ['rh', 'admin']) && $editColabId) {
+                $colab = $colabBLL->getColaboradorById($editColabId);
+            } else {
+                $colab = $colabBLL->getColaboradorByUserId($userId);
+            }
+            $nomeColab = $colab['nome'] ?? '';
+            $notBLL->notificarRH("O colaborador $nomeColab solicitou alteração de dados na ficha. Acesse a área de aprovações.");
+            // Mensagem para popup
+            $success_message = "O seu pedido de alteração foi enviado e será analisado pelo RH. Em breve terá uma resposta.";
+        }
         // Recarregar dados após atualização
         if (in_array($perfil, ['rh', 'admin']) && $editColabId) {
             $colab = $colabBLL->getColaboradorById($editColabId);
@@ -857,6 +872,20 @@ window.addEventListener('scroll', function() {
     }
 });
 </script>
+
+<?php if ($success_message): ?>
+<div id="popup-success" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:9999;">
+    <div style="background:#fff;padding:32px 24px;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,0.18);max-width:90vw;max-height:90vh;position:relative;">
+        <button onclick="document.getElementById('popup-success').style.display='none';" style="position:absolute;top:8px;right:12px;background:none;border:none;font-size:22px;cursor:pointer;">&times;</button>
+        <div style="font-size:18px;color:#155724;margin-bottom:8px;">
+            <?php echo htmlspecialchars($success_message); ?>
+        </div>
+        <div style="text-align:right;">
+            <button onclick="document.getElementById('popup-success').style.display='none';" style="background:#667eea;color:#fff;border:none;padding:8px 18px;border-radius:4px;cursor:pointer;">Fechar</button>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 
 </body>

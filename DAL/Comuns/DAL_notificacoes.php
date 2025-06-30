@@ -25,5 +25,11 @@ class DAL_Notificacoes {
             $stmt2->execute([$rh['id'], $mensagem]);
         }
     }
+
+    public function eliminarNotificacao($id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("DELETE FROM notificacoes WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
 }
 ?>

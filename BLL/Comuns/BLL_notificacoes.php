@@ -15,5 +15,8 @@ class NotificacoesManager {
     public function notificarRH($mensagem) {
         return $this->dal->notificarRH($mensagem);
     }
+    public function eliminarNotificacao($id) {
+        return $this->dal->eliminarNotificacao($id);
+    }
 }
 ?>

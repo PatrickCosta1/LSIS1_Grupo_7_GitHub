@@ -4,6 +4,16 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: ../Comuns/erro.php');
     exit();
 }
+
+// Eliminar notificação
+if (isset($_GET['eliminar']) && is_numeric($_GET['eliminar'])) {
+    require_once '../../BLL/Comuns/BLL_notificacoes.php';
+    $notBLL = new NotificacoesManager();
+    $notBLL->eliminarNotificacao($_GET['eliminar']);
+    header('Location: notificacoes.php');
+    exit();
+}
+
 require_once '../../BLL/Comuns/BLL_notificacoes.php';
 $notBLL = new NotificacoesManager();
 $notificacoes = $notBLL->getNotificacoesByUserId($_SESSION['user_id']);
@@ -199,6 +209,12 @@ if ($_SESSION['profile'] === 'rh') {
                                 <button type="submit" class="btn btn-sm">Marcar como lida</button>
                             <?php endif; ?>
                         </form>
+                        <?php if ($not['lida']): ?>
+                            <form method="get" style="display:inline;">
+                                <input type="hidden" name="eliminar" value="<?php echo $not['id']; ?>">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Eliminar esta notificação?')">Eliminar</button>
+                            </form>
+                        <?php endif; ?>
                     </li>
                 <?php endforeach; ?>
             </ul>
