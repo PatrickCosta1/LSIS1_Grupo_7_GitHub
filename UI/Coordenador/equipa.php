@@ -55,6 +55,7 @@ $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
                     <a href="ferias.php">Férias</a>
                     <a href="formacoes.php">Formações</a>
                     <a href="recibos.php">Recibos</a>
+                    <!-- Adiciona mais opções se quiseres -->
                 </div>
             </div>
             <a href="../Comuns/logout.php">Sair</a>

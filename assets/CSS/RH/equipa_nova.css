@@ -83,13 +83,13 @@ main h1 {
 
 /* Formulário moderno */
 .ficha-form-moderna {
-    background: rgba(255,255,255,0.97);
-    border-radius: 24px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.10);
-    padding: 40px 48px;
-    max-width: 600px;
+    background: rgba(255,255,255,0.99);
+    border-radius: 28px;
+    box-shadow: 0 12px 40px rgba(3,96,233,0.13);
+    padding: 44px 38px 32px 38px;
+    max-width: 540px;
     margin: 0 auto 32px auto;
-    border: 1px solid rgba(255,255,255,0.3);
+    border: 1.5px solid #e9eff6;
     position: relative;
     overflow: hidden;
 }
@@ -98,7 +98,7 @@ main h1 {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 4px;
+    height: 5px;
     background: linear-gradient(90deg, #0360e9 0%, #299cf3 100%);
     border-radius: 24px 24px 0 0;
 }
@@ -107,7 +107,7 @@ main h1 {
 .ficha-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px 32px;
+    gap: 28px 32px;
     max-width: 500px;
     margin: 0 auto;
 }
@@ -125,10 +125,10 @@ main h1 {
 }
 
 .ficha-campo label {
-    color: #4a5568;
+    color: #23408e;
     font-weight: 600;
+    font-size: 1rem;
     margin-bottom: 4px;
-    font-size: 0.92rem;
     letter-spacing: 0.02em;
 }
 
@@ -233,6 +233,11 @@ main h1 {
     .ficha-grid { grid-template-columns: 1fr; gap: 10px 0; }
 }
 
+@media (max-width: 700px) {
+    .ficha-form-moderna { padding: 12px 4px; }
+    .ficha-grid { gap: 12px 0; }
+}
+
 /* Scrollbar personalizada */
 ::-webkit-scrollbar {
     width: 8px;
@@ -279,15 +284,92 @@ header nav a:hover::before, .btn:hover::before {
 }
 /* Acrescenta ao equipa_nova.css */
 .lista-colaboradores {
-    max-height: 220px;
+    max-height: 340px;
     overflow-y: auto;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
     background: #f7faff;
-    padding: 12px 16px;
+    padding: 16px 18px 10px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    box-shadow: 0 2px 12px rgba(3,96,233,0.07);
+    margin-top: 4px;
+    margin-bottom: 4px;
+    transition: box-shadow 0.2s;
 }
+
 .lista-colaboradores label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-weight: 500;
-    color: #2d3748;
+    color: #23408e;
+    background: #fff;
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 7px;
+    box-shadow: 0 1px 4px rgba(3,96,233,0.04);
     cursor: pointer;
+    transition: background 0.18s, box-shadow 0.18s;
+    border: 1px solid transparent;
+    font-size: 1rem;
+}
+
+.lista-colaboradores label:hover,
+.lista-colaboradores label:focus-within {
+    background: #e6f0ff;
+    border: 1px solid #299cf3;
+    box-shadow: 0 2px 8px rgba(41,156,243,0.10);
+}
+
+.lista-colaboradores input[type="checkbox"] {
+    accent-color: #0360e9;
+    margin-right: 8px;
+    min-width: 20px;
+    min-height: 20px;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(41,156,243,0.07);
+    transition: box-shadow 0.18s;
+}
+
+.lista-colaboradores input[type="checkbox"]:focus {
+    outline: 2px solid #299cf3;
+    outline-offset: 2px;
+}
+
+.lista-colaboradores::-webkit-scrollbar {
+    width: 8px;
+}
+.lista-colaboradores::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 6px;
+}
+.lista-colaboradores::-webkit-scrollbar-track {
+    background: #f7faff;
+    border-radius: 6px;
+}
+
+/* Pequeno badge para o número de colaboradores disponíveis */
+.lista-colaboradores::before {
+    content: attr(data-count) " disponíveis";
+    display: block;
+    color: #299cf3;
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    margin-left: 2px;
+    letter-spacing: 0.01em;
+}
+
+@media (max-width: 600px) {
+    .lista-colaboradores {
+        padding: 10px 4px 6px 4px;
+        border-radius: 8px;
+    }
+    .lista-colaboradores label {
+        font-size: 0.95rem;
+        padding: 7px 6px;
+        border-radius: 6px;
+    }
 }

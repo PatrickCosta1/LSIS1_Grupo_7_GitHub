@@ -63,11 +63,10 @@ $isOwnFicha = ($editColabId == '' || $editColabId == $userId);
 
 // Lista de campos que colaborador/coordenador pode editar
 $colabEditable = [
-    'morada_fiscal', 'sexo', 'situacao_irs', 'dependentes', 'iban', 'habilitacoes', 'curso',
+    'morada_fiscal', 'sexo', 'situacao_irs', 'dependentes', 'iban', 'habilitacoes', 'curso','estado_civil',
     'telemovel', 'matricula_viatura', 'nome_contacto_emergencia', 'grau_relacionamento',
     'contacto_emergencia', 'cartao_continente'
 ];
-
 
 
 // Funções helper para os atributos dos campos
@@ -433,7 +432,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="ficha-campo">
                 <label>Estado Civil:</label>
-                <select name="estado_civil">
+                <select name="estado_civil"> <?php echo selectAttr('estado_civil', $canEditAll, $colabEditable); ?>>
                     <option value="">Selecione</option>
                     <option value="Solteiro" <?php if (($colab['estado_civil'] ?? '') === 'Solteiro') echo 'selected'; ?>>Solteiro</option>
                     <option value="Casado" <?php if (($colab['estado_civil'] ?? '') === 'Casado') echo 'selected'; ?>>Casado</option>

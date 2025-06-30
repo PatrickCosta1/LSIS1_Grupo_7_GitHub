@@ -12,5 +12,8 @@ class NotificacoesManager {
     public function marcarComoLida($notificacaoId) {
         return $this->dal->marcarComoLida($notificacaoId);
     }
+    public function notificarRH($mensagem) {
+        return $this->dal->notificarRH($mensagem);
+    }
 }
 ?>

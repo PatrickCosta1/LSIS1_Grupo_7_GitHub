@@ -4,11 +4,12 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admi
     header('Location: ../Comuns/erro.php');
     exit();
 }
-require_once '../../BLL/RH/BLL_equipas.php';
-$equipasBLL = new RHEquipasManager();
+require_once '../../BLL/RH/BLL_equipa_nova.php';
+$equipasBLL = new EquipaNovaManager();
 
+// Buscar apenas colaboradores que NÃO estão em nenhuma equipa
 $coordenadores = $equipasBLL->getCoordenadores();
-$colaboradores = $equipasBLL->getColaboradores(); // Adiciona este método na BLL para buscar todos os colaboradores
+$colaboradores = $equipasBLL->getColaboradoresSemEquipa();
 $success = '';
 $error = '';
 
@@ -58,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="ficha-grid">
                 <div class="ficha-campo">
                     <label>Nome da Equipa:</label>
-                    <input type="text" name="nome" required>
+                    <input type="text" name="nome" required autocomplete="off">
                 </div>
                 <div class="ficha-campo">
                     <label>Coordenador:</label>
@@ -71,16 +72,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="ficha-campo">
                     <label>Elementos da Equipa:</label>
-                    <div class="lista-colaboradores">
-                        <?php foreach ($colaboradores as $col): ?>
-                            <label style="display:block; margin-bottom:6px;">
-                                <input type="checkbox" name="elementos[]" value="<?php echo $col['colaborador_id']; ?>">
-                                <?php echo htmlspecialchars($col['nome']); ?>
-                            </label>
-                        <?php endforeach; ?>
+                    <div class="lista-colaboradores" data-count="<?= count($colaboradores) ?>">
+                        <?php if (empty($colaboradores)): ?>
+                            <span style="color:#888;">Não existem colaboradores disponíveis para adicionar.</span>
+                        <?php else: ?>
+                            <?php foreach ($colaboradores as $col): ?>
+                                <label>
+                                    <input type="checkbox" name="elementos[]" value="<?php echo $col['colaborador_id']; ?>">
+                                    <?php echo htmlspecialchars($col['nome']); ?>
+                                </label>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
-                    <small>Selecione os colaboradores que vão pertencer à equipa.</small>
+                    <small>Selecione os colaboradores que vão pertencer à equipa.<br>
+                    <span style="color:#888;">Apenas colaboradores sem equipa aparecem aqui.</span></small>
                 </div>
+            </div>
             <div style="text-align:center; margin-top: 24px;">
                 <button type="submit" class="btn">Criar Equipa</button>
             </div>

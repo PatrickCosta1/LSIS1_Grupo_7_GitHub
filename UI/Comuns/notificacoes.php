@@ -8,7 +8,6 @@ require_once '../../BLL/Comuns/BLL_notificacoes.php';
 $notBLL = new NotificacoesManager();
 $notificacoes = $notBLL->getNotificacoesByUserId($_SESSION['user_id']);
 
-
 require_once '../../BLL/Comuns/BLL_mensagens.php';
 $mensagemBLL = new MensagensManager();
 $mensagensRecebidas = $mensagemBLL->getMensagensParaUtilizador($_SESSION['user_id']);
@@ -19,6 +18,32 @@ if (isset($_GET['marcar_lida'])) {
     $notBLL->marcarComoLida($notificacaoId);
     header('Location: notificacoes.php');
     exit();
+}
+
+// RH: Aprovação de pedidos de alteração
+$aprovacao_msg = '';
+if ($_SESSION['profile'] === 'rh') {
+    require_once '../../BLL/Colaborador/BLL_ficha_colaborador.php';
+    $colabBLL = new ColaboradorFichaManager();
+
+    // Aprovar pedido
+    if (isset($_POST['aprovar_pedido'])) {
+        if ($colabBLL->aprovarPedido($_POST['pedido_id'])) {
+            $aprovacao_msg = "Alteração aprovada e aplicada.";
+        } else {
+            $aprovacao_msg = "Erro ao aprovar pedido.";
+        }
+    }
+    // Recusar pedido
+    if (isset($_POST['recusar_pedido'])) {
+        if ($colabBLL->recusarPedido($_POST['pedido_id'])) {
+            $aprovacao_msg = "Alteração recusada.";
+        } else {
+            $aprovacao_msg = "Erro ao recusar pedido.";
+        }
+    }
+    // Buscar pedidos pendentes
+    $pedidosPendentes = $colabBLL->listarPedidosPendentes();
 }
 ?>
 <!DOCTYPE html>
@@ -157,73 +182,87 @@ if (isset($_GET['marcar_lida'])) {
     </header>
     <main>
         <h1>Notificações</h1>
-            <div class="notificacoes-container">
+        <div class="notificacoes-container">
 
-            <?php if (!empty($mensagensRecebidas)): ?>
-                <h2 style="margin-top:32px;">Mensagens Recebidas</h2>
-                <ul class="notificacoes-lista">
-                    <?php foreach ($mensagensRecebidas as $msg): ?>
-                        <li class="notificacao<?php if (!$msg['lida']) echo ' unread'; ?>">
-                            <span class="titulo"><?php echo htmlspecialchars($msg['assunto']); ?></span>
-                            <span class="mensagem"><?php echo nl2br(htmlspecialchars($msg['mensagem'])); ?></span>
-                            <span class="data"><?php echo date('d/m/Y H:i', strtotime($msg['data_envio'])); ?></span>
-                            <div class="detalhes">
-                                <strong>Enviada por:</strong> <?php echo htmlspecialchars($msg['remetente_nome']); ?><br>
-                                <strong>Mensagem:</strong> <?php echo nl2br(htmlspecialchars($msg['mensagem'])); ?><br>
-                                <?php if ($msg['anexo']): ?>
-                                    <strong>Anexo:</strong> <a href="../Uploads/Mensagens/<?php echo htmlspecialchars($msg['anexo']); ?>" target="_blank">Ver ficheiro</a><br>
-                                <?php endif; ?>
-                                <strong>Data/Hora:</strong> <?php echo date('d/m/Y H:i', strtotime($msg['data_envio'])); ?>
-                            </div>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
+        <?php if (!empty($notificacoes)): ?>
+            <h2 style="margin-top:32px;">Notificações do Sistema</h2>
+            <ul class="notificacoes-lista">
+                <?php foreach ($notificacoes as $not): ?>
+                    <li class="notificacao<?php if (!$not['lida']) echo ' unread'; ?>">
+                        <span class="titulo">
+                            <?php echo htmlspecialchars($not['mensagem']); ?>
+                        </span>
+                        <span class="data"><?php echo date('d/m/Y H:i', strtotime($not['data_envio'])); ?></span>
+                        <form method="get" style="display:inline;">
+                            <input type="hidden" name="marcar_lida" value="<?php echo $not['id']; ?>">
+                            <?php if (!$not['lida']): ?>
+                                <button type="submit" class="btn btn-sm">Marcar como lida</button>
+                            <?php endif; ?>
+                        </form>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <div style="color:#888; text-align:center; margin:32px 0;">
+                Não existem notificações.
+            </div>
+        <?php endif; ?>
+
+        <?php if ($_SESSION['profile'] === 'rh'): ?>
+            <h2 style="margin-top:32px;">Pedidos de Alteração de Ficha</h2>
+            <?php if ($aprovacao_msg): ?>
+                <div class="success-message" style="margin-bottom:16px;"><?php echo htmlspecialchars($aprovacao_msg); ?></div>
             <?php endif; ?>
-
+            <?php if (!empty($pedidosPendentes)): ?>
                 <ul class="notificacoes-lista">
-            <li class="notificacao unread" data-titulo="Nova Mensagem" data-perfil="RH" data-mensagem="Tens uma nova mensagem da equipa de RH." data-data="2024-06-27 10:15">
-                <span class="titulo">Nova Mensagem</span>
-                <span class="mensagem">Tens uma nova mensagem da equipa de RH.</span>
-                <span class="data">2024-06-27 10:15</span>
-                <div class="detalhes">
-                    <strong>Enviada por:</strong> RH<br>
-                    <strong>Mensagem:</strong> Tens uma nova mensagem da equipa de RH.<br>
-                    <strong>Data/Hora:</strong> 2024-06-27 10:15
+                <?php foreach ($pedidosPendentes as $p): ?>
+                    <li class="notificacao unread">
+                        <span class="titulo">
+                            <strong><?php echo htmlspecialchars($p['colaborador_nome']); ?></strong> pediu alteração:
+                            <strong><?php echo htmlspecialchars($p['campo']); ?></strong>
+                            <br>
+                            <span style="color:#888;">De:</span> <?php echo htmlspecialchars($p['valor_antigo']); ?>
+                            <span style="color:#888;">Para:</span> <strong><?php echo htmlspecialchars($p['valor_novo']); ?></strong>
+                        </span>
+                        <span class="data"><?php echo date('d/m/Y H:i', strtotime($p['data_pedido'])); ?></span>
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="pedido_id" value="<?php echo $p['id']; ?>">
+                            <button type="submit" name="aprovar_pedido" class="btn btn-sm">Aprovar</button>
+                            <button type="submit" name="recusar_pedido" class="btn btn-danger btn-sm">Recusar</button>
+                        </form>
+                    </li>
+                <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <div style="color:#888; text-align:center; margin:16px 0;">
+                    Não existem pedidos de alteração pendentes.
                 </div>
-            </li>
-            <li class="notificacao" data-titulo="Férias Aprovadas" data-perfil="Coordenador" data-mensagem="O teu pedido de férias foi aprovado." data-data="2024-06-25 09:00">
-                <span class="titulo">Férias Aprovadas</span>
-                <span class="mensagem">O teu pedido de férias foi aprovado.</span>
-                <span class="data">2024-06-25 09:00</span>
-                <div class="detalhes">
-                    <strong>Enviada por:</strong> Coordenador<br>
-                    <strong>Mensagem:</strong> O teu pedido de férias foi aprovado.<br>
-                    <strong>Data/Hora:</strong> 2024-06-25 09:00
-                </div>
-            </li>
-            <li class="notificacao unread" data-titulo="Nova Formação Disponível" data-perfil="Formações" data-mensagem="Inscreve-te já na formação &quot;Excel Avançado&quot;." data-data="2024-06-24 14:30">
-                <span class="titulo">Nova Formação Disponível</span>
-                <span class="mensagem">Inscreve-te já na formação "Excel Avançado".</span>
-                <span class="data">2024-06-24 14:30</span>
-                <div class="detalhes">
-                    <strong>Enviada por:</strong> Formações<br>
-                    <strong>Mensagem:</strong> Inscreve-te já na formação "Excel Avançado".<br>
-                    <strong>Data/Hora:</strong> 2024-06-24 14:30
-                </div>
-            </li>
-            <li class="notificacao" data-titulo="Recibo Disponível" data-perfil="Financeiro" data-mensagem="O recibo de vencimento de junho já está disponível." data-data="2024-06-20 08:00">
-                <span class="titulo">Recibo Disponível</span>
-                <span class="mensagem">O recibo de vencimento de junho já está disponível.</span>
-                <span class="data">2024-06-20 08:00</span>
-                <div class="detalhes">
-                    <strong>Enviada por:</strong> Financeiro<br>
-                    <strong>Mensagem:</strong> O recibo de vencimento de junho já está disponível.<br>
-                    <strong>Data/Hora:</strong> 2024-06-20 08:00
-                </div>
-            </li>
-        </ul>
-    </div>
-</main>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if (!empty($mensagensRecebidas)): ?>
+            <h2 style="margin-top:32px;">Mensagens Recebidas</h2>
+            <ul class="notificacoes-lista">
+                <?php foreach ($mensagensRecebidas as $msg): ?>
+                    <li class="notificacao<?php if (!$msg['lida']) echo ' unread'; ?>">
+                        <span class="titulo"><?php echo htmlspecialchars($msg['assunto']); ?></span>
+                        <span class="mensagem"><?php echo nl2br(htmlspecialchars($msg['mensagem'])); ?></span>
+                        <span class="data"><?php echo date('d/m/Y H:i', strtotime($msg['data_envio'])); ?></span>
+                        <div class="detalhes">
+                            <strong>Enviada por:</strong> <?php echo htmlspecialchars($msg['remetente_nome']); ?><br>
+                            <strong>Mensagem:</strong> <?php echo nl2br(htmlspecialchars($msg['mensagem'])); ?><br>
+                            <?php if ($msg['anexo']): ?>
+                                <strong>Anexo:</strong> <a href="../Uploads/Mensagens/<?php echo htmlspecialchars($msg['anexo']); ?>" target="_blank">Ver ficheiro</a><br>
+                            <?php endif; ?>
+                            <strong>Data/Hora:</strong> <?php echo date('d/m/Y H:i', strtotime($msg['data_envio'])); ?>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+
+        </div>
+    </main>
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
       <button id="open-chatbot" style="
