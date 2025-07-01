@@ -17,5 +17,14 @@ class PerfilManager {
         }
         return $result;
     }
+
+    public function alterarPassword($id, $pw_atual, $pw_nova) {
+        $pwAtualBD = $this->dal->getPasswordHashById($id);
+        if ($pwAtualBD !== $pw_atual) {
+            return "A palavra-passe atual está incorreta.";
+        }
+        $ok = $this->dal->updatePassword($id, $pw_nova);
+        return $ok === true ? true : "Erro ao atualizar a palavra-passe.";
+    }
 }
 ?>

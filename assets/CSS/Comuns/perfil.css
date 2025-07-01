@@ -255,3 +255,39 @@ main h1 {
 .dropdown-equipa:focus-within .dropdown-menu {
     display: block;
 }
+
+.modal-pw-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(44,98,255,0.10);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-pw {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(44,98,255,0.13);
+    padding: 36px 32px 28px 32px;
+    min-width: 320px;
+    max-width: 95vw;
+    position: relative;
+    text-align: center;
+    animation: fadeInUp 0.4s;
+}
+.fechar-modal-pw {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #299cf3;
+    cursor: pointer;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+.fechar-modal-pw:hover {
+    color: #0360e9;
+}
