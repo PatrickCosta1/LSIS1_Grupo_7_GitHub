@@ -35,10 +35,22 @@ $aprovacao_msg = '';
 if ($_SESSION['profile'] === 'rh') {
     require_once '../../BLL/Colaborador/BLL_ficha_colaborador.php';
     $colabBLL = new ColaboradorFichaManager();
+    $notificacoesManager = new NotificacoesManager();
 
     // Aprovar pedido
     if (isset($_POST['aprovar_pedido'])) {
         if ($colabBLL->aprovarPedido($_POST['pedido_id'])) {
+            // Buscar dados do pedido para o email
+            $pedido = $colabBLL->getPedidoById($_POST['pedido_id']);
+            if ($pedido) {
+                $notificacoesManager->notificarColaboradorPedidoAlteracao(
+                    $pedido['colaborador_id'],
+                    'aprovado',
+                    $pedido['campo'],
+                    $pedido['valor_antigo'],
+                    $pedido['valor_novo']
+                );
+            }
             $aprovacao_msg = "Alteração aprovada e aplicada.";
         } else {
             $aprovacao_msg = "Erro ao aprovar pedido.";
@@ -47,6 +59,17 @@ if ($_SESSION['profile'] === 'rh') {
     // Recusar pedido
     if (isset($_POST['recusar_pedido'])) {
         if ($colabBLL->recusarPedido($_POST['pedido_id'])) {
+            // Buscar dados do pedido para o email
+            $pedido = $colabBLL->getPedidoById($_POST['pedido_id']);
+            if ($pedido) {
+                $notificacoesManager->notificarColaboradorPedidoAlteracao(
+                    $pedido['colaborador_id'],
+                    'recusado',
+                    $pedido['campo'],
+                    $pedido['valor_antigo'],
+                    $pedido['valor_novo']
+                );
+            }
             $aprovacao_msg = "Alteração recusada.";
         } else {
             $aprovacao_msg = "Erro ao recusar pedido.";
