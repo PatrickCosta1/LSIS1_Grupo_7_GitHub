@@ -1,8 +1,8 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'colaborador') {
+if (!isset($_SESSION['user_id'])) {
     header('Location: ../Comuns/erro.php');
-    exit();
+    exit;
 }
 
 // Exemplo de formações disponíveis (substitui por dados da BD no futuro)
@@ -52,22 +52,22 @@ $formacoes = [
     <header>
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_colaborador.php';">
         <nav>
-            <a href="#">A Minha Ficha</a>
-            <a href="#">Notificações</a>
+            <a href="ficha_colaborador.php">A Minha Ficha</a>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
             <div class="dropdown-perfil">
-                <a href="#" class="perfil-link">
+                <a href="../Comuns/perfil.php" class="perfil-link">
                     Perfil
                     <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
-                    <a href="#">Ficha Colaborador</a>
-                    <a href="#">Benefícios</a>
-                    <a href="#">Férias</a>
-                    <a href="#">Formações</a>
-                    <a href="#">Recibos</a>
+                    <a href="ficha_colaborador.php">Ficha Colaborador</a>
+                    <a href="beneficios.php">Benefícios</a>
+                    <a href="ferias.php">Férias</a>
+                    <a href="formacoes.php">Formações</a>
+                    <a href="recibos.php">Recibos</a>
                 </div>
             </div>
-            <a href="#">Sair</a>
+            <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
     <main>
@@ -93,6 +93,7 @@ $formacoes = [
                     </div>
                     <div class="formacao-acoes">
                         <button class="btn-marcacao" type="button">Ver calendário</button>
+                        <button class="btn-inscrever" type="button">Inscrever-me</button>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -104,6 +105,14 @@ $formacoes = [
                 <div id="calendario-sessoes"></div>
             </div>
         </div>
+        <div class="inscricao-modal" id="inscricao-modal" style="display:none;">
+            <div class="inscricao-content">
+                <button class="fechar-inscricao" onclick="fecharInscricao()">×</button>
+                <h2 id="inscricao-titulo"></h2>
+                <p>Deseja confirmar a inscrição nesta formação?</p>
+                <button class="btn-confirmar" onclick="confirmarInscricao()">Confirmar Inscrição</button>
+            </div>
+        </div>
     </main>
     <script>
     const formacoes = <?= json_encode($formacoes) ?>;
@@ -112,9 +121,10 @@ $formacoes = [
     const titulo = document.getElementById('calendario-titulo');
     const sessoesDiv = document.getElementById('calendario-sessoes');
 
-    cards.forEach(card => {
-        card.addEventListener('click', () => {
-            const idx = card.getAttribute('data-index');
+    // Ver calendário
+    document.querySelectorAll('.btn-marcacao').forEach((btn, idx) => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
             const formacao = formacoes[idx];
             titulo.textContent = formacao.nome + " - Sessões";
             sessoesDiv.innerHTML = '';
@@ -134,6 +144,46 @@ $formacoes = [
     });
     function fecharCalendario() {
         modal.style.display = 'none';
+    }
+    </script>
+
+    <script>
+    let formacaoSelecionada = null;
+    const btnsInscrever = document.querySelectorAll('.btn-inscrever');
+    const inscricaoModal = document.getElementById('inscricao-modal');
+    const inscricaoTitulo = document.getElementById('inscricao-titulo');
+
+    btnsInscrever.forEach((btn, idx) => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            formacaoSelecionada = idx;
+            inscricaoTitulo.textContent = formacoes[idx].nome;
+            inscricaoModal.style.display = 'flex';
+        });
+    });
+
+    function fecharInscricao() {
+        inscricaoModal.style.display = 'none';
+    }
+
+    function confirmarInscricao() {
+        fetch('inscrever_formacao.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                formacao_nome: formacoes[formacaoSelecionada].nome
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            inscricaoModal.innerHTML = `
+                <div class="inscricao-content">
+                    <h2>Inscrição efetuada!</h2>
+                    <p>Está inscrito em: <b>${formacoes[formacaoSelecionada].nome}</b></p>
+                </div>
+            `;
+            setTimeout(() => { inscricaoModal.style.display = 'none'; location.reload(); }, 1800);
+        });
     }
     </script>
 </div>

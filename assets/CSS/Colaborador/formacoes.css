@@ -329,3 +329,85 @@ main .descricao-inicial {
         padding: 18px 10px;
     }
 }
+
+/* Modal de confirmação de inscrição */
+.inscricao-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(44,98,255,0.10);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+}
+
+.inscricao-modal[style*="display: flex"] {
+    display: flex !important;
+}
+
+.inscricao-content {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(44,98,255,0.13);
+    padding: 36px 32px 28px 32px;
+    min-width: 320px;
+    max-width: 95vw;
+    position: relative;
+    text-align: center;
+    animation: fadeInUp 0.4s;
+}
+
+.fechar-inscricao {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #299cf3;
+    cursor: pointer;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+.fechar-inscricao:hover {
+    color: #0360e9;
+}
+
+.btn-confirmar {
+    background: #299cf3;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-top: 18px;
+    box-shadow: 0 2px 8px #299cf322;
+    cursor: pointer;
+    opacity: 0.95;
+    transition: background 0.2s, color 0.2s;
+}
+.btn-confirmar:hover {
+    background: #0360e9;
+    color: #fff;
+}
+
+/* Botão Inscrever-me */
+.btn-inscrever {
+    background: #299cf3;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-left: 12px;
+    box-shadow: 0 2px 8px #299cf322;
+    cursor: pointer;
+    opacity: 0.95;
+    transition: background 0.2s, color 0.2s;
+}
+.btn-inscrever:hover {
+    background: #0360e9;
+    color: #fff;
+}

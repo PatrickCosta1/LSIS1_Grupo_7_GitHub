@@ -24,22 +24,22 @@ $nome = isset($_SESSION['nome']) ? htmlspecialchars($_SESSION['nome']) : 'Colabo
     <header>
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_colaborador.php';">
         <nav>
-            <a href="#">A Minha Ficha</a>
-            <a href="#">Notificações</a>
+            <a href="ficha_colaborador.php">A Minha Ficha</a>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
             <div class="dropdown-perfil">
-                <a href="#" class="perfil-link">
+                <a href="../Comuns/perfil.php" class="perfil-link">
                     Perfil
                     <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
-                    <a href="#">Ficha Colaborador</a>
-                    <a href="#">Benefícios</a>
-                    <a href="#">Férias</a>
-                    <a href="#">Formações</a>
-                    <a href="#">Recibos</a>
+                    <a href="ficha_colaborador.php">Ficha Colaborador</a>
+                    <a href="beneficios.php">Benefícios</a>
+                    <a href="ferias.php">Férias</a>
+                    <a href="formacoes.php">Formações</a>
+                    <a href="recibos.php">Recibos</a>
                 </div>
             </div>
-            <a href="#">Sair</a>
+            <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
     <main>
