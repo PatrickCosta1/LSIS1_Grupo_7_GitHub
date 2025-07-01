@@ -16,7 +16,15 @@ class EquipaNovaManager {
         return $this->dal->getColaboradoresSemEquipa();
     }
 
-    public function addEquipa($nome, $coordenador_id, $elementos = []) {
-        return $this->dal->addEquipa($nome, $coordenador_id, $elementos);
+    public function addEquipa($nome, $responsavel_id, $elementos = [], $tipo = 'colaboradores') {
+        return $this->dal->addEquipa($nome, $responsavel_id, $elementos, $tipo);
+    }
+
+    public function getResponsaveisPorTipo($tipo) {
+        return $this->dal->getResponsaveisPorTipo($tipo);
+    }
+
+    public function getMembrosPorTipo($tipo) {
+        return $this->dal->getMembrosPorTipo($tipo);
     }
 }

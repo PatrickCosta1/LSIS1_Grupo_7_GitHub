@@ -29,5 +29,20 @@ class RHDashboardManager {
     public function getCargosPorNivelHierarquico() {
         return $this->dal->getCargosPorNivelHierarquico();
     }
+
+    // Adicionado: tempo médio na empresa por equipa
+    public function getTempoMedioEmpresaPorEquipa() {
+        return $this->dal->getTempoMedioEmpresaPorEquipa();
+    }
+
+    // Adicionado: remuneração média por equipa
+    public function getRemuneracaoMediaPorEquipa() {
+        return $this->dal->getRemuneracaoMediaPorEquipa();
+    }
+
+    // Adicionado: distribuição de género por equipa
+    public function getDistribuicaoGeneroPorEquipa() {
+        return $this->dal->getDistribuicaoGeneroPorEquipa();
+}
 }
 ?>

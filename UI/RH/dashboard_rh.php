@@ -71,6 +71,57 @@ foreach ($nivel as $i => $row) {
 
 // Nome do RH
 $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
+
+// Tempo médio na empresa por equipa
+$tempo_medio_empresa = [];
+if ($equipas_labels) {
+    $tempo_medio_raw = $rhBLL->getTempoMedioEmpresaPorEquipa();
+    foreach ($equipas_labels as $nome_equipa) {
+        $tempo_medio_empresa[] = isset($tempo_medio_raw[$nome_equipa]) ? round($tempo_medio_raw[$nome_equipa], 1) : 0;
+    }
+}
+
+// Adicionar cálculo da remuneração média por equipa
+$equipas_remuneracao_media = [];
+if ($equipas_labels) {
+    // Obter remuneração média por equipa (em euros)
+    $remuneracao_media_raw = $rhBLL->getRemuneracaoMediaPorEquipa();
+    foreach ($equipas_labels as $nome_equipa) {
+        $equipas_remuneracao_media[] = isset($remuneracao_media_raw[$nome_equipa]) ? round($remuneracao_media_raw[$nome_equipa], 2) : 0;
+    }
+}
+
+// Percentagem de masculino/feminino/outro por equipa
+$genero_equipa_raw = $rhBLL->getDistribuicaoGeneroPorEquipa();
+$percent_masculino = [];
+$percent_feminino = [];
+$percent_outro = [];
+$total_masc = 0;
+$total_fem = 0;
+$total_outro = 0;
+$total_colab = 0;
+foreach ($equipas_labels as $nome_equipa) {
+    $masc = 0;
+    $fem = 0;
+    $outro = 0;
+    $total = 0;
+    if (isset($genero_equipa_raw[$nome_equipa])) {
+        foreach ($genero_equipa_raw[$nome_equipa] as $genero => $count) {
+            $genero_norm = strtolower(trim($genero));
+            if ($genero_norm === 'm' || $genero_norm === 'masculino') $masc += $count;
+            elseif ($genero_norm === 'f' || $genero_norm === 'feminino') $fem += $count;
+            else $outro += $count;
+            $total += $count;
+        }
+    }
+    $percent_masculino[] = $total > 0 ? round($masc / $total * 100, 1) : 0;
+    $percent_feminino[] = $total > 0 ? round($fem / $total * 100, 1) : 0;
+    $percent_outro[] = $total > 0 ? round($outro / $total * 100, 1) : 0;
+    $total_masc += $masc;
+    $total_fem += $fem;
+    $total_outro += $outro;
+    $total_colab += $total;
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -99,65 +150,132 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
         </nav>
     </header>
     <main>
-        <h1>Dashboards</h1>
-        <div class="dashboard-graph-tabs">
-            <button class="tab-btn active" data-target="card-equipa">Pessoas por Equipa</button>
-            <button class="tab-btn" data-target="card-idade">Idade Média por Equipa</button>
-            <button class="tab-btn" data-target="card-nivel">Nível Hierárquico/Cargo</button>
+    <h1 style="margin-bottom: 0;">Gestão RH - Dashboard</h1>
+    <!-- Dropdown para seleção de equipa -->
+    <div style="margin-bottom: 18px;">
+        <label for="equipaSelect" style="font-weight:bold;">Escolher Equipa:</label>
+        <select id="equipaSelect" style="margin-left:8px; padding:4px 8px;">
+            <option value="all">Todas</option>
+            <?php foreach ($equipas_labels as $idx => $nome_equipa): ?>
+                <option value="<?php echo $idx; ?>"><?php echo htmlspecialchars($nome_equipa); ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <!-- DASHBOARD GRID -->
+    <div class="dashboard-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px;">
+        <!-- KPIs -->
+        <div class="kpi-card" style="background:#f7f8fa;padding:18px;border-radius:10px;text-align:center;">
+            <div style="font-size:15px;color:#888;">Total Colaboradores</div>
+            <div id="kpiTotalColab" style="font-size:2.1em;color:#667eea;font-weight:bold;"><?php echo array_sum($equipas_membros); ?></div>
         </div>
-        
-        <section class="dashboard-cards">
-            <div class="card dashboard-equipa" id="card-equipa" style="display: flex; flex-direction: column; align-items: center;">
-                <h2><i style="color:#667eea;"></i>Pessoas por Equipa</h2>
-                <div class="dashboard-desc">
-                    Aqui podes analisar o número de Colaboradores por Equipa. Para além dessa informação, tens ainda acesso ao número mínimo, máximo, a média, mediana destes valores.
-                </div>
-                <div id="chartContainer" class="chart-equipa"></div>
-                <div id="statsContainer" class="stats-equipa"></div>
+        <div class="kpi-card" style="background:#f7f8fa;padding:18px;border-radius:10px;text-align:center;">
+            <div style="font-size:15px;color:#888;">Média de Idade</div>
+            <div id="kpiMediaIdade" style="font-size:2.1em;color:#764ba2;font-weight:bold;">
+                <?php echo count($equipas_idade_media) && array_sum($equipas_idade_media) > 0 ? round(array_sum($equipas_idade_media)/count(array_filter($equipas_idade_media)),1) : '-'; ?>
             </div>
-
-            <!-- Idade Média por Equipa -->
-            <div class="card dashboard-idade" id="card-idade" style="display:none; flex-direction: column; align-items: center;">
-                <h2><i style="color:#764ba2;"></i>Idade Média por Equipa</h2>
-                <div class="dashboard-desc">
-                    Aqui podes analisar a idade média por Equipa. Para além dessa informação, tens ainda acesso ao mínimo, máximo, a média, mediana destes valores.
-                </div>
-                <div id="chartIdadeMedia" class="chart-idade"></div>
-                <div id="statsIdadeMedia" class="stats-idade"></div>
+        </div>
+        <div class="kpi-card" style="background:#f7f8fa;padding:18px;border-radius:10px;text-align:center;">
+            <div style="font-size:15px;color:#888;">Tempo Médio Empresa</div>
+            <div id="kpiTempoMedio" style="font-size:2.1em;color:#ff9f40;font-weight:bold;">
+                <?php echo count($tempo_medio_empresa) && array_sum($tempo_medio_empresa) > 0 ? round(array_sum($tempo_medio_empresa)/count(array_filter($tempo_medio_empresa)),1).' anos' : '-'; ?>
             </div>
-
-            <!-- Nível Hierárquico/Cargo -->
-            <div class="card dashboard-nivel" id="card-nivel" style="display:none; flex-direction: column; align-items: center;">
-                <h2><i class="fa fa-sitemap" style="color:#36a2eb;"></i>Nível Hirárquico/Cargo</h2>
-                <div class="dashboard-desc">
-                    Aqui podes analisar a distribuição dos níveis hirárquicos e a sua legenda, bem como o cargo com menos trabalhadores (mínimo) e o que tem mais trabalhadores (máximo)
-                </div>
-                <div class="nivel-legenda legenda-nivel">
-                    <strong>Legenda:</strong>
-                    <ul>
-                        <?php foreach ($nivel_labels as $i => $nivel): ?>
-                            <li>
-                                <span class="pie-color" style="background:<?php echo $pie_colors[$i % count($pie_colors)]; ?>"></span>
-                                <span style="font-weight:bold;"><?php echo htmlspecialchars($nivel); ?></span>
-                                <?php if (!empty($nivel_cargos_count[$i])): ?>
-                                    - <?php
-                                        $cargosOnly = array_map(function($str) {
-                                            return preg_replace('/\s*\(\d+\)$/', '', $str);
-                                        }, $nivel_cargos_count[$i]);
-                                        echo htmlspecialchars(implode(', ', $cargosOnly));
-                                    ?>
-                                <?php endif; ?>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-                <div id="chartNivelHierarquico" class="chart-nivel"></div>
-                <div id="statsNivelHierarquico" class="stats-nivel"></div>
+        </div>
+        <div class="kpi-card" style="background:#f7f8fa;padding:18px;border-radius:10px;text-align:center;">
+            <div style="font-size:15px;color:#888;">Remuneração Média</div>
+            <div id="kpiRemuneracao" style="font-size:2.1em;color:#cddc39;font-weight:bold;">
+                <?php echo isset($equipas_remuneracao_media) && count($equipas_remuneracao_media) && array_sum($equipas_remuneracao_media) > 0 ? round(array_sum($equipas_remuneracao_media)/count(array_filter($equipas_remuneracao_media)),2).' €' : '-'; ?>
             </div>
-        </section>
-
-        <script>
-            // Tabs dos gráficos - garantir display: flex SEMPRE
+        </div>
+        <!-- Percentagem Masculino -->
+        <div class="kpi-card" style="background:#fff;padding:18px;border-radius:10px;text-align:center;">
+            <div style="font-size:15px;color:#888;">% Masculino</div>
+            <div id="kpiPercentMasc" style="font-size:2.1em;color:#36a2eb;font-weight:bold;">
+                <?php
+                if ($total_colab > 0) {
+                    $masc_percent = ($total_masc + $total_fem + $total_outro) > 0 ? round($total_masc / ($total_masc + $total_fem + $total_outro) * 100, 1) : 0;
+                    echo $masc_percent . '%';
+                } else {
+                    echo '-';
+                }
+                ?>
+            </div>
+        </div>
+        <!-- Percentagem Feminino -->
+        <div class="kpi-card" style="background:#fff;padding:18px;border-radius:10px;text-align:center;">
+            <div style="font-size:15px;color:#888;">% Feminino</div>
+            <div id="kpiPercentFem" style="font-size:2.1em;color:#ff6384;font-weight:bold;">
+                <?php
+                if ($total_colab > 0) {
+                    $masc_percent = ($total_masc + $total_fem + $total_outro) > 0 ? round($total_masc / ($total_masc + $total_fem + $total_outro) * 100, 1) : 0;
+                    $fem_percent = ($total_masc + $total_fem + $total_outro) > 0 ? round($total_fem / ($total_masc + $total_fem + $total_outro) * 100, 1) : 0;
+                    echo $fem_percent . '%';
+                } else {
+                    echo '-';
+                }
+                ?>
+            </div>
+        </div>
+        <!-- Percentagem Outro -->
+        <div class="kpi-card" style="background:#fff;padding:18px;border-radius:10px;text-align:center;">
+            <div style="font-size:15px;color:#888;">% Outro</div>
+            <div id="kpiPercentOutro" style="font-size:2.1em;color:#b2dfdb;font-weight:bold;">
+                <?php
+                if ($total_colab > 0) {
+                    $outro_percent = ($total_masc + $total_fem + $total_outro) > 0 ? round($total_outro / ($total_masc + $total_fem + $total_outro) * 100, 1) : 0;
+                    echo $outro_percent . '%';
+                } else {
+                    echo '-';
+                }
+                ?>
+            </div>
+        </div>
+        <!-- % Retenção ao lado de % Outro -->
+        <div class="kpi-card" style="background:#fff;padding:18px;border-radius:10px;text-align:center;">
+            <div style="font-size:15px;color:#888;">% Retenção</div>
+            <div id="kpiRetencao" style="font-size:2.1em;color:#4bc0c0;font-weight:bold;">
+                <!-- Valor de retenção a ser preenchido via JS ou PHP -->
+                -
+            </div>
+        </div>
+        <!-- GAUGES -->
+        <!-- Remover o antigo gauge-card de % Retenção abaixo -->
+        <!--
+        <div class="gauge-card" style="grid-column:3/4;background:#fff;padding:18px;border-radius:10px;text-align:center;">
+            <div style="font-size:15px;color:#888;">% Retenção</div>
+            <canvas id="gaugeRetencao" width="120" height="70"></canvas>
+            <div id="gaugeRetencaoVal" style="font-size:1.2em;font-weight:bold;"></div>
+        </div>
+        -->
+    </div>
+    <!-- GRÁFICOS PRINCIPAIS -->
+    <div class="dashboard-main-charts" style="display:grid;grid-template-columns:2fr 2fr;gap:18px;">
+        <div style="background:#fff;padding:18px;border-radius:10px;">
+            <div style="font-size:16px;font-weight:bold;margin-bottom:8px;">Colaboradores por Equipa</div>
+            <div id="chartContainer" class="chart-equipa"></div>
+        </div>
+        <div style="background:#fff;padding:18px;border-radius:10px;">
+            <div style="font-size:16px;font-weight:bold;margin-bottom:8px;">Idades dos Colaboradores</div>
+            <div id="chartIdadeMedia" class="chart-idade"></div>
+        </div>
+        <div style="background:#fff;padding:18px;border-radius:10px;">
+            <div style="font-size:16px;font-weight:bold;margin-bottom:8px;">Tempo Médio na Empresa</div>
+            <div id="chartTempoMedio" class="chart-tempo"></div>
+        </div>
+        <div style="background:#fff;padding:18px;border-radius:10px;">
+            <div style="font-size:16px;font-weight:bold;margin-bottom:8px;">Nível Hierárquico/Cargo</div>
+            <div id="chartNivelHierarquico" class="chart-nivel"></div>
+        </div>
+    </div>
+    <!-- Estatísticas -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:24px;">
+        <div id="statsContainer" class="stats-equipa"></div>
+        <div id="statsIdadeMedia" class="stats-idade"></div>
+        <div id="statsTempoMedio" class="stats-tempo"></div>
+        <div id="statsNivelHierarquico" class="stats-nivel"></div>
+    </div>
+</main>
+<script>
+    // Tabs dos gráficos - garantir display: flex SEMPRE
             
             // Ativar a primeira aba por padrão
             document.querySelector('.tab-btn.active').click();
@@ -213,6 +331,13 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
         const nivelCargosCount = <?php echo json_encode($nivel_cargos_count); ?>;
         const pieColors = <?php echo json_encode($pie_colors); ?>;
         const temDados = <?php echo $tem_dados ? 'true' : 'false'; ?>;
+        const tempoMedioEmpresa = <?php echo json_encode($tempo_medio_empresa); ?>;
+        // Passar idades individuais para JS
+        const equipasIdades = <?php echo json_encode($equipas_idades); ?>;
+        const equipasRemuneracaoMedia = <?php echo json_encode($equipas_remuneracao_media); ?>;
+        const percentMasc = <?php echo json_encode($percent_masculino); ?>;
+        const percentFem = <?php echo json_encode($percent_feminino); ?>;
+        const percentOutro = <?php echo json_encode($percent_outro); ?>;
 
         // Tamanho fixo para todos os gráficos
         const CHART_WIDTH = 335;
@@ -409,6 +534,60 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                     document.getElementById('statsNivelHierarquico').innerHTML = "<span style='color:#888;'>Sem dados para estatísticas.</span>";
                 }
             }
+
+            // Tempo médio na empresa por equipa
+            if (typeof CanvasJS !== "undefined" && document.getElementById("chartTempoMedio")) {
+                var dataPointsTempo = [];
+                for (let i = 0; i < equipasLabels.length; i++) {
+                    dataPointsTempo.push({
+                        label: equipasLabels[i],
+                        y: tempoMedioEmpresa[i],
+                        color: "#ff9f40",
+                        indexLabel: String(tempoMedioEmpresa[i])
+                    });
+                }
+                document.getElementById("chartTempoMedio").style.width = CHART_WIDTH + "px";
+                document.getElementById("chartTempoMedio").style.height = CHART_HEIGHT + "px";
+                var chartTempo = new CanvasJS.Chart("chartTempoMedio", {
+                    width: CHART_WIDTH,
+                    height: CHART_HEIGHT,
+                    animationEnabled: true,
+                    backgroundColor: "transparent",
+                    theme: "light2",
+                    axisX: {
+                        labelFontSize: 14,
+                        labelAngle: -20,
+                        interval: 1,
+                        labelFontColor: "#3a366b"
+                    },
+                    axisY: { 
+                        title: "Anos",
+                        minimum: 0,
+                        labelFontColor: "#3a366b",
+                        gridColor: "#ecebfa"
+                    },
+                    data: [{
+                        type: "column",
+                        dataPoints: dataPointsTempo
+                    }]
+                });
+                chartTempo.render();
+                // Estatísticas
+                if (typeof ss !== "undefined" && tempoMedioEmpresa.length > 0 && tempoMedioEmpresa.some(x => x > 0)) {
+                    const min = ss.min(tempoMedioEmpresa.filter(x => x > 0));
+                    const max = ss.max(tempoMedioEmpresa.filter(x => x > 0));
+                    const avg = ss.mean(tempoMedioEmpresa.filter(x => x > 0));
+                    const med = ss.median(tempoMedioEmpresa.filter(x => x > 0));
+                    document.getElementById('statsTempoMedio').innerHTML =
+                        `<strong>Estatísticas:</strong><br>
+                        <span style="color:#ff9f40;">Mínimo:</span> ${min} &nbsp; | &nbsp;
+                        <span style="color:#ff9f40;">Máximo:</span> ${max} &nbsp; | &nbsp;
+                        <span style="color:#ff9f40;">Média:</span> ${avg.toFixed(2)} &nbsp; | &nbsp;
+                        <span style="color:#ff9f40;">Mediana:</span> ${med}`;
+                } else {
+                    document.getElementById('statsTempoMedio').innerHTML = "<span style='color:#888;'>Sem dados para estatísticas.</span>";
+                }
+            }
         });
 
         document.querySelectorAll('.tab-btn').forEach(function(btn) {
@@ -423,6 +602,309 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                 }, 100);
             });
         });
+    </script>
+    <script>
+        // Função para atualizar KPIs conforme equipa selecionada
+    function atualizarKPIs(idx) {
+        if (idx === "all") {
+            // Total colaboradores
+            let total = equipasMembros.reduce((a,b)=>a+b,0);
+            document.getElementById("kpiTotalColab").innerText = total;
+            // Média idade
+            let medias = equipasIdadeMedia.filter(x=>x>0);
+            let mediaIdade = medias.length ? (medias.reduce((a,b)=>a+b,0)/medias.length).toFixed(1) : '-';
+            document.getElementById("kpiMediaIdade").innerText = mediaIdade;
+            // Tempo médio empresa
+            let tempos = tempoMedioEmpresa.filter(x=>x>0);
+            let tempoMedio = tempos.length ? (tempos.reduce((a,b)=>a+b,0)/tempos.length).toFixed(1)+' anos' : '-';
+            document.getElementById("kpiTempoMedio").innerText = tempoMedio;
+            // Remuneração média
+            if (typeof equipasRemuneracaoMedia !== "undefined") {
+                let rems = equipasRemuneracaoMedia.filter(x=>x>0);
+                let rem = rems.length ? (rems.reduce((a,b)=>a+b,0)/rems.length).toFixed(2)+' €' : '-';
+                document.getElementById("kpiRemuneracao").innerText = rem;
+            }
+            // Percentagem masculino/feminino
+            if (typeof percentMasc !== "undefined") {
+                let masc = percentMasc.filter(x=>x>0);
+                let mascVal = masc.length ? (masc.reduce((a,b)=>a+b,0)/masc.length).toFixed(1)+'%' : '-';
+                document.getElementById("kpiPercentMasc").innerText = mascVal;
+            }
+            if (typeof percentFem !== "undefined") {
+                let fem = percentFem.filter(x=>x>0);
+                let femVal = fem.length ? (fem.reduce((a,b)=>a+b,0)/fem.length).toFixed(1)+'%' : '-';
+                document.getElementById("kpiPercentFem").innerText = femVal;
+            }
+            if (typeof percentOutro !== "undefined") {
+                let outro = percentOutro.filter(x=>x>0);
+                let outroVal = outro.length ? (outro.reduce((a,b)=>a+b,0)/outro.length).toFixed(1)+'%' : '-';
+                document.getElementById("kpiPercentOutro").innerText = outroVal;
+            }
+        } else {
+            idx = parseInt(idx);
+            document.getElementById("kpiTotalColab").innerText = equipasMembros[idx] ?? '-';
+            document.getElementById("kpiMediaIdade").innerText = equipasIdadeMedia[idx] && equipasIdadeMedia[idx]>0 ? equipasIdadeMedia[idx] : '-';
+            document.getElementById("kpiTempoMedio").innerText = tempoMedioEmpresa[idx] && tempoMedioEmpresa[idx]>0 ? tempoMedioEmpresa[idx]+' anos' : '-';
+            if (typeof equipasRemuneracaoMedia !== "undefined") {
+                document.getElementById("kpiRemuneracao").innerText = equipasRemuneracaoMedia[idx] && equipasRemuneracaoMedia[idx]>0 ? equipasRemuneracaoMedia[idx]+' €' : '-';
+            }
+            if (typeof percentMasc !== "undefined") {
+                document.getElementById("kpiPercentMasc").innerText = percentMasc[idx] && percentMasc[idx]>0 ? percentMasc[idx]+'%' : '-';
+            }
+            if (typeof percentFem !== "undefined") {
+                document.getElementById("kpiPercentFem").innerText = percentFem[idx] && percentFem[idx]>0 ? percentFem[idx]+'%' : '-';
+            }
+            if (typeof percentOutro !== "undefined") {
+                document.getElementById("kpiPercentOutro").innerText = percentOutro[idx] && percentOutro[idx]>0 ? percentOutro[idx]+'%' : '-';
+            }
+        }
+    }
+
+    // Atualizar gráficos e KPIs ao filtrar equipa
+    function filtrarPorEquipa(idx) {
+        atualizarKPIs(idx);
+
+        // Pessoas por equipa
+        if (typeof CanvasJS !== "undefined" && document.getElementById("chartContainer")) {
+            let dataPoints = [];
+            if (idx === "all") {
+                for (let i = 0; i < equipasLabels.length; i++) {
+                    dataPoints.push({
+                        label: equipasLabels[i],
+                        y: equipasMembros[i],
+                        color: "#667eea",
+                        indexLabel: String(equipasMembros[i])
+                    });
+                }
+            } else {
+                dataPoints.push({
+                    label: equipasLabels[idx],
+                    y: equipasMembros[idx],
+                        color: "#667eea",
+                        indexLabel: String(equipasMembros[idx])
+                });
+            }
+            document.getElementById("chartContainer").innerHTML = "";
+            var chart = new CanvasJS.Chart("chartContainer", {
+                width: CHART_WIDTH,
+                height: CHART_HEIGHT,
+                animationEnabled: true,
+                backgroundColor: "transparent",
+                theme: "light2",
+                title: { text: "" },
+                axisX: {
+                    labelFontSize: 14,
+                    labelAngle: -20,
+                    interval: 1,
+                    labelFontColor: "#3a366b"
+                },
+                axisY: { 
+                    title: "",
+                    interval: null,
+                    minimum: 0,
+                    labelFontColor: "#3a366b",
+                    gridColor: "#ecebfa",
+                    labelFormatter: function() { return ""; }
+                },
+                data: [{
+                    type: "column",
+                    dataPoints: dataPoints
+                }]
+            });
+            chart.render();
+        }
+
+        // Idades dos colaboradores (scatter)
+        if (typeof CanvasJS !== "undefined" && document.getElementById("chartIdadeMedia")) {
+            let dataPointsIdade = [];
+            let todasIdades = [];
+            if (idx === "all") {
+                for (let i = 0; i < equipasLabels.length; i++) {
+                    let idades = equipasIdades[equipasLabels[i]] || [];
+                    for (let j = 0; j < idades.length; j++) {
+                        dataPointsIdade.push({
+                            label: equipasLabels[i],
+                            y: Number(idades[j]),
+                            color: "#764ba2"
+                        });
+                        todasIdades.push(Number(idades[j]));
+                    }
+                }
+            } else {
+                let idades = equipasIdades[equipasLabels[idx]] || [];
+                for (let j = 0; j < idades.length; j++) {
+                    dataPointsIdade.push({
+                        label: "Colaborador " + (j + 1),
+                        y: Number(idades[j]),
+                        color: "#764ba2"
+                    });
+                    todasIdades.push(Number(idades[j]));
+                }
+            }
+            document.getElementById("chartIdadeMedia").innerHTML = "";
+            var chartIdade = new CanvasJS.Chart("chartIdadeMedia", {
+                width: CHART_WIDTH,
+                height: CHART_HEIGHT,
+                animationEnabled: true,
+                backgroundColor: "transparent",
+                theme: "light2",
+                title: { text: "" },
+                axisX: {
+                    labelFontSize: 14,
+                    labelAngle: -20,
+                    interval: 1,
+                    labelFontColor: "#3a366b"
+                },
+                axisY: { 
+                    title: "Idade",
+                    minimum: 0,
+                    labelFontColor: "#3a366b",
+                    gridColor: "#ecebfa"
+                },
+                data: [{
+                    type: "scatter",
+                    markerSize: 12,
+                    dataPoints: dataPointsIdade
+                }]
+            });
+            chartIdade.render();
+
+            // Estatísticas para idades
+            if (typeof ss !== "undefined" && todasIdades.length > 0) {
+                const min = ss.min(todasIdades);
+                const max = ss.max(todasIdades);
+                const avg = ss.mean(todasIdades);
+                const med = ss.median(todasIdades);
+                document.getElementById('statsIdadeMedia').innerHTML =
+                    `<strong>Estatísticas:</strong><br>
+                    <span style="color:#764ba2;">Mínimo:</span> ${min} &nbsp; | &nbsp;
+                    <span style="color:#764ba2;">Máximo:</span> ${max} &nbsp; | &nbsp;
+                    <span style="color:#764ba2;">Média:</span> ${avg.toFixed(2)} &nbsp; | &nbsp;
+                    <span style="color:#764ba2;">Mediana:</span> ${med}`;
+            } else {
+                document.getElementById('statsIdadeMedia').innerHTML = "<span style='color:#888;'>Sem dados para estatísticas.</span>";
+            }
+        }
+
+        // Tempo médio na empresa por equipa
+        if (typeof CanvasJS !== "undefined" && document.getElementById("chartTempoMedio")) {
+            let dataPointsTempo = [];
+            if (idx === "all") {
+                for (let i = 0; i < equipasLabels.length; i++) {
+                    dataPointsTempo.push({
+                        label: equipasLabels[i],
+                        y: tempoMedioEmpresa[i],
+                        color: "#ff9f40",
+                        indexLabel: String(tempoMedioEmpresa[i])
+                    });
+                }
+            } else {
+                dataPointsTempo.push({
+                    label: equipasLabels[idx],
+                    y: tempoMedioEmpresa[idx],
+                    color: "#ff9f40",
+                    indexLabel: String(tempoMedioEmpresa[idx])
+                });
+            }
+            document.getElementById("chartTempoMedio").innerHTML = "";
+            var chartTempo = new CanvasJS.Chart("chartTempoMedio", {
+                width: CHART_WIDTH,
+                height: CHART_HEIGHT,
+                animationEnabled: true,
+                backgroundColor: "transparent",
+                theme: "light2",
+                axisX: {
+                    labelFontSize: 14,
+                    labelAngle: -20,
+                    interval: 1,
+                    labelFontColor: "#3a366b"
+                },
+                axisY: { 
+                    title: "Anos",
+                    minimum: 0,
+                    labelFontColor: "#3a366b",
+                    gridColor: "#ecebfa"
+                },
+                data: [{
+                    type: "column",
+                    dataPoints: dataPointsTempo
+                }]
+            });
+            chartTempo.render();
+            // Estatísticas
+            let tempos = [];
+            if (idx === "all") {
+                tempos = tempoMedioEmpresa.filter(x=>x>0);
+            } else {
+                tempos = tempoMedioEmpresa[idx] > 0 ? [tempoMedioEmpresa[idx]] : [];
+            }
+            if (typeof ss !== "undefined" && tempos.length > 0) {
+                const min = ss.min(tempos);
+                const max = ss.max(tempos);
+                const avg = ss.mean(tempos);
+                const med = ss.median(tempos);
+                document.getElementById('statsTempoMedio').innerHTML =
+                    `<strong>Estatísticas:</strong><br>
+                    <span style="color:#ff9f40;">Mínimo:</span> ${min} &nbsp; | &nbsp;
+                    <span style="color:#ff9f40;">Máximo:</span> ${max} &nbsp; | &nbsp;
+                    <span style="color:#ff9f40;">Média:</span> ${avg.toFixed(2)} &nbsp; | &nbsp;
+                    <span style="color:#ff9f40;">Mediana:</span> ${med}`;
+            } else {
+                document.getElementById('statsTempoMedio').innerHTML = "<span style='color:#888;'>Sem dados para estatísticas.</span>";
+            }
+        }
+
+        // Nível Hierárquico/Cargo (não filtra por equipa, permanece igual)
+        if (typeof CanvasJS !== "undefined" && document.getElementById("chartNivelHierarquico")) {
+            var dataPointsNivel = [];
+            for (let i = 0; i < nivelLabels.length; i++) {
+                dataPointsNivel.push({
+                    label: nivelLabels[i],
+                    y: nivelData[i],
+                    color: pieColors[i % pieColors.length],
+                    indexLabel: String(nivelData[i])
+                });
+            }
+            document.getElementById("chartNivelHierarquico").innerHTML = "";
+            var chartNivel = new CanvasJS.Chart("chartNivelHierarquico", {
+                width: CHART_WIDTH,
+                height: CHART_HEIGHT,
+                animationEnabled: true,
+                backgroundColor: "transparent",
+                theme: "light2",
+                title: { text: "" },
+                axisX: {
+                    labelFontSize: 14,
+                    labelAngle: -20,
+                    interval: 1,
+                    labelFontColor: "#3a366b"
+                },
+                axisY: { 
+                    title: "",
+                    interval: null,
+                    minimum: 0,
+                    labelFontColor: "#3a366b",
+                    gridColor: "#ecebfa",
+                    labelFormatter: function() { return ""; }
+                },
+                data: [{
+                    type: "column",
+                    dataPoints: dataPointsNivel
+                }]
+            });
+            chartNivel.render();
+        }
+    }
+
+    // Inicializar com "Todas"
+    document.addEventListener("DOMContentLoaded", function () {
+        filtrarPorEquipa("all");
+    });
+
+    // Dropdown listener
+    document.getElementById("equipaSelect").addEventListener("change", function() {
+        filtrarPorEquipa(this.value === "all" ? "all" : parseInt(this.value));
+    });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script src="../../assets/chatbot.js"></script>

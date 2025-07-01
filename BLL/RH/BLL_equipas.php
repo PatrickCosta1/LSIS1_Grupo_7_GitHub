@@ -9,8 +9,8 @@ class RHEquipasManager {
     public function getAllEquipas() {
         return $this->dal->getAllEquipas();
     }
-    public function addEquipa($nome, $coordenador_utilizador_id, $elementos = []) {
-        return $this->dal->addEquipa($nome, $coordenador_utilizador_id, $elementos);
+    public function addEquipa($nome, $coordenador_colaborador_id, $elementos = []) {
+        return $this->dal->addEquipa($nome, $coordenador_colaborador_id, $elementos);
     }
     public function getCoordenadores() {
         return $this->dal->getCoordenadores();

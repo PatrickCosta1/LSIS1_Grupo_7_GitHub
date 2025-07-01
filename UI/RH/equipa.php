@@ -12,15 +12,53 @@ if ($equipaId <= 0) {
     exit();
 }
 
-$equipasBLL = new RHEquipaEditarManager(); // Use a classe da BLL de editar equipa
+$equipasBLL = new RHEquipaEditarManager();
 $equipa = $equipasBLL->getEquipaById($equipaId);
 if (!$equipa) {
     header('Location: equipas.php');
     exit();
 }
 
+// Determinar o tipo da equipa
+$tipoEquipa = $equipa['tipo'] ?? 'colaboradores';
+
+// Buscar membros disponíveis conforme o tipo da equipa
+function getMembrosDisponiveis($tipo, $equipasBLL) {
+    if ($tipo === 'colaboradores') {
+        // Apenas colaboradores (perfil_id = 2)
+        return $equipasBLL->getColaboradoresSemEquipaSoColaboradores();
+    } elseif ($tipo === 'coordenadores') {
+        // Apenas coordenadores (perfil_id = 3)
+        require_once '../../DAL/Database.php';
+        $pdo = Database::getConnection();
+        $sql = "SELECT c.id as colaborador_id, c.nome
+                FROM colaboradores c
+                INNER JOIN utilizadores u ON c.utilizador_id = u.id
+                WHERE u.perfil_id = 3 AND u.ativo = 1
+                  AND c.id NOT IN (
+                      SELECT colaborador_id FROM equipa_colaboradores
+                  )";
+        $stmt = $pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } elseif ($tipo === 'rh') {
+        // Apenas RH (perfil_id = 4)
+        require_once '../../DAL/Database.php';
+        $pdo = Database::getConnection();
+        $sql = "SELECT c.id as colaborador_id, c.nome
+                FROM colaboradores c
+                INNER JOIN utilizadores u ON c.utilizador_id = u.id
+                WHERE u.perfil_id = 4 AND u.ativo = 1
+                  AND c.id NOT IN (
+                      SELECT colaborador_id FROM equipa_colaboradores
+                  )";
+        $stmt = $pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    return [];
+}
+
 $coordenadores = $equipasBLL->getCoordenadoresDisponiveis($equipaId);
-$colaboradoresFora = $equipasBLL->getColaboradoresSemEquipaSoColaboradores();
+$colaboradoresFora = getMembrosDisponiveis($tipoEquipa, $equipasBLL);
 $colaboradoresEquipa = $equipasBLL->getColaboradoresDaEquipa($equipaId);
 
 $success = '';
@@ -31,24 +69,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $colabId = intval($_POST['remover_colab_id']);
         $ok = $equipasBLL->removerColaboradorDaEquipa($equipaId, $colabId);
         if ($ok) {
-            $success = "Colaborador removido da equipa.";
+            $success = "Membro removido da equipa.";
         } else {
-            $error = "Erro ao remover colaborador.";
+            $error = "Erro ao remover membro.";
         }
     }
     if (isset($_POST['adicionar_colab_id'])) {
         $colabId = intval($_POST['adicionar_colab_id']);
         $ok = $equipasBLL->adicionarColaboradorAEquipa($equipaId, $colabId);
         if ($ok) {
-            $success = "Colaborador adicionado à equipa.";
+            $success = "Membro adicionado à equipa.";
         } else {
-            $error = "Erro ao adicionar colaborador.";
+            $error = "Erro ao adicionar membro.";
         }
     }
-    if (isset($_POST['nome']) && isset($_POST['coordenador_id'])) {
+    if (isset($_POST['nome']) && isset($_POST['responsavel_id'])) {
         $novoNome = trim($_POST['nome']);
-        $novoCoord = intval($_POST['coordenador_id']);
-        $ok = $equipasBLL->atualizarNomeCoordenador($equipaId, $novoNome, $novoCoord);
+        $novoResp = intval($_POST['responsavel_id']);
+        $ok = $equipasBLL->atualizarNomeCoordenador($equipaId, $novoNome, $novoResp);
         if ($ok) {
             $success = "Equipa atualizada com sucesso!";
         } else {
@@ -64,8 +102,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     $equipa = $equipasBLL->getEquipaById($equipaId);
+    $tipoEquipa = $equipa['tipo'] ?? 'colaboradores';
     $colaboradoresEquipa = $equipasBLL->getColaboradoresDaEquipa($equipaId);
-    $colaboradoresFora = $equipasBLL->getColaboradoresSemEquipaSoColaboradores();
+    $colaboradoresFora = getMembrosDisponiveis($tipoEquipa, $equipasBLL);
 }
 ?>
 <!DOCTYPE html>
@@ -101,10 +140,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" name="nome" id="nome" value="<?= htmlspecialchars($equipa['nome']) ?>" required>
             </div>
             <div class="ficha-campo">
-                <label for="coordenador_id">Coordenador:</label>
-                <select name="coordenador_id" id="coordenador_id" required>
+                <label for="responsavel_id">Coordenador:</label>
+                <select name="responsavel_id" id="responsavel_id" required>
                     <?php foreach ($coordenadores as $coord): ?>
-                        <option value="<?= $coord['id'] ?>" <?= $coord['id'] == $equipa['coordenador_id'] ? 'selected' : '' ?>>
+                        <option value="<?= $coord['id'] ?>" <?= $coord['id'] == $equipa['responsavel_id'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($coord['nome']) ?>
                         </option>
                     <?php endforeach; ?>

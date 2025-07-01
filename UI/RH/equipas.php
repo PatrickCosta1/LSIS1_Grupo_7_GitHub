@@ -48,7 +48,7 @@ $equipas = $equipasBLL->getAllEquipas();
             <thead>
                 <tr>
                     <th>Equipa</th>
-                    <th>Coordenador</th>
+                    <th>Responsável</th>
                     <th>Nº Colaboradores</th>
                     <th style="min-width:120px;">Ações</th>
                 </tr>
@@ -57,7 +57,7 @@ $equipas = $equipasBLL->getAllEquipas();
                 <?php foreach ($equipas as $eq): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($eq['nome']); ?></td>
-                    <td><?php echo htmlspecialchars($eq['coordenador']); ?></td>
+                    <td><?php echo htmlspecialchars($eq['responsavel']); ?></td>
                     <td><?php echo htmlspecialchars($eq['num_colaboradores']); ?></td>
                     <td>
                         <a href="equipa.php?id=<?php echo $eq['id']; ?>" class="btn">Ver</a>

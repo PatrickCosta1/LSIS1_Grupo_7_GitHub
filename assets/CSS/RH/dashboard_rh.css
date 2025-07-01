@@ -248,6 +248,20 @@ header nav a.active {
     border: 1px solid #fff;
 }
 
+/* KPI de remuneração média */
+.kpi-card {
+    color: #444;
+}
+.kpi-card #kpiRemuneracao {
+    color: #cddc39;
+}
+.kpi-card #kpiPercentMasc {
+    color: #36a2eb;
+}
+.kpi-card #kpiPercentFem {
+    color: #ff6384;
+}
+
 
 
 /* Responsivo */
@@ -282,5 +296,5 @@ h1 {
     color: #fff;
     border-radius: 10px;
     padding: 40px 500px;
-    font-size: 1.05rem;
+    font-size: 1.05rem;
 }
