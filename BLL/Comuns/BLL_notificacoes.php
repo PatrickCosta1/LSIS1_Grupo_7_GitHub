@@ -103,8 +103,8 @@ class NotificacoesManager {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'patrickcosta1605@gmail.com';
-            $mail->Password   = 'sxcxatuvhpcwgohu';
+            $mail->Username   = '@gmail.com';
+            $mail->Password   = '';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
 
