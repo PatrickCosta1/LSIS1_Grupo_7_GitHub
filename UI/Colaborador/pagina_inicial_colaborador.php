@@ -78,6 +78,10 @@ $nmr_notificacoes = isset($dados['notificacoes_novas']) ? (int)$dados['notificac
         ">
     ?
   </button>
+
+
+
+
   <iframe
     id="chatbot-iframe"
     src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
@@ -88,6 +92,8 @@ $nmr_notificacoes = isset($dados['notificacoes_novas']) ? (int)$dados['notificac
   </iframe>
 </div>
 <script src="../../assets/chatbot.js"></script>
+
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -116,6 +122,20 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+window.addEventListener('scroll', function() {
+  const footer = document.querySelector('.footer-tlantic');
+  if (window.scrollY > 100) { // Mostra o footer após 100px de scroll
+    footer.classList.add('footer-visivel');
+  } else {
+    footer.classList.remove('footer-visivel');
+  }
+});
+</script>
+
+
 
 </body>
+
+
 </html>

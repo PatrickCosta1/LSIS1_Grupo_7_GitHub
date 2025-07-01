@@ -84,7 +84,7 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
 
 <body>
     <header>
-        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_RH.php';">
         <nav>
             
                 <a href="dashboard_rh.php">Dashboard</a>

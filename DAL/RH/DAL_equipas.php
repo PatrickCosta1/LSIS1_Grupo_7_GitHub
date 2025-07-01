@@ -53,5 +53,36 @@ class DAL_Equipas {
         $stmt = $pdo->query($sql);
         return $stmt->fetchAll();
     }
+
+    public function getEquipaById($id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT * FROM equipas WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
+public function getCoordenadoresDisponiveis($equipaId = null) {
+        $pdo = Database::getConnection();
+        $sql = "SELECT c.id, c.nome FROM colaboradores c
+                WHERE c.cargo = 'Coordenador'
+                " . ($equipaId ? "OR c.id = (SELECT coordenador_id FROM equipas WHERE id = ?)" : "");
+        $stmt = $pdo->prepare($sql);
+        if ($equipaId) {
+            $stmt->execute([$equipaId]);
+        } else {
+            $stmt->execute();
+        }
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getColaboradoresDaEquipa($equipaId) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT c.id, c.nome FROM equipa_colaboradores ec
+                               INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+                               WHERE ec.equipa_id = ?");
+        $stmt->execute([$equipaId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

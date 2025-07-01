@@ -61,7 +61,6 @@ $equipas = $equipasBLL->getAllEquipas();
                     <td><?php echo htmlspecialchars($eq['num_colaboradores']); ?></td>
                     <td>
                         <a href="equipa.php?id=<?php echo $eq['id']; ?>" class="btn">Ver</a>
-                        <a href="#" class="btn btn-danger">Remover</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

@@ -62,7 +62,7 @@ $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
             Gere a tua Equipa através da consulta de relatórios e dashboards, acede à tua Ficha de Colaborador, recebe notificações importantes e muito mais!
         </p>
         <div class="botoes-atalho">
-            <a href="equipa.php" class="botao-atalho roxo">A Minha Equipa</a>
+            <a href="<?php echo $equipaLink; ?>" class="botao-atalho roxo">A Minha Equipa</a>
             <a href="relatorios_equipa.php" class="botao-atalho laranja">Relatórios</a>
             <a href="../Colaborador/ficha_colaborador.php" class="botao-atalho verde">A Minha Ficha</a>
         </div>

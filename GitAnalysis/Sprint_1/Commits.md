@@ -4,16 +4,24 @@
 <summary>Diff</summary>
 
 <pre>
- BLL/Authenticator.php   |    2 !!
+ BLL/Authenticator.php   |    3 !!!
  b/BLL/Authenticator.php |    1 !
- 2 files changed, 3 modifications(!)
+ 2 files changed, 4 modifications(!)
 </pre>
 </details>
 <details>
 <summary>Commits</summary>
 
 <pre>
-commit ce63660e33d5e4fe87d33c4e859f81d5a28f63c8	refs/heads/main
+commit aa225757981090148158554a0b34b87986cf0e09	refs/remotes/origin/bruno_branch
+Author: 1230654@isep.ipp.pt <1230654@isep.ipp.pt>
+Date:   Wed Jun 18 11:44:32 2025 +0100
+
+    Update Authenticator.php
+
+M	BLL/Authenticator.php
+
+commit ce63660e33d5e4fe87d33c4e859f81d5a28f63c8	refs/remotes/origin/bruno_branch
 Author: 1230654@isep.ipp.pt <1230654@isep.ipp.pt>
 Date:   Wed Jun 18 11:20:08 2025 +0100
 
@@ -21,7 +29,7 @@ Date:   Wed Jun 18 11:20:08 2025 +0100
 
 M	BLL/Authenticator.php
 
-commit 48551415eaeeffe97e9edf5f074784ee715368d3	refs/heads/main
+commit 48551415eaeeffe97e9edf5f074784ee715368d3	refs/remotes/origin/bruno_branch
 Author: 1230654@isep.ipp.pt <1230654@isep.ipp.pt>
 Date:   Wed Jun 18 11:18:30 2025 +0100
 
@@ -29,7 +37,7 @@ Date:   Wed Jun 18 11:18:30 2025 +0100
 
 M	BLL/Authenticator.php
 
-commit cc4affbb91823a7055a91de04923ea0521e42d29	refs/heads/main
+commit cc4affbb91823a7055a91de04923ea0521e42d29	refs/remotes/origin/bruno_branch
 Author: 1230654@isep.ipp.pt <1230654@isep.ipp.pt>
 Date:   Wed Jun 18 11:11:27 2025 +0100
 
@@ -227,7 +235,34 @@ M	BLL/Authenticator.php
 <summary>Commits</summary>
 
 <pre>
-commit c2cf3f5e3ca42c92c7d8d6171b9ca58411556aa6	refs/heads/main (HEAD -> main, origin/main, origin/HEAD)
+commit 3fc38d5c9497bd4d77cd06994adbaab6ab72ff05	refs/remotes/origin/patrick_branch
+Author: Patrick Costa <1230881@isep.ipp.pt>
+Date:   Sun Jun 22 16:58:45 2025 +0100
+
+    Atualização 22/06
+
+M	BLL/Admin/BLL_alertas.php
+M	BLL/Admin/BLL_campos_personalizados.php
+A	BLL/Colaborador/BLL_campos_personalizados.php
+M	BLL/RH/BLL_equipas.php
+M	DAL/Admin/DAL_alertas.php
+M	DAL/Admin/DAL_campos_personalizados.php
+M	DAL/Admin/DAL_utilizadores.php
+A	DAL/Colaborador/DAL_campos_personalizados.php
+M	DAL/RH/DAL_colaboradores_gerir.php
+M	DAL/RH/DAL_equipas.php
+A	UI/Admin/alerta_novo.php
+M	UI/Admin/alertas.php
+A	UI/Admin/campo_novo.php
+M	UI/Admin/permissoes.php
+M	UI/Colaborador/ficha_colaborador.php
+M	UI/RH/colaboradores_gerir.php
+A	UI/RH/equipa_colaboradores.php
+A	UI/RH/equipa_coordenador.php
+M	UI/RH/equipas.php
+M	assets/style.css
+
+commit c2cf3f5e3ca42c92c7d8d6171b9ca58411556aa6	refs/remotes/origin/patrick_branch
 Author: Patrick Costa <1230881@isep.ipp.pt>
 Date:   Fri Jun 20 09:02:34 2025 +0100
 
@@ -243,7 +278,7 @@ M	UI/Colaborador/ficha_colaborador.php
 M	UI/RH/equipas.php
 D	destroy_session.php
 
-commit ac6bdb22d5556078f1676409300a76b96113b41d	refs/heads/main
+commit ac6bdb22d5556078f1676409300a76b96113b41d	refs/remotes/origin/patrick_branch
 Author: PatrickCosta1 <1230881@isep.ipp.pt>
 Date:   Wed Jun 18 19:16:59 2025 +0100
 
@@ -297,7 +332,7 @@ M	UI/RH/relatorios.php
 A	assets/style.css
 A	destroy_session.php
 
-commit 8fa486586cb2b239a8d62cd26e0d4686fa31e2f4	refs/heads/main
+commit 8fa486586cb2b239a8d62cd26e0d4686fa31e2f4	refs/remotes/origin/patrick_branch
 Author: PatrickCosta1 <1230881@isep.ipp.pt>
 Date:   Wed Jun 18 16:05:04 2025 +0100
 
@@ -362,7 +397,7 @@ M	UI/RH/equipas.php
 M	UI/RH/exportar.php
 M	UI/RH/relatorios.php
 
-commit 736aefd80c7f0cea60ed46f29f51d0e72f43889f	refs/heads/main
+commit 736aefd80c7f0cea60ed46f29f51d0e72f43889f	refs/remotes/origin/patrick_branch
 Author: PatrickCosta1 <1230881@isep.ipp.pt>
 Date:   Wed Jun 18 13:16:27 2025 +0100
 
@@ -424,7 +459,7 @@ R100	UI/RH/equipas.html	UI/RH/equipas.php
 R100	UI/RH/exportar.html	UI/RH/exportar.php
 R100	UI/RH/relatorios.html	UI/RH/relatorios.php
 
-commit ece6983b5120b245a266354e91575ddc99851614	refs/heads/main
+commit ece6983b5120b245a266354e91575ddc99851614	refs/remotes/origin/patrick_branch
 Author: PatrickCosta1 <1230881@isep.ipp.pt>
 Date:   Wed Jun 18 13:01:54 2025 +0100
 
@@ -437,7 +472,7 @@ D	DAL/UserDataAcess.php
 A	DAL/ff
 M	UI/Comuns/login.php
 
-commit c7323d708f8450b43da3067e53ffc788a9a32456	refs/heads/main
+commit c7323d708f8450b43da3067e53ffc788a9a32456	refs/remotes/origin/patrick_branch
 Author: PatrickCosta1 <1230881@isep.ipp.pt>
 Date:   Wed Jun 18 11:53:16 2025 +0100
 
@@ -463,7 +498,7 @@ M	UI/RH/equipas.html
 M	UI/RH/exportar.html
 M	UI/RH/relatorios.html
 
-commit e982770357844ec29d8a483fa3e25948d9ab7b4f	refs/heads/main
+commit e982770357844ec29d8a483fa3e25948d9ab7b4f	refs/remotes/origin/patrick_branch
 Author: PatrickCosta1 <1230881@isep.ipp.pt>
 Date:   Wed Jun 18 11:43:07 2025 +0100
 
@@ -488,7 +523,7 @@ M	UI/RH/equipas.html
 M	UI/RH/exportar.html
 M	UI/RH/relatorios.html
 
-commit 08029dca8c321002c4607c30fddce9f111bd4faa	refs/heads/main
+commit 08029dca8c321002c4607c30fddce9f111bd4faa	refs/remotes/origin/bruno_branch
 Author: PatrickCosta1 <1230881@isep.ipp.pt>
 Date:   Wed Jun 18 10:57:46 2025 +0100
 
@@ -542,7 +577,7 @@ A	index.php
 <summary>Commits</summary>
 
 <pre>
-commit 5a390b2e26787c05d12ea98f4224200f409fb10c	refs/heads/main
+commit 5a390b2e26787c05d12ea98f4224200f409fb10c	refs/remotes/origin/bruno_branch
 Author: Bruno-costaui <1231247@isep.ipp.pt>
 Date:   Wed Jun 18 11:07:09 2025 +0100
 
@@ -566,7 +601,7 @@ M	BLL/Authenticator.php
 <summary>Commits</summary>
 
 <pre>
-commit 021f47342be5bbe79313e0bc21ef8e6bf1a5245b	refs/heads/main
+commit 021f47342be5bbe79313e0bc21ef8e6bf1a5245b	refs/remotes/origin/patrick_branch
 Author: Miguel Correia <miguelscorreia24@gmail.com>
 Date:   Wed Jun 18 11:44:58 2025 +0100
 
