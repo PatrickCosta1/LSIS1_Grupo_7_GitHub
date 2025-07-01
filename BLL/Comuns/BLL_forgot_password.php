@@ -26,7 +26,7 @@ class ForgotPasswordManager {
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
             $mail->Username   = 'patrickcosta1605@gmail.com';
-            $mail->Password   = 'sxcxatuvhpcwgohu'; // senha de app do Gmail
+            $mail->Password   = ''; // senha de app do Gmail
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
 
