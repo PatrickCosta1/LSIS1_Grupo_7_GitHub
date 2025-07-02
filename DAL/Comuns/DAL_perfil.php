@@ -25,5 +25,19 @@ class DAL_Perfil {
         }
         return $ok1;
     }
+
+    public function getPasswordHashById($id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT password FROM utilizadores WHERE id = ?");
+        $stmt->execute([$id]);
+        $row = $stmt->fetch();
+        return $row ? $row['password'] : null;
+    }
+
+    public function updatePassword($id, $newHash) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("UPDATE utilizadores SET password = ? WHERE id = ?");
+        return $stmt->execute([$newHash, $id]);
+    }
 }
 ?>

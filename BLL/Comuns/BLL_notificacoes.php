@@ -149,4 +149,57 @@ class NotificacoesManager {
             // Logar erro se necessário
         }
     }
+    public function notificarColaboradorPedidoFerias($colaboradorId, $status, $dataInicio, $dataFim) {
+        $colaborador = $this->dal->getUtilizadorById($colaboradorId);
+        if (!$colaborador || empty($colaborador['email'])) return;
+
+        $statusTxt = $status === 'aceite' ? 'Aprovado' : 'Recusado';
+        $corStatus = $status === 'aceite' ? '#38a169' : '#e53e3e';
+
+        $mail = new PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = '@gmail.com';
+            $mail->Password   = '';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = 587;
+
+            $mail->setFrom('patrickcosta1605@gmail.com', 'Portal Tlantic');
+            $mail->addAddress($colaborador['email'], $colaborador['username'] ?? '');
+            $mail->isHTML(true);
+            $mail->Subject = 'Status do Pedido de Férias - Portal Tlantic';
+
+            $mail->Body = '
+            <div style="background:#f7f7fa;padding:32px 0;">
+                <div style="max-width:420px;margin:0 auto;background:#fff;border-radius:12px;box-shadow:0 2px 16px rgba(102,126,234,0.10);padding:32px 28px 28px 28px;font-family:\'Segoe UI\',Arial,sans-serif;">
+                    <div style="text-align:center;margin-bottom:18px;">
+                        <img src="https://i.imgur.com/8oQw7Qz.png" alt="Tlantic" style="height:48px;">
+                    </div>
+                    <h2 style="color:#667eea;text-align:center;margin-bottom:18px;font-weight:700;letter-spacing:0.5px;font-size:1.2rem;">Pedido de Férias ' . $statusTxt . '</h2>
+                    <p style="color:#333;text-align:center;font-size:1.05rem;margin-bottom:18px;">
+                        Olá <b>' . htmlspecialchars($colaborador['username'] ?? '') . '</b>,<br>
+                        O seu pedido de férias foi <span style="color:' . $corStatus . ';font-weight:600;">' . $statusTxt . '</span> pelo RH.<br>
+                        <b>De:</b> ' . htmlspecialchars($dataInicio) . ' <b>até</b> ' . htmlspecialchars($dataFim) . '
+                    </p>
+                    <p style="color:#444;text-align:center;font-size:0.98rem;margin-bottom:18px;">
+                        Para mais detalhes, aceda ao Portal Tlantic.<br>
+                        <a href="http://localhost/LSIS1_Grupo_7_GitHub/" style="color:#667eea;text-decoration:none;font-weight:600;">Aceder ao Portal</a>
+                    </p>
+                    <div style="margin-top:32px;text-align:center;color:#aaa;font-size:0.90rem;">
+                        &copy; ' . date('Y') . ' Tlantic. Todos os direitos reservados.
+                    </div>
+                </div>
+            </div>
+            ';
+            $mail->AltBody = "O seu pedido de férias foi $statusTxt pelo RH.\nDe: $dataInicio até $dataFim\nAcesse o portal para mais informações.";
+            $mail->send();
+        } catch (Exception $e) {
+            // Logar erro se necessário
+        }
+        // Notificação interna
+        $msg = "O seu pedido de férias de $dataInicio até $dataFim foi $statusTxt pelo RH.";
+        $this->dal->enviarNotificacao(null, $colaboradorId, $msg);
+    }
 }

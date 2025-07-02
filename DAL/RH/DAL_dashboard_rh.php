@@ -19,8 +19,8 @@ class DAL_DashboardRH {
             ) 
             + 
             (
-                CASE WHEN e.coordenador_id IS NOT NULL 
-                    AND e.coordenador_id NOT IN (
+                CASE WHEN e.responsavel_id IS NOT NULL 
+                    AND e.responsavel_id NOT IN (
                         SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id
                     )
                 THEN 1 ELSE 0 END
@@ -30,7 +30,7 @@ class DAL_DashboardRH {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Para todas as queries que listam membros da equipa, inclua o coordenador se não estiver já em equipa_colaboradores
+    // Para todas as queries que listam membros da equipa, inclua o responsavel se não estiver já em equipa_colaboradores
     public function getIdadesColaboradoresPorEquipa() {
         $pdo = Database::getConnection();
         $sql = "
@@ -42,9 +42,9 @@ class DAL_DashboardRH {
             UNION
             SELECT e.nome as equipa_nome, c.data_nascimento
             FROM equipas e
-            INNER JOIN colaboradores c ON e.coordenador_id = c.id
-            WHERE e.coordenador_id IS NOT NULL
-              AND (e.coordenador_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
+            INNER JOIN colaboradores c ON e.responsavel_id = c.id
+            WHERE e.responsavel_id IS NOT NULL
+              AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
               AND c.data_nascimento IS NOT NULL AND c.data_nascimento != '' AND c.data_nascimento != '0000-00-00'
         ";
         $stmt = $pdo->query($sql);
@@ -116,10 +116,10 @@ class DAL_DashboardRH {
             FROM (
                 SELECT ec.equipa_id, ec.colaborador_id FROM equipa_colaboradores ec
                 UNION
-                SELECT e.id as equipa_id, e.coordenador_id as colaborador_id
+                SELECT e.id as equipa_id, e.responsavel_id as colaborador_id
                 FROM equipas e
-                WHERE e.coordenador_id IS NOT NULL
-                  AND (e.coordenador_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
+                WHERE e.responsavel_id IS NOT NULL
+                  AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
             ) membros
             INNER JOIN equipas e ON membros.equipa_id = e.id
             INNER JOIN colaboradores c ON membros.colaborador_id = c.id
@@ -142,10 +142,10 @@ class DAL_DashboardRH {
             FROM (
                 SELECT ec.equipa_id, ec.colaborador_id FROM equipa_colaboradores ec
                 UNION
-                SELECT e.id as equipa_id, e.coordenador_id as colaborador_id
+                SELECT e.id as equipa_id, e.responsavel_id as colaborador_id
                 FROM equipas e
-                WHERE e.coordenador_id IS NOT NULL
-                  AND (e.coordenador_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
+                WHERE e.responsavel_id IS NOT NULL
+                  AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
             ) membros
             INNER JOIN equipas e ON membros.equipa_id = e.id
             INNER JOIN colaboradores c ON membros.colaborador_id = c.id
@@ -162,6 +162,6 @@ class DAL_DashboardRH {
             $result[$eq][$sexo] = $total;
         }
         return $result;
-    }
+}
 }
 ?>

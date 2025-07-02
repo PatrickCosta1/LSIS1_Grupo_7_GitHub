@@ -46,9 +46,9 @@ $nmr_notificacoes = isset($dados['notificacoes_novas']) ? (int)$dados['notificac
         Atualiza os teus <strong>dados</strong>, recebe <strong>notificações</strong>, consulta informações importantes e gere a tua ligação com a empresa de forma <strong>simples e segura</strong>.
     </p>
     <div class="botoes-atalho">
-        <a href="#" class="botao-atalho roxo">Recibos</a>
+        <a href="recibos.php" class="botao-atalho roxo">Recibos</a>
         <a href="ficha_colaborador.php#" class="botao-atalho laranja">Ficha Colaborador</a>
-        <a href="#" class="botao-atalho verde">Férias</a>
+        <a href="ferias.php" class="botao-atalho verde">Férias</a>
     </div>
     <div class="dash-carousel-container">
         <span class="dash-topic active">Marcação de Férias</span>
@@ -78,6 +78,10 @@ $nmr_notificacoes = isset($dados['notificacoes_novas']) ? (int)$dados['notificac
         ">
     ?
   </button>
+
+
+
+
   <iframe
     id="chatbot-iframe"
     src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
@@ -88,6 +92,8 @@ $nmr_notificacoes = isset($dados['notificacoes_novas']) ? (int)$dados['notificac
   </iframe>
 </div>
 <script src="../../assets/chatbot.js"></script>
+
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -116,6 +122,20 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+window.addEventListener('scroll', function() {
+  const footer = document.querySelector('.footer-tlantic');
+  if (window.scrollY > 100) { // Mostra o footer após 100px de scroll
+    footer.classList.add('footer-visivel');
+  } else {
+    footer.classList.remove('footer-visivel');
+  }
+});
+</script>
+
+
 
 </body>
+
+
 </html>

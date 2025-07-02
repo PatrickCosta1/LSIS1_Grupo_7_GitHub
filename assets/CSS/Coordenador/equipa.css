@@ -509,7 +509,7 @@ header nav a:hover::before {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(90deg, #299cf3 0%, #0360e9 100%);
+    background: #fff;
     color: #fff !important;
     border: none;
     border-radius: 50%;

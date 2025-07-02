@@ -20,7 +20,6 @@ $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
     <meta charset="UTF-8">
     <title>Minha Equipa - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/Coordenador/equipa.css">
-    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
 </head>
 <body>
     <header>
@@ -90,8 +89,8 @@ $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
                         </td>
                         <td>
                             <button class="btn-contactar" data-nome="<?php echo htmlspecialchars($c['nome']); ?>" data-id="<?php echo $c['id']; ?>" title="Enviar mensagem">
-                                <!-- SVG -->
-                            </button>                 
+                                <img src="https://cdn-icons-png.flaticon.com/512/3682/3682321.png" alt="Mensagem" style="width:22px;height:22px;display:block;margin:0 auto;">
+                            </button>              
                         </td>
                     </tr>
                     <?php endforeach; ?>

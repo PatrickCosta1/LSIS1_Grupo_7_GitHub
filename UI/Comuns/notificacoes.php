@@ -30,14 +30,14 @@ if (isset($_GET['marcar_lida'])) {
     exit();
 }
 
-// RH: Aprovação de pedidos de alteração
+// RH: Aprovação de pedidos de alteração e férias
 $aprovacao_msg = '';
 if ($_SESSION['profile'] === 'rh') {
     require_once '../../BLL/Colaborador/BLL_ficha_colaborador.php';
     $colabBLL = new ColaboradorFichaManager();
     $notificacoesManager = new NotificacoesManager();
 
-    // Aprovar pedido
+    // Aprovar pedido de alteração
     if (isset($_POST['aprovar_pedido'])) {
         if ($colabBLL->aprovarPedido($_POST['pedido_id'])) {
             // Buscar dados do pedido para o email
@@ -56,7 +56,7 @@ if ($_SESSION['profile'] === 'rh') {
             $aprovacao_msg = "Erro ao aprovar pedido.";
         }
     }
-    // Recusar pedido
+    // Recusar pedido de alteração
     if (isset($_POST['recusar_pedido'])) {
         if ($colabBLL->recusarPedido($_POST['pedido_id'])) {
             // Buscar dados do pedido para o email
@@ -75,8 +75,43 @@ if ($_SESSION['profile'] === 'rh') {
             $aprovacao_msg = "Erro ao recusar pedido.";
         }
     }
+    // Aprovar pedido de férias
+    if (isset($_POST['aprovar_pedido_ferias'])) {
+        if ($colabBLL->aprovarPedidoFerias($_POST['pedido_ferias_id'])) {
+            $pedido = $colabBLL->getPedidoFeriasById($_POST['pedido_ferias_id']);
+            if ($pedido) {
+                $notificacoesManager->notificarColaboradorPedidoFerias(
+                    $pedido['colaborador_id'],
+                    'aceite',
+                    $pedido['data_inicio'],
+                    $pedido['data_fim']
+                );
+            }
+            $aprovacao_msg = "Pedido de férias aprovado.";
+        } else {
+            $aprovacao_msg = "Erro ao aprovar pedido de férias.";
+        }
+    }
+    // Recusar pedido de férias
+    if (isset($_POST['recusar_pedido_ferias'])) {
+        if ($colabBLL->recusarPedidoFerias($_POST['pedido_ferias_id'])) {
+            $pedido = $colabBLL->getPedidoFeriasById($_POST['pedido_ferias_id']);
+            if ($pedido) {
+                $notificacoesManager->notificarColaboradorPedidoFerias(
+                    $pedido['colaborador_id'],
+                    'recusado',
+                    $pedido['data_inicio'],
+                    $pedido['data_fim']
+                );
+            }
+            $aprovacao_msg = "Pedido de férias recusado.";
+        } else {
+            $aprovacao_msg = "Erro ao recusar pedido de férias.";
+        }
+    }
     // Buscar pedidos pendentes
     $pedidosPendentes = $colabBLL->listarPedidosPendentes();
+    $pedidosFeriasPendentes = $colabBLL->listarPedidosFeriasPendentes();
 }
 ?>
 <!DOCTYPE html>
@@ -275,6 +310,32 @@ if ($_SESSION['profile'] === 'rh') {
             <?php else: ?>
                 <div style="color:#888; text-align:center; margin:16px 0;">
                     Não existem pedidos de alteração pendentes.
+                </div>
+            <?php endif; ?>
+
+            <h2 style="margin-top:32px;">Pedidos de Férias Pendentes</h2>
+            <?php if (!empty($pedidosFeriasPendentes)): ?>
+                <ul class="notificacoes-lista">
+                <?php foreach ($pedidosFeriasPendentes as $pf): ?>
+                    <li class="notificacao unread">
+                        <span class="titulo">
+                            <strong><?php echo htmlspecialchars($pf['colaborador_nome']); ?></strong> pediu férias:
+                            <br>
+                            <span style="color:#888;">De:</span> <?php echo htmlspecialchars($pf['data_inicio']); ?>
+                            <span style="color:#888;">Até:</span> <strong><?php echo htmlspecialchars($pf['data_fim']); ?></strong>
+                        </span>
+                        <span class="data"><?php echo date('d/m/Y H:i', strtotime($pf['data_pedido'])); ?></span>
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="pedido_ferias_id" value="<?php echo $pf['id']; ?>">
+                            <button type="submit" name="aprovar_pedido_ferias" class="btn btn-sm">Aprovar</button>
+                            <button type="submit" name="recusar_pedido_ferias" class="btn btn-danger btn-sm">Recusar</button>
+                        </form>
+                    </li>
+                <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <div style="color:#888; text-align:center; margin:16px 0;">
+                    Não existem pedidos de férias pendentes.
                 </div>
             <?php endif; ?>
         <?php endif; ?>
