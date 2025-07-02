@@ -31,5 +31,4 @@ class CoordenadorDashboardManager {
         return $this->dal->getColaboradoresByEquipa($equipaId);
     }
 }
-
 ?>

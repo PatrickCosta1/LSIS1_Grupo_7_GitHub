@@ -33,6 +33,7 @@ class RHEquipaEditarManager {
     }
 
     public function atualizarNomeCoordenador($equipaId, $nome, $coordenadorId) {
+        // $coordenadorId deve ser o ID do colaborador
         return $this->dal->atualizarNomeCoordenador($equipaId, $nome, $coordenadorId);
     }
 

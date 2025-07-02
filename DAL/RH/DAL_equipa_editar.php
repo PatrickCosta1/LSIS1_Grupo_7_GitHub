@@ -11,8 +11,10 @@ class DALEquipa {
 
     public function getCoordenadoresDisponiveis($equipaId = null) {
         $pdo = Database::getConnection();
+        // Seleciona todos os coordenadores ativos + o responsável atual da equipa (caso exista)
         $sql = "SELECT c.id, c.nome FROM colaboradores c
-                WHERE c.cargo = 'Coordenador'
+                INNER JOIN utilizadores u ON c.utilizador_id = u.id
+                WHERE u.perfil_id = 3 AND u.ativo = 1
                 " . ($equipaId ? "OR c.id = (SELECT responsavel_id FROM equipas WHERE id = ?)" : "");
         $stmt = $pdo->prepare($sql);
         if ($equipaId) {
@@ -67,8 +69,10 @@ class DALEquipa {
 
     public function atualizarNomeCoordenador($equipaId, $nome, $responsavelId) {
         $pdo = Database::getConnection();
-        // Verifica se o responsável existe e está ativo
-        $stmtCheck = $pdo->prepare("SELECT id FROM utilizadores WHERE id = ? AND ativo = 1");
+        // Verifica se o NOVO responsável existe, é RH e está ativo
+        $stmtCheck = $pdo->prepare("SELECT c.id FROM colaboradores c
+            INNER JOIN utilizadores u ON c.utilizador_id = u.id
+            WHERE c.id = ? AND u.perfil_id = 4 AND u.ativo = 1");
         $stmtCheck->execute([$responsavelId]);
         $responsavelExiste = $stmtCheck->fetchColumn();
 

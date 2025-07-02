@@ -43,6 +43,6 @@ class RHDashboardManager {
     // Adicionado: distribuição de género por equipa
     public function getDistribuicaoGeneroPorEquipa() {
         return $this->dal->getDistribuicaoGeneroPorEquipa();
-}
+    }
 }
 ?>

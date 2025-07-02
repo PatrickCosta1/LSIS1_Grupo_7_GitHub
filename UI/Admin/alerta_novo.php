@@ -10,10 +10,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $descricao = trim($_POST['descricao'] ?? '');
     $periodicidade_meses = intval($_POST['periodicidade_meses'] ?? 0);
     $ativo = isset($_POST['ativo']) ? 1 : 0;
+    $destinatario = $_POST['destinatario'] ?? '';
 
-    if ($tipo && $descricao && $periodicidade_meses > 0) {
+    if ($tipo && $descricao && $periodicidade_meses > 0 && $destinatario) {
         $bll = new AlertaNovoManager();
-        $ok = $bll->criarAlerta($tipo, $descricao, $periodicidade_meses, $ativo);
+        $ok = $bll->criarAlerta($tipo, $descricao, $periodicidade_meses, $ativo, $destinatario);
         if ($ok) {
             $msg = "Alerta criado com sucesso!";
         } else {
@@ -56,6 +57,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <textarea name="descricao" id="descricao" rows="4" required maxlength="500"></textarea>
                 <label for="periodicidade_meses">Periodicidade (meses):</label>
                 <input type="number" name="periodicidade_meses" id="periodicidade_meses" min="1" required>
+                <label for="destinatario">Destinatário:</label>
+                <select name="destinatario" id="destinatario" required>
+                    <option value="">Selecione</option>
+                    <option value="colaborador">Colaborador</option>
+                    <option value="coordenador">Coordenador</option>
+                    <option value="rh">RH</option>
+                    <option value="admin">Admin</option>
+                </select>
                 <label>
                     <input type="checkbox" name="ativo" checked>
                     Ativo

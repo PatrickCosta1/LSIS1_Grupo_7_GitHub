@@ -624,20 +624,25 @@ foreach ($equipas_labels as $nome_equipa) {
                 let rem = rems.length ? (rems.reduce((a,b)=>a+b,0)/rems.length).toFixed(2)+' €' : '-';
                 document.getElementById("kpiRemuneracao").innerText = rem;
             }
-            // Percentagem masculino/feminino
-            if (typeof percentMasc !== "undefined") {
-                let masc = percentMasc.filter(x=>x>0);
-                let mascVal = masc.length ? (masc.reduce((a,b)=>a+b,0)/masc.length).toFixed(1)+'%' : '-';
+            // Percentagem masculino/feminino/outro - corrigido para cálculo global
+            if (typeof percentMasc !== "undefined" && typeof percentFem !== "undefined" && typeof percentOutro !== "undefined") {
+                // Calcular totais globais
+                let totalMasc = 0, totalFem = 0, totalOutro = 0, totalAll = 0;
+                for (let i = 0; i < equipasLabels.length; i++) {
+                    let membros = equipasMembros[i] || 0;
+                    let masc = percentMasc[i] ? (percentMasc[i]/100)*membros : 0;
+                    let fem = percentFem[i] ? (percentFem[i]/100)*membros : 0;
+                    let outro = percentOutro[i] ? (percentOutro[i]/100)*membros : 0;
+                    totalMasc += masc;
+                    totalFem += fem;
+                    totalOutro += outro;
+                    totalAll += membros;
+                }
+                let mascVal = totalAll > 0 ? (totalMasc/totalAll*100).toFixed(1)+'%' : '-';
+                let femVal = totalAll > 0 ? (totalFem/totalAll*100).toFixed(1)+'%' : '-';
+                let outroVal = totalAll > 0 ? (totalOutro/totalAll*100).toFixed(1)+'%' : '-';
                 document.getElementById("kpiPercentMasc").innerText = mascVal;
-            }
-            if (typeof percentFem !== "undefined") {
-                let fem = percentFem.filter(x=>x>0);
-                let femVal = fem.length ? (fem.reduce((a,b)=>a+b,0)/fem.length).toFixed(1)+'%' : '-';
                 document.getElementById("kpiPercentFem").innerText = femVal;
-            }
-            if (typeof percentOutro !== "undefined") {
-                let outro = percentOutro.filter(x=>x>0);
-                let outroVal = outro.length ? (outro.reduce((a,b)=>a+b,0)/outro.length).toFixed(1)+'%' : '-';
                 document.getElementById("kpiPercentOutro").innerText = outroVal;
             }
         } else {

@@ -57,18 +57,71 @@ function getMembrosDisponiveis($tipo, $equipasBLL) {
     return [];
 }
 
-$coordenadores = $equipasBLL->getCoordenadoresDisponiveis($equipaId);
+// Buscar responsáveis corretos conforme o tipo da equipa
+function getResponsaveisDisponiveis($tipo, $equipaId = null, $responsavelIdAtual = null) {
+    require_once '../../DAL/Database.php';
+    $pdo = Database::getConnection();
+    $responsaveis = [];
+    if ($tipo === 'colaboradores' || $tipo === 'coordenadores') {
+        $sql = "SELECT c.id, c.nome
+                FROM colaboradores c
+                INNER JOIN utilizadores u ON c.utilizador_id = u.id
+                WHERE u.perfil_id = 3 AND u.ativo = 1";
+        $responsaveis = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    } elseif ($tipo === 'rh') {
+        $sql = "SELECT c.id, c.nome
+                FROM colaboradores c
+                INNER JOIN utilizadores u ON c.utilizador_id = u.id
+                WHERE u.perfil_id = 4 AND u.ativo = 1";
+        $responsaveis = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+    // Garante que o responsável atual aparece na lista (mesmo se não ativo)
+    if ($responsavelIdAtual) {
+        $existe = false;
+        foreach ($responsaveis as $r) {
+            if ($r['id'] == $responsavelIdAtual) {
+                $existe = true;
+                break;
+            }
+        }
+        if (!$existe) {
+            // Buscar o responsável atual pelo ID
+            $stmt = $pdo->prepare("SELECT c.id, c.nome FROM colaboradores c WHERE c.id = ?");
+            $stmt->execute([$responsavelIdAtual]);
+            $atual = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($atual) {
+                $responsaveis[] = $atual;
+            }
+        }
+    }
+    return $responsaveis;
+}
+
+$coordenadores = getResponsaveisDisponiveis($tipoEquipa, $equipaId, $equipa['responsavel_id'] ?? null);
 $colaboradoresFora = getMembrosDisponiveis($tipoEquipa, $equipasBLL);
 $colaboradoresEquipa = $equipasBLL->getColaboradoresDaEquipa($equipaId);
+
+// Remover o responsável da lista de adicionar caso seja equipa RH
+if ($tipoEquipa === 'rh' && !empty($equipa['responsavel_id'])) {
+    $colaboradoresFora = array_filter($colaboradoresFora, function($colab) use ($equipa) {
+        // O campo pode ser 'colaborador_id' ou 'id' dependendo da query
+        $id = isset($colab['colaborador_id']) ? $colab['colaborador_id'] : (isset($colab['id']) ? $colab['id'] : null);
+        return $id != $equipa['responsavel_id'];
+    });
+    // Reindexar array para evitar problemas no foreach
+    $colaboradoresFora = array_values($colaboradoresFora);
+}
 
 $success = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $success = '';
+    $error = '';
     if (isset($_POST['remover_colab_id'])) {
         $colabId = intval($_POST['remover_colab_id']);
-        $ok = $equipasBLL->removerColaboradorDaEquipa($equipaId, $colabId);
-        if ($ok) {
+        $okRemover = $equipasBLL->removerColaboradorDaEquipa($equipaId, $colabId);
+        if ($okRemover) {
             $success = "Membro removido da equipa.";
         } else {
             $error = "Erro ao remover membro.";
@@ -76,8 +129,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (isset($_POST['adicionar_colab_id'])) {
         $colabId = intval($_POST['adicionar_colab_id']);
-        $ok = $equipasBLL->adicionarColaboradorAEquipa($equipaId, $colabId);
-        if ($ok) {
+        $okAdicionar = $equipasBLL->adicionarColaboradorAEquipa($equipaId, $colabId);
+        if ($okAdicionar) {
             $success = "Membro adicionado à equipa.";
         } else {
             $error = "Erro ao adicionar membro.";
@@ -85,12 +138,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (isset($_POST['nome']) && isset($_POST['responsavel_id'])) {
         $novoNome = trim($_POST['nome']);
-        $novoResp = intval($_POST['responsavel_id']);
-        $ok = $equipasBLL->atualizarNomeCoordenador($equipaId, $novoNome, $novoResp);
-        if ($ok) {
+        $novoResp = intval($_POST['responsavel_id']); // ID do colaborador
+        $okAtualizar = $equipasBLL->atualizarNomeCoordenador($equipaId, $novoNome, $novoResp);
+        if ($okAtualizar) {
             $success = "Equipa atualizada com sucesso!";
         } else {
-            $error = "Erro ao atualizar equipa.";
+            $error = "Erro ao atualizar equipa. Verifique se o coordenador selecionado é válido.";
         }
     }
     if (isset($_POST['remover_equipa'])) {
@@ -105,6 +158,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipoEquipa = $equipa['tipo'] ?? 'colaboradores';
     $colaboradoresEquipa = $equipasBLL->getColaboradoresDaEquipa($equipaId);
     $colaboradoresFora = getMembrosDisponiveis($tipoEquipa, $equipasBLL);
+    // Recarregar responsáveis após alteração
+    $coordenadores = getResponsaveisDisponiveis($tipoEquipa, $equipaId, $equipa['responsavel_id'] ?? null);
 }
 ?>
 <!DOCTYPE html>

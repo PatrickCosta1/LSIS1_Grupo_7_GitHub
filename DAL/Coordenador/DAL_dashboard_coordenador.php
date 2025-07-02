@@ -19,23 +19,43 @@ class DAL_DashboardCoordenador {
 
     public function getEquipasComMembros($userId) {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare("SELECT e.id, e.nome, 
-            (SELECT COUNT(*) FROM equipa_colaboradores ec WHERE ec.equipa_id = e.id) as num_colaboradores
-            FROM equipas e WHERE e.coordenador_id = ?");
+        $stmt = $pdo->prepare("
+            SELECT e.id, e.nome, 
+                (
+                    SELECT COUNT(*) FROM equipa_colaboradores ec WHERE ec.equipa_id = e.id
+                ) 
+                + 
+                (
+                    CASE WHEN e.responsavel_id IS NOT NULL 
+                        AND e.responsavel_id NOT IN (
+                            SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id
+                        )
+                    THEN 1 ELSE 0 END
+                ) as num_colaboradores
+            FROM equipas e WHERE e.coordenador_id = ?
+        ");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getIdadesColaboradoresPorEquipa($userId) {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare(
-            "SELECT e.nome as equipa_nome, c.data_nascimento
+        $stmt = $pdo->prepare("
+            SELECT e.nome as equipa_nome, c.data_nascimento
             FROM equipa_colaboradores ec
             INNER JOIN colaboradores c ON ec.colaborador_id = c.id
             INNER JOIN equipas e ON ec.equipa_id = e.id
-            WHERE e.coordenador_id = ? AND c.data_nascimento IS NOT NULL AND c.data_nascimento != '' AND c.data_nascimento != '0000-00-00'"
-        );
-        $stmt->execute([$userId]);
+            WHERE e.coordenador_id = ? AND c.data_nascimento IS NOT NULL AND c.data_nascimento != '' AND c.data_nascimento != '0000-00-00'
+            UNION
+            SELECT e.nome as equipa_nome, c.data_nascimento
+            FROM equipas e
+            INNER JOIN colaboradores c ON e.responsavel_id = c.id
+            WHERE e.coordenador_id = ?
+              AND e.responsavel_id IS NOT NULL
+              AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
+              AND c.data_nascimento IS NOT NULL AND c.data_nascimento != '' AND c.data_nascimento != '0000-00-00'
+        ");
+        $stmt->execute([$userId, $userId]);
         $result = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $data_nasc = $row['data_nascimento'];
@@ -52,29 +72,49 @@ class DAL_DashboardCoordenador {
 
     public function getDistribuicaoNivelHierarquico($userId) {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare(
-            "SELECT c.nivel_hierarquico, COUNT(*) as total 
-            FROM colaboradores c
-            INNER JOIN equipa_colaboradores ec ON c.id = ec.colaborador_id
-            INNER JOIN equipas e ON ec.equipa_id = e.id
-            WHERE e.coordenador_id = ? AND c.nivel_hierarquico IS NOT NULL AND c.nivel_hierarquico != ''
-            GROUP BY c.nivel_hierarquico"
-        );
-        $stmt->execute([$userId]);
+        $stmt = $pdo->prepare("
+            SELECT nivel_hierarquico, COUNT(*) as total FROM (
+                SELECT c.nivel_hierarquico
+                FROM equipa_colaboradores ec
+                INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+                INNER JOIN equipas e ON ec.equipa_id = e.id
+                WHERE e.coordenador_id = ? AND c.nivel_hierarquico IS NOT NULL AND c.nivel_hierarquico != ''
+                UNION ALL
+                SELECT c.nivel_hierarquico
+                FROM equipas e
+                INNER JOIN colaboradores c ON e.responsavel_id = c.id
+                WHERE e.coordenador_id = ?
+                  AND e.responsavel_id IS NOT NULL
+                  AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
+                  AND c.nivel_hierarquico IS NOT NULL AND c.nivel_hierarquico != ''
+            ) as sub
+            GROUP BY nivel_hierarquico
+        ");
+        $stmt->execute([$userId, $userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getCargosPorNivelHierarquico($userId) {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare(
-            "SELECT c.nivel_hierarquico, c.cargo, COUNT(*) as total
-            FROM colaboradores c
-            INNER JOIN equipa_colaboradores ec ON c.id = ec.colaborador_id
-            INNER JOIN equipas e ON ec.equipa_id = e.id
-            WHERE e.coordenador_id = ? AND c.nivel_hierarquico IS NOT NULL AND c.nivel_hierarquico != '' AND c.cargo IS NOT NULL AND c.cargo != ''
-            GROUP BY c.nivel_hierarquico, c.cargo"
-        );
-        $stmt->execute([$userId]);
+        $stmt = $pdo->prepare("
+            SELECT nivel_hierarquico, cargo, COUNT(*) as total FROM (
+                SELECT c.nivel_hierarquico, c.cargo
+                FROM equipa_colaboradores ec
+                INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+                INNER JOIN equipas e ON ec.equipa_id = e.id
+                WHERE e.coordenador_id = ? AND c.nivel_hierarquico IS NOT NULL AND c.nivel_hierarquico != '' AND c.cargo IS NOT NULL AND c.cargo != ''
+                UNION ALL
+                SELECT c.nivel_hierarquico, c.cargo
+                FROM equipas e
+                INNER JOIN colaboradores c ON e.responsavel_id = c.id
+                WHERE e.coordenador_id = ?
+                  AND e.responsavel_id IS NOT NULL
+                  AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
+                  AND c.nivel_hierarquico IS NOT NULL AND c.nivel_hierarquico != '' AND c.cargo IS NOT NULL AND c.cargo != ''
+            ) as sub
+            GROUP BY nivel_hierarquico, cargo
+        ");
+        $stmt->execute([$userId, $userId]);
         $result = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $nivel = $row['nivel_hierarquico'];
@@ -88,14 +128,24 @@ class DAL_DashboardCoordenador {
 
     public function getTemposNaEmpresaPorEquipa($userId) {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare(
-            "SELECT e.nome as equipa_nome, c.data_inicio_contrato
-            FROM equipa_colaboradores ec
-            INNER JOIN colaboradores c ON ec.colaborador_id = c.id
-            INNER JOIN equipas e ON ec.equipa_id = e.id
-            WHERE e.coordenador_id = ? AND c.data_inicio_contrato IS NOT NULL AND c.data_inicio_contrato != '' AND c.data_inicio_contrato != '0000-00-00'"
-        );
-        $stmt->execute([$userId]);
+        $stmt = $pdo->prepare("
+            SELECT equipa_nome, data_inicio_contrato FROM (
+                SELECT e.nome as equipa_nome, c.data_inicio_contrato
+                FROM equipa_colaboradores ec
+                INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+                INNER JOIN equipas e ON ec.equipa_id = e.id
+                WHERE e.coordenador_id = ? AND c.data_inicio_contrato IS NOT NULL AND c.data_inicio_contrato != '' AND c.data_inicio_contrato != '0000-00-00'
+                UNION ALL
+                SELECT e.nome as equipa_nome, c.data_inicio_contrato
+                FROM equipas e
+                INNER JOIN colaboradores c ON e.responsavel_id = c.id
+                WHERE e.coordenador_id = ?
+                  AND e.responsavel_id IS NOT NULL
+                  AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
+                  AND c.data_inicio_contrato IS NOT NULL AND c.data_inicio_contrato != '' AND c.data_inicio_contrato != '0000-00-00'
+            ) as sub
+        ");
+        $stmt->execute([$userId, $userId]);
         $result = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $data_inicio = $row['data_inicio_contrato'];
@@ -110,15 +160,25 @@ class DAL_DashboardCoordenador {
         }
         return $result;
     }
+
     public function getColaboradoresByEquipa($equipaId) {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare(
-            "SELECT c.id, c.nome, c.email, c.cargo
+        $stmt = $pdo->prepare("
+            SELECT c.id, c.nome, c.email, c.cargo
             FROM equipa_colaboradores ec
             INNER JOIN colaboradores c ON ec.colaborador_id = c.id
-            WHERE ec.equipa_id = ?"
-        );
-        $stmt->execute([$equipaId]);
+            WHERE ec.equipa_id = ?
+            UNION
+            SELECT c.id, c.nome, c.email, c.cargo
+            FROM equipas e
+            INNER JOIN colaboradores c ON e.responsavel_id = c.id
+            WHERE e.id = ?
+              AND e.responsavel_id IS NOT NULL
+              AND NOT EXISTS (
+                  SELECT 1 FROM equipa_colaboradores ec2 WHERE ec2.equipa_id = e.id AND ec2.colaborador_id = e.responsavel_id
+              )
+        ");
+        $stmt->execute([$equipaId, $equipaId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
