@@ -228,19 +228,10 @@ if ($_SESSION['profile'] === 'rh') {
                 <a href="../RH/relatorios.php">Relatórios</a>
                 <a href="../RH/exportar.php">Exportar</a>
                 <a href="../Comuns/notificacoes.php">Notificações</a>
-                <div class="dropdown-perfil">
+                
                     <a href="../Comuns/perfil.php" class="perfil-link">
                         Perfil
-                        <span class="seta-baixo">&#9662;</span>
                     </a>
-                    <div class="dropdown-menu">
-                        <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
-                        <a href="../Colaborador/beneficios.php">Benefícios</a>
-                        <a href="../Colaborador/ferias.php">Férias</a>
-                        <a href="../Colaborador/formacoes.php">Formações</a>
-                        <a href="../Colaborador/recibos.php">Recibos</a>
-                    </div>
-                </div>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
                 <a href="../Convidado/onboarding_convidado.php">Preencher Dados</a>
