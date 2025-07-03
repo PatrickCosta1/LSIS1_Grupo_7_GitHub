@@ -6,6 +6,7 @@ class CoordenadorDashboardManager {
     public function __construct() {
         $this->dal = new DAL_DashboardCoordenador();
     }
+    
     public function getCoordenadorName($userId) {
         return $this->dal->getCoordenadorName($userId);
     }

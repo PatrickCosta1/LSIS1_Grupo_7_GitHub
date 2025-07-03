@@ -1,32 +1,48 @@
 <?php
 require_once __DIR__ . '/../../DAL/Comuns/DAL_notificacoes.php';
-require_once __DIR__ . '/../../vendor/autoload.php';
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+
+// Check if PHPMailer is available and include it
+$phpmailerAvailable = false;
+if (file_exists(__DIR__ . '/../../vendor/autoload.php')) {
+    require_once __DIR__ . '/../../vendor/autoload.php';
+    if (class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+        $phpmailerAvailable = true;
+    }
+}
 
 class NotificacoesManager {
     private $dal;
+    private $phpmailerAvailable;
+    
     public function __construct() {
+        global $phpmailerAvailable;
         $this->dal = new DAL_Notificacoes();
+        $this->phpmailerAvailable = $phpmailerAvailable;
     }
 
     public function enviarNotificacao($remetenteId, $destinatarioId, $mensagem) {
+        // Always save to database first
         $this->dal->enviarNotificacao($remetenteId, $destinatarioId, $mensagem);
+
+        // Only try to send email if PHPMailer is available
+        if (!$this->phpmailerAvailable) {
+            return true; // Still return success for database notification
+        }
 
         $remetente = $remetenteId ? $this->dal->getUtilizadorById($remetenteId) : ['username' => 'Sistema'];
         $destinatario = $this->dal->getUtilizadorById($destinatarioId);
 
-        if (!$destinatario || empty($destinatario['email'])) return;
+        if (!$destinatario || empty($destinatario['email'])) return true;
 
         $dataHora = date('d/m/Y H:i');
-        $mail = new PHPMailer(true);
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
         try {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
             $mail->Username   = 'patrickcosta1605@gmail.com';
-            $mail->Password   = '';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Password   = ''; // Add your Gmail app password here
+            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
 
             $mail->setFrom('patrickcosta1605@gmail.com', 'Portal Tlantic');
@@ -69,9 +85,11 @@ class NotificacoesManager {
             $mail->AltBody = "Nova notificação no Portal Tlantic\nDe: " . ($remetente['username'] ?? 'Sistema') . "\nData/Hora: $dataHora\nMensagem: $mensagem\nAcesse o portal para mais informações.";
 
             $mail->send();
-        } catch (Exception $e) {
-            // Logar erro se necessário
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            error_log("Email sending failed: " . $e->getMessage());
         }
+        
+        return true;
     }
 
     public function getNotificacoesByUserId($userId) {
@@ -92,20 +110,36 @@ class NotificacoesManager {
         return $this->dal->eliminarNotificacao($id);
     }
     public function notificarColaboradorPedidoAlteracao($colaboradorId, $status, $campo, $valorAntigo, $valorNovo) {
-        $colaborador = $this->dal->getUtilizadorById($colaboradorId);
-        if (!$colaborador || empty($colaborador['email'])) return;
+        // Convert colaborador_id to utilizador_id
+        $utilizadorId = $this->dal->getUtilizadorIdByColaboradorId($colaboradorId);
+        if (!$utilizadorId) {
+            return false; // Invalid colaborador_id
+        }
 
-        $statusTxt = $status === 'aprovado' ? 'Aprovado' : 'Recusado';
+        // First send internal notification
+        $statusTxt = $status === 'aprovado' ? 'aprovado' : 'recusado';
+        $msg = "O seu pedido de alteração do campo '$campo' foi $statusTxt pelo RH.";
+        $this->dal->enviarNotificacao(null, $utilizadorId, $msg);
+
+        // Only try email if PHPMailer is available
+        if (!$this->phpmailerAvailable) {
+            return true;
+        }
+
+        $colaborador = $this->dal->getUtilizadorById($utilizadorId);
+        if (!$colaborador || empty($colaborador['email'])) return true;
+
+        $statusTxtEmail = $status === 'aprovado' ? 'Aprovado' : 'Recusado';
         $corStatus = $status === 'aprovado' ? '#38a169' : '#e53e3e';
 
-        $mail = new PHPMailer(true);
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
         try {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = '@gmail.com';
-            $mail->Password   = '';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Username   = 'patrickcosta1605@gmail.com';
+            $mail->Password   = ''; // Add your Gmail app password here
+            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
 
             $mail->setFrom('patrickcosta1605@gmail.com', 'Portal Tlantic');
@@ -119,10 +153,10 @@ class NotificacoesManager {
                     <div style="text-align:center;margin-bottom:18px;">
                         <img src="https://i.imgur.com/8oQw7Qz.png" alt="Tlantic" style="height:48px;">
                     </div>
-                    <h2 style="color:#667eea;text-align:center;margin-bottom:18px;font-weight:700;letter-spacing:0.5px;font-size:1.2rem;">Pedido de Alteração ' . $statusTxt . '</h2>
+                    <h2 style="color:#667eea;text-align:center;margin-bottom:18px;font-weight:700;letter-spacing:0.5px;font-size:1.2rem;">Pedido de Alteração ' . $statusTxtEmail . '</h2>
                     <p style="color:#333;text-align:center;font-size:1.05rem;margin-bottom:18px;">
                         Olá <b>' . htmlspecialchars($colaborador['username'] ?? '') . '</b>,<br>
-                        O seu pedido de alteração foi <span style="color:' . $corStatus . ';font-weight:600;">' . $statusTxt . '</span> pelo RH.
+                        O seu pedido de alteração foi <span style="color:' . $corStatus . ';font-weight:600;">' . $statusTxtEmail . '</span> pelo RH.
                     </p>
                     <div style="background:#f5f7fa;border-left:5px solid #667eea;padding:16px 18px 12px 18px;border-radius:8px;margin-bottom:18px;">
                         <div style="color:#23408e;font-size:1.05rem;">
@@ -142,28 +176,47 @@ class NotificacoesManager {
             </div>
             ';
 
-            $mail->AltBody = "O seu pedido de alteração foi $statusTxt pelo RH.\nCampo: $campo\nDe: $valorAntigo\nPara: $valorNovo\nAcesse o portal para mais informações.";
+            $mail->AltBody = "O seu pedido de alteração foi $statusTxtEmail pelo RH.\nCampo: $campo\nDe: $valorAntigo\nPara: $valorNovo\nAcesse o portal para mais informações.";
 
             $mail->send();
-        } catch (Exception $e) {
-            // Logar erro se necessário
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            error_log("Email sending failed: " . $e->getMessage());
         }
+        
+        return true;
     }
-    public function notificarColaboradorPedidoFerias($colaboradorId, $status, $dataInicio, $dataFim) {
-        $colaborador = $this->dal->getUtilizadorById($colaboradorId);
-        if (!$colaborador || empty($colaborador['email'])) return;
 
-        $statusTxt = $status === 'aceite' ? 'Aprovado' : 'Recusado';
+    public function notificarColaboradorPedidoFerias($colaboradorId, $status, $dataInicio, $dataFim) {
+        // Convert colaborador_id to utilizador_id
+        $utilizadorId = $this->dal->getUtilizadorIdByColaboradorId($colaboradorId);
+        if (!$utilizadorId) {
+            return false; // Invalid colaborador_id
+        }
+
+        // First send internal notification
+        $statusTxt = $status === 'aceite' ? 'aprovado' : 'recusado';
+        $msg = "O seu pedido de férias de $dataInicio até $dataFim foi $statusTxt pelo RH.";
+        $this->dal->enviarNotificacao(null, $utilizadorId, $msg);
+
+        // Only try email if PHPMailer is available
+        if (!$this->phpmailerAvailable) {
+            return true;
+        }
+
+        $colaborador = $this->dal->getUtilizadorById($utilizadorId);
+        if (!$colaborador || empty($colaborador['email'])) return true;
+
+        $statusTxtEmail = $status === 'aceite' ? 'Aprovado' : 'Recusado';
         $corStatus = $status === 'aceite' ? '#38a169' : '#e53e3e';
 
-        $mail = new PHPMailer(true);
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
         try {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = '@gmail.com';
-            $mail->Password   = '';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Username   = 'patrickcosta1605@gmail.com';
+            $mail->Password   = ''; // Add your Gmail app password here
+            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
 
             $mail->setFrom('patrickcosta1605@gmail.com', 'Portal Tlantic');
@@ -177,10 +230,10 @@ class NotificacoesManager {
                     <div style="text-align:center;margin-bottom:18px;">
                         <img src="https://i.imgur.com/8oQw7Qz.png" alt="Tlantic" style="height:48px;">
                     </div>
-                    <h2 style="color:#667eea;text-align:center;margin-bottom:18px;font-weight:700;letter-spacing:0.5px;font-size:1.2rem;">Pedido de Férias ' . $statusTxt . '</h2>
+                    <h2 style="color:#667eea;text-align:center;margin-bottom:18px;font-weight:700;letter-spacing:0.5px;font-size:1.2rem;">Pedido de Férias ' . $statusTxtEmail . '</h2>
                     <p style="color:#333;text-align:center;font-size:1.05rem;margin-bottom:18px;">
                         Olá <b>' . htmlspecialchars($colaborador['username'] ?? '') . '</b>,<br>
-                        O seu pedido de férias foi <span style="color:' . $corStatus . ';font-weight:600;">' . $statusTxt . '</span> pelo RH.<br>
+                        O seu pedido de férias foi <span style="color:' . $corStatus . ';font-weight:600;">' . $statusTxtEmail . '</span> pelo RH.<br>
                         <b>De:</b> ' . htmlspecialchars($dataInicio) . ' <b>até</b> ' . htmlspecialchars($dataFim) . '
                     </p>
                     <p style="color:#444;text-align:center;font-size:0.98rem;margin-bottom:18px;">
@@ -193,13 +246,25 @@ class NotificacoesManager {
                 </div>
             </div>
             ';
-            $mail->AltBody = "O seu pedido de férias foi $statusTxt pelo RH.\nDe: $dataInicio até $dataFim\nAcesse o portal para mais informações.";
+            $mail->AltBody = "O seu pedido de férias foi $statusTxtEmail pelo RH.\nDe: $dataInicio até $dataFim\nAcesse o portal para mais informações.";
             $mail->send();
-        } catch (Exception $e) {
-            // Logar erro se necessário
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            error_log("Email sending failed: " . $e->getMessage());
         }
-        // Notificação interna
-        $msg = "O seu pedido de férias de $dataInicio até $dataFim foi $statusTxt pelo RH.";
-        $this->dal->enviarNotificacao(null, $colaboradorId, $msg);
+        
+        return true;
+    }
+    public function notificarColaboradorComprovativo($colaboradorId, $status, $tipoComprovativo) {
+        // Convert colaborador_id to utilizador_id
+        $utilizadorId = $this->dal->getUtilizadorIdByColaboradorId($colaboradorId);
+        if (!$utilizadorId) {
+            return false;
+        }
+
+        $statusTxt = $status === 'aprovado' ? 'aprovado' : 'recusado';
+        $tipoTexto = ucfirst(str_replace('_', ' ', $tipoComprovativo));
+        $msg = "O seu comprovativo '$tipoTexto' foi $statusTxt pelo RH.";
+        
+        return $this->dal->enviarNotificacao(null, $utilizadorId, $msg);
     }
 }

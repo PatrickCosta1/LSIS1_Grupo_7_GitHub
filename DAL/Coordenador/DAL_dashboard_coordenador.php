@@ -12,15 +12,20 @@ class DAL_DashboardCoordenador {
 
     public function getEquipasByCoordenador($userId) {
         $pdo = Database::getConnection();
-        // Corrigido: usar responsavel_id
-        $stmt = $pdo->prepare("SELECT e.id, e.nome FROM equipas e WHERE e.responsavel_id = ?");
+        // Corrigido: buscar primeiro o colaborador_id pelo utilizador_id, depois as equipas
+        $stmt = $pdo->prepare("
+            SELECT e.id, e.nome 
+            FROM equipas e 
+            INNER JOIN colaboradores c ON e.responsavel_id = c.id 
+            WHERE c.utilizador_id = ?
+        ");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getEquipasComMembros($userId) {
         $pdo = Database::getConnection();
-        // Corrigido: usar responsavel_id
+        // Corrigido: buscar pela ligação utilizador_id -> colaborador_id -> responsavel_id
         $stmt = $pdo->prepare("
             SELECT e.id, e.nome, 
                 (
@@ -34,7 +39,9 @@ class DAL_DashboardCoordenador {
                         )
                     THEN 1 ELSE 0 END
                 ) as num_colaboradores
-            FROM equipas e WHERE e.responsavel_id = ?
+            FROM equipas e 
+            INNER JOIN colaboradores c ON e.responsavel_id = c.id 
+            WHERE c.utilizador_id = ?
         ");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -42,21 +49,22 @@ class DAL_DashboardCoordenador {
 
     public function getIdadesColaboradoresPorEquipa($userId) {
         $pdo = Database::getConnection();
-        // Corrigido: usar responsavel_id
+        // Corrigido: usar a ligação correta utilizador_id -> colaborador_id
         $stmt = $pdo->prepare("
-            SELECT e.nome as equipa_nome, c.data_nascimento
+            SELECT e.nome as equipa_nome, col.data_nascimento
             FROM equipa_colaboradores ec
-            INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+            INNER JOIN colaboradores col ON ec.colaborador_id = col.id
             INNER JOIN equipas e ON ec.equipa_id = e.id
-            WHERE e.responsavel_id = ? AND c.data_nascimento IS NOT NULL AND c.data_nascimento != '' AND c.data_nascimento != '0000-00-00'
+            INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+            WHERE coord.utilizador_id = ? AND col.data_nascimento IS NOT NULL AND col.data_nascimento != '' AND col.data_nascimento != '0000-00-00'
             UNION
-            SELECT e.nome as equipa_nome, c.data_nascimento
+            SELECT e.nome as equipa_nome, coord.data_nascimento
             FROM equipas e
-            INNER JOIN colaboradores c ON e.responsavel_id = c.id
-            WHERE e.responsavel_id = ?
+            INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+            WHERE coord.utilizador_id = ?
               AND e.responsavel_id IS NOT NULL
               AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
-              AND c.data_nascimento IS NOT NULL AND c.data_nascimento != '' AND c.data_nascimento != '0000-00-00'
+              AND coord.data_nascimento IS NOT NULL AND coord.data_nascimento != '' AND coord.data_nascimento != '0000-00-00'
         ");
         $stmt->execute([$userId, $userId]);
         $result = [];
@@ -75,22 +83,23 @@ class DAL_DashboardCoordenador {
 
     public function getDistribuicaoNivelHierarquico($userId) {
         $pdo = Database::getConnection();
-        // Corrigido: usar responsavel_id
+        // Corrigido: usar a ligação correta utilizador_id -> colaborador_id
         $stmt = $pdo->prepare("
             SELECT nivel_hierarquico, COUNT(*) as total FROM (
-                SELECT c.nivel_hierarquico
+                SELECT col.nivel_hierarquico
                 FROM equipa_colaboradores ec
-                INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+                INNER JOIN colaboradores col ON ec.colaborador_id = col.id
                 INNER JOIN equipas e ON ec.equipa_id = e.id
-                WHERE e.responsavel_id = ? AND c.nivel_hierarquico IS NOT NULL AND c.nivel_hierarquico != ''
+                INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+                WHERE coord.utilizador_id = ? AND col.nivel_hierarquico IS NOT NULL AND col.nivel_hierarquico != ''
                 UNION ALL
-                SELECT c.nivel_hierarquico
+                SELECT coord.nivel_hierarquico
                 FROM equipas e
-                INNER JOIN colaboradores c ON e.responsavel_id = c.id
-                WHERE e.responsavel_id = ?
+                INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+                WHERE coord.utilizador_id = ?
                   AND e.responsavel_id IS NOT NULL
                   AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
-                  AND c.nivel_hierarquico IS NOT NULL AND c.nivel_hierarquico != ''
+                  AND coord.nivel_hierarquico IS NOT NULL AND coord.nivel_hierarquico != ''
             ) as sub
             GROUP BY nivel_hierarquico
         ");
@@ -100,22 +109,23 @@ class DAL_DashboardCoordenador {
 
     public function getCargosPorNivelHierarquico($userId) {
         $pdo = Database::getConnection();
-        // Corrigido: usar responsavel_id
+        // Corrigido: usar a ligação correta utilizador_id -> colaborador_id
         $stmt = $pdo->prepare("
             SELECT nivel_hierarquico, cargo, COUNT(*) as total FROM (
-                SELECT c.nivel_hierarquico, c.cargo
+                SELECT col.nivel_hierarquico, col.cargo
                 FROM equipa_colaboradores ec
-                INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+                INNER JOIN colaboradores col ON ec.colaborador_id = col.id
                 INNER JOIN equipas e ON ec.equipa_id = e.id
-                WHERE e.responsavel_id = ? AND c.nivel_hierarquico IS NOT NULL AND c.nivel_hierarquico != '' AND c.cargo IS NOT NULL AND c.cargo != ''
+                INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+                WHERE coord.utilizador_id = ? AND col.nivel_hierarquico IS NOT NULL AND col.nivel_hierarquico != '' AND col.cargo IS NOT NULL AND col.cargo != ''
                 UNION ALL
-                SELECT c.nivel_hierarquico, c.cargo
+                SELECT coord.nivel_hierarquico, coord.cargo
                 FROM equipas e
-                INNER JOIN colaboradores c ON e.responsavel_id = c.id
-                WHERE e.responsavel_id = ?
+                INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+                WHERE coord.utilizador_id = ?
                   AND e.responsavel_id IS NOT NULL
                   AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
-                  AND c.nivel_hierarquico IS NOT NULL AND c.nivel_hierarquico != '' AND c.cargo IS NOT NULL AND c.cargo != ''
+                  AND coord.nivel_hierarquico IS NOT NULL AND coord.nivel_hierarquico != '' AND coord.cargo IS NOT NULL AND coord.cargo != ''
             ) as sub
             GROUP BY nivel_hierarquico, cargo
         ");
@@ -133,22 +143,23 @@ class DAL_DashboardCoordenador {
 
     public function getTemposNaEmpresaPorEquipa($userId) {
         $pdo = Database::getConnection();
-        // Corrigido: usar responsavel_id
+        // Corrigido: usar a ligação correta utilizador_id -> colaborador_id
         $stmt = $pdo->prepare("
             SELECT equipa_nome, data_inicio_contrato FROM (
-                SELECT e.nome as equipa_nome, c.data_inicio_contrato
+                SELECT e.nome as equipa_nome, col.data_inicio_contrato
                 FROM equipa_colaboradores ec
-                INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+                INNER JOIN colaboradores col ON ec.colaborador_id = col.id
                 INNER JOIN equipas e ON ec.equipa_id = e.id
-                WHERE e.responsavel_id = ? AND c.data_inicio_contrato IS NOT NULL AND c.data_inicio_contrato != '' AND c.data_inicio_contrato != '0000-00-00'
+                INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+                WHERE coord.utilizador_id = ? AND col.data_inicio_contrato IS NOT NULL AND col.data_inicio_contrato != '' AND col.data_inicio_contrato != '0000-00-00'
                 UNION ALL
-                SELECT e.nome as equipa_nome, c.data_inicio_contrato
+                SELECT e.nome as equipa_nome, coord.data_inicio_contrato
                 FROM equipas e
-                INNER JOIN colaboradores c ON e.responsavel_id = c.id
-                WHERE e.responsavel_id = ?
+                INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+                WHERE coord.utilizador_id = ?
                   AND e.responsavel_id IS NOT NULL
                   AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
-                  AND c.data_inicio_contrato IS NOT NULL AND c.data_inicio_contrato != '' AND c.data_inicio_contrato != '0000-00-00'
+                  AND coord.data_inicio_contrato IS NOT NULL AND coord.data_inicio_contrato != '' AND coord.data_inicio_contrato != '0000-00-00'
             ) as sub
         ");
         $stmt->execute([$userId, $userId]);

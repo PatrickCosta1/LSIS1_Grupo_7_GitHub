@@ -7,10 +7,21 @@ if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'coordenador') {
 require_once '../../BLL/Coordenador/BLL_dashboard_coordenador.php';
 $coordBLL = new CoordenadorDashboardManager();
 
+// Buscar todas as equipas do coordenador
+$equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
+
 $equipaId = $_GET['id'] ?? null;
 if (!$equipaId) {
-    header('Location: dashboard_coordenador.php');
-    exit();
+    // Se não houver id na query, usa a primeira equipa do coordenador
+    if (!empty($equipas)) {
+        $equipaId = $equipas[0]['id'];
+        header('Location: equipa.php?id=' . urlencode($equipaId));
+        exit();
+    } else {
+        // Não tem equipas
+        echo "<div style='text-align:center;margin:40px 0;color:#23408e;font-size:1.1rem;'>Não existem equipas associadas a este coordenador.</div>";
+        exit();
+    }
 }
 $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
 ?>
@@ -61,6 +72,14 @@ $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
         </nav>
     </header>
     <main>
+        <div class="portal-brand">
+            <div class="color-bar">
+                <div class="color-segment"></div>
+                <div class="color-segment"></div>
+                <div class="color-segment"></div>
+            </div>
+            <span class="portal-text">Portal Do Colaborador</span>
+        </div>
         <h1>Membros da Equipa</h1>
         <?php if (!empty($colaboradores)): ?>
         <div class="tabela-colaboradores-wrapper">

@@ -5,16 +5,51 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admi
     exit();
 }
 
-if (isset($_GET['export']) && $_GET['export'] === 'colaboradores') {
-    require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
-    $colabBLL = new RHColaboradoresManager();
-    $colaboradores = $colabBLL->getAllColaboradores();
-    header('Content-Type: text/csv');
+require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
+$colabBLL = new RHColaboradoresManager();
+
+// Carregar equipas e perfis para o formulário
+$equipas = method_exists($colabBLL, 'getAllEquipas') ? $colabBLL->getAllEquipas() : [];
+$perfis = method_exists($colabBLL, 'getAllPerfis') ? $colabBLL->getAllPerfis() : [];
+
+// Exportação
+if (isset($_GET['export'])) {
+    $tipo = $_GET['export'];
+    $filtro = isset($_GET['filtro']) ? $_GET['filtro'] : null;
+
+    $colaboradores = [];
+    if ($tipo === 'colaboradores') {
+        $colaboradores = $colabBLL->getAllColaboradores();
+    } elseif ($tipo === 'equipa' && $filtro !== null && $filtro !== '') {
+        // O select envia sempre string, pode ser '0', por isso valida se é numérico e maior que zero
+        if (is_numeric($filtro) && (int)$filtro > 0) {
+            $colaboradores = $colabBLL->getColaboradoresPorEquipa((int)$filtro);
+        }
+    } elseif ($tipo === 'perfil' && $filtro !== null && $filtro !== '') {
+        if (is_numeric($filtro) && (int)$filtro > 0) {
+            $colaboradores = $colabBLL->getColaboradoresPorPerfil((int)$filtro);
+        }
+    }
+
+    // Para debug: descomente para ver o resultado no log do PHP
+    // error_log("Tipo: $tipo | Filtro: $filtro | Resultado: " . print_r($colaboradores, true));
+
+    header('Content-Type: text/csv; charset=UTF-8');
     header('Content-Disposition: attachment;filename="colaboradores.csv"');
     $out = fopen('php://output', 'w');
-    fputcsv($out, ['Nome', 'Função', 'Equipa', 'Email', 'Estado']);
-    foreach ($colaboradores as $col) {
-        fputcsv($out, [$col['nome'], $col['funcao'], $col['equipa'], $col['email'], $col['ativo'] ? 'Ativo' : 'Inativo']);
+    // BOM para Excel abrir corretamente em UTF-8
+    fprintf($out, chr(0xEF).chr(0xBB).chr(0xBF));
+    fputcsv($out, ['Nome', 'Cargo', 'Equipas', 'Email', 'Estado']);
+    if (!empty($colaboradores)) {
+        foreach ($colaboradores as $col) {
+            fputcsv($out, [
+                $col['nome'] ?? '',
+                $col['cargo'] ?? '',
+                $col['equipas'] ?? '',
+                $col['email'] ?? '',
+                (isset($col['ativo']) && $col['ativo'] ? 'Ativo' : 'Inativo')
+            ]);
+        }
     }
     fclose($out);
     exit;
@@ -27,6 +62,14 @@ if (isset($_GET['export']) && $_GET['export'] === 'colaboradores') {
     <title>Exportar Dados - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/exportar.css">
     <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
+    <script>
+    // Mostra/esconde selects conforme opção
+    function onTipoChange() {
+        var tipo = document.getElementById('tipo-export').value;
+        document.getElementById('filtro-equipa').style.display = (tipo === 'equipa') ? 'block' : 'none';
+        document.getElementById('filtro-perfil').style.display = (tipo === 'perfil') ? 'block' : 'none';
+    }
+    </script>
 </head>
 <body>
     <header>
@@ -57,18 +100,35 @@ if (isset($_GET['export']) && $_GET['export'] === 'colaboradores') {
     </header>
     <main>
         <h1>Exportar Dados</h1>
-        <form>
+        <form method="get" action="exportar.php" style="max-width:400px;margin:0 auto;">
             <label>Escolha o tipo de exportação:
-                <select>
-                    <option>Todos os colaboradores</option>
-                    <option>Por equipa</option>
-                    <option>Por perfil</option>
+                <select name="export" id="tipo-export" onchange="onTipoChange()" required>
+                    <option value="colaboradores">Todos os colaboradores</option>
+                    <option value="equipa">Por equipa</option>
+                    <option value="perfil">Por perfil</option>
                 </select>
             </label>
-            <a href="exportar.php?export=colaboradores" class="btn">Exportar para Excel</a>
+            <div id="filtro-equipa" style="display:none;">
+                <label>Selecione a equipa:
+                    <select name="filtro">
+                        <?php foreach ($equipas as $e): ?>
+                            <option value="<?php echo $e['id']; ?>"><?php echo htmlspecialchars($e['nome']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+            </div>
+            <div id="filtro-perfil" style="display:none;">
+                <label>Selecione o perfil:
+                    <select name="filtro">
+                        <?php foreach ($perfis as $p): ?>
+                            <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['nome']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+            </div>
+            <button type="submit" class="btn">Exportar para Excel</button>
         </form>
     </main>
-
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
       <button id="open-chatbot" style="
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -96,5 +156,9 @@ if (isset($_GET['export']) && $_GET['export'] === 'colaboradores') {
       </iframe>
     </div>
     <script src="../../assets/chatbot.js"></script>
+    <script>
+        // Inicializa selects corretos ao recarregar
+        onTipoChange();
+    </script>
 </body>
 </html>

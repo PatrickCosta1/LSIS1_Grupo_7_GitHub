@@ -1,10 +1,10 @@
 body {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: #ffffff; /* Fundo branco puro */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     min-height: 100vh;
-    /* aumenta o padding-top para compensar o header mais largo e com margem */
-    padding-top: calc(100px + 2cm); /* 100px altura header + 0.5cm top + 0.5cm bottom */
+    /* Reduz ainda mais o espaço após o header */
+    padding-top: calc(100px + 1.2cm); /* Reduzido de 2cm para 1.2cm */
 }
 header {
     position: fixed;
@@ -51,20 +51,77 @@ header nav a.active {
     color: #e0eaff !important;
 }
 
+/* Marca colorida acima do título */
+.portal-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0px 0 12px 0; /* Reduzido de 4px para 0px na margem superior */
+}
+
+.color-bar {
+    height: 6px;
+    width: 80px;
+    border-radius: 3px;
+    display: flex;
+}
+
+.color-segment {
+    flex: 1;
+    height: 100%;
+}
+
+.color-segment:first-child {
+    background: #8155ff;
+    border-radius: 3px 0 0 3px;
+}
+
+.color-segment:nth-child(2) {
+    background: #ff9b37;
+}
+
+.color-segment:last-child {
+    background: #3ed829;
+    border-radius: 0 3px 3px 0;
+}
+
+.portal-text {
+    font-size: 0.75rem;
+    color: #19365f;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
 /* Título principal */
 main h1 {
-    color: #0360e9;
+    color: #19365f;
     text-align: center;
     font-size: 2.2rem;
     font-weight: 700;
-    margin: 40px 0 32px 0;
+    margin: 4px 0 32px 0; /* Reduzido de 8px 0 32px 0 para 4px 0 32px 0 */
     letter-spacing: 1px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Container simples branco */
+main {
+    margin: 0 auto;
+    max-width: 600px;
+    background: transparent;
+    padding: 50px 45px;
+    position: relative;
 }
 
 .perfil-edit-container {
     margin: 0 auto;
-    max-width: 440px;
+    max-width: 100%;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    position: relative;
+    z-index: 2;
 }
 
 .perfil-edit-form {
@@ -76,60 +133,96 @@ main h1 {
 .ficha-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 22px 24px;
-    margin-bottom: 18px;
+    gap: 24px 28px;
+    margin-bottom: 24px;
 }
 
 .ficha-campo {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
 }
 
 .ficha-campo label {
-    color: #0360e9;
-    font-weight: 500;
-    font-size: 1rem;
+    color: #19365f;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 2px;
 }
 
 .ficha-campo input[type="text"],
 .ficha-campo input[type="email"],
 .ficha-campo input[type="password"] {
-    padding: 8px 10px;
-    border: 1px solid #c3cfe2;
-    border-radius: 7px;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
     font-size: 1rem;
-    background: #f5f7fa;
-    color: #1c3c69;
-    transition: border 0.2s;
+    background: #ffffff;
+    color: #2d3748;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.ficha-campo input::placeholder {
+    color: #a0aec0;
 }
 
 .ficha-campo input:focus {
-    border-color: #0360e9;
+    border-color: #19365f;
+    background: #ffffff;
     outline: none;
+    box-shadow: 0 0 0 3px rgba(25, 54, 95, 0.1);
+    transform: translateY(-1px);
 }
 
 .perfil-edit-actions {
     display: flex;
     justify-content: center;
-    margin-top: 18px;
+    margin-top: 32px;
 }
 
 .btn {
-    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
-    color: #fff;
+    background: linear-gradient(135deg, #19365f 0%, #299cf3 100%);
+    color: #ffffff;
     border: none;
-    border-radius: 7px;
-    padding: 10px 28px;
-    font-size: 1.08rem;
+    border-radius: 12px;
+    padding: 14px 32px;
+    font-size: 1.1rem;
     cursor: pointer;
-    transition: background 0.2s;
-    font-weight: 500;
+    transition: all 0.3s ease;
+    font-weight: 700;
     margin: 0 8px;
+    box-shadow: 0 8px 20px rgba(25, 54, 95, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.2), 
+        transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
 }
 
 .btn:hover {
-    background: linear-gradient(135deg, #1c3c69 0%, #0360e9 100%);
+    background: linear-gradient(135deg, #0f1e35 0%, #19365f 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(25, 54, 95, 0.35);
+}
+
+.btn:active {
+    transform: translateY(0);
 }
 
 @media (max-width: 700px) {
@@ -290,4 +383,350 @@ main h1 {
 }
 .fechar-modal-pw:hover {
     color: #0360e9;
+}
+
+/* Novos blocos de informação */
+.perfil-info-blocks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 40px;
+    max-width: 100%;
+}
+
+.info-block {
+    background: linear-gradient(135deg, #19365f 0%, #299cf3 100%);
+    border-radius: 16px;
+    padding: 24px;
+    color: white;
+    box-shadow: 0 8px 24px rgba(25, 54, 95, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.info-block::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.3) 0%, 
+        rgba(255, 255, 255, 0.8) 50%, 
+        rgba(255, 255, 255, 0.3) 100%);
+}
+
+.info-block:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(25, 54, 95, 0.3);
+}
+
+.info-block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.info-block-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+}
+
+.info-count {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.info-block-content p {
+    margin: 0 0 20px 0; /* Aumentado de 16px para 20px */
+    font-size: 1rem;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+.btn-ver-calendario {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    margin-top: 8px; /* Adicionado margem superior para separar do texto */
+}
+
+.btn-ver-calendario:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+/* Modais de calendário */
+.modal-calendario-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-calendario {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    padding: 32px;
+    min-width: 600px;
+    max-width: 90vw;
+    max-height: 80vh;
+    position: relative;
+    animation: fadeInUp 0.4s;
+    overflow-y: auto;
+}
+
+.fechar-modal-calendario {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #19365f;
+    cursor: pointer;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+
+.fechar-modal-calendario:hover {
+    color: #299cf3;
+}
+
+.modal-calendario h2 {
+    color: #19365f;
+    margin-bottom: 24px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.calendario-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Eventos de formação - efeito vidro cinza */
+.evento-formacao {
+    background: linear-gradient(135deg, 
+        rgba(128, 128, 128, 0.15) 0%, 
+        rgba(160, 160, 160, 0.12) 25%, 
+        rgba(144, 144, 144, 0.10) 50%, 
+        rgba(120, 120, 120, 0.08) 75%, 
+        rgba(100, 100, 100, 0.12) 100%);
+    backdrop-filter: blur(20px) saturate(130%);
+    -webkit-backdrop-filter: blur(20px) saturate(130%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    color: #333;
+    box-shadow: 
+        0 4px 16px rgba(128, 128, 128, 0.15),
+        0 1px 1px rgba(255, 255, 255, 0.6) inset,
+        0 -1px 1px rgba(128, 128, 128, 0.1) inset;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.evento-formacao::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.5) 20%, 
+        rgba(255, 255, 255, 0.8) 50%, 
+        rgba(255, 255, 255, 0.5) 80%, 
+        transparent 100%);
+    z-index: 1;
+}
+
+.evento-formacao:hover {
+    background: linear-gradient(135deg, 
+        rgba(128, 128, 128, 0.20) 0%, 
+        rgba(160, 160, 160, 0.18) 25%, 
+        rgba(144, 144, 144, 0.15) 50%, 
+        rgba(120, 120, 120, 0.12) 75%, 
+        rgba(100, 100, 100, 0.18) 100%);
+    backdrop-filter: blur(25px) saturate(150%);
+    -webkit-backdrop-filter: blur(25px) saturate(150%);
+    box-shadow: 
+        0 6px 20px rgba(128, 128, 128, 0.25),
+        0 2px 2px rgba(255, 255, 255, 0.7) inset,
+        0 -2px 2px rgba(128, 128, 128, 0.15) inset;
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Eventos de férias - agora com efeito vidro cinza igual às formações */
+.evento-ferias {
+    background: linear-gradient(135deg, 
+        rgba(128, 128, 128, 0.15) 0%, 
+        rgba(160, 160, 160, 0.12) 25%, 
+        rgba(144, 144, 144, 0.10) 50%, 
+        rgba(120, 120, 120, 0.08) 75%, 
+        rgba(100, 100, 100, 0.12) 100%);
+    backdrop-filter: blur(20px) saturate(130%);
+    -webkit-backdrop-filter: blur(20px) saturate(130%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    color: #333;
+    box-shadow: 
+        0 4px 16px rgba(128, 128, 128, 0.15),
+        0 1px 1px rgba(255, 255, 255, 0.6) inset,
+        0 -1px 1px rgba(128, 128, 128, 0.1) inset;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.evento-ferias::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.5) 20%, 
+        rgba(255, 255, 255, 0.8) 50%, 
+        rgba(255, 255, 255, 0.5) 80%, 
+        transparent 100%);
+    z-index: 1;
+}
+
+.evento-ferias:hover {
+    background: linear-gradient(135deg, 
+        rgba(128, 128, 128, 0.20) 0%, 
+        rgba(160, 160, 160, 0.18) 25%, 
+        rgba(144, 144, 144, 0.15) 50%, 
+        rgba(120, 120, 120, 0.12) 75%, 
+        rgba(100, 100, 100, 0.18) 100%);
+    backdrop-filter: blur(25px) saturate(150%);
+    -webkit-backdrop-filter: blur(25px) saturate(150%);
+    box-shadow: 
+        0 6px 20px rgba(128, 128, 128, 0.25),
+        0 2px 2px rgba(255, 255, 255, 0.7) inset,
+        0 -2px 2px rgba(128, 128, 128, 0.15) inset;
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Cores especiais para o status dentro dos cards vidraçados */
+.evento-ferias.pendente .evento-status .status-pendente {
+    color: #f7b731;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.evento-ferias.aceite .evento-status .status-aceite {
+    color: #2ed573;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.evento-ferias.recusado .evento-status .status-recusado {
+    color: #ff6b6b;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Indicadores visuais para cada status */
+.evento-ferias.pendente::after {
+    content: '⏳';
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 1.2rem;
+    opacity: 0.7;
+}
+
+.evento-ferias.aceite::after {
+    content: '✅';
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
+.evento-ferias.recusado::after {
+    content: '❌';
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
+.calendario-vazio {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888;
+    font-style: italic;
+}
+
+.calendario-vazio p {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .perfil-info-blocks {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 24px;
+    }
+    
+    .modal-calendario {
+        min-width: 90vw;
+        padding: 20px;
+    }
+    
+    .info-block {
+        padding: 20px;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

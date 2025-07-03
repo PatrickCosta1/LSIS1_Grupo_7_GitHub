@@ -21,11 +21,39 @@ if (!$colaborador_id) {
 
 $formacoesBLL = new FormacoesManager();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['formacao_id'])) {
-    $formacoesBLL->inscrever($colaborador_id, intval($_POST['formacao_id']));
-}
-
+// Buscar formações ANTES de processar o POST
 $formacoes = $formacoesBLL->listarFormacoesFuturas();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['formacao_id'])) {
+    $resultado = $formacoesBLL->inscrever($colaborador_id, intval($_POST['formacao_id']));
+    
+    if ($resultado) {
+        // Buscar dados da formação para a notificação
+        $formacao = null;
+        foreach ($formacoes as $f) {
+            if ($f['id'] == $_POST['formacao_id']) {
+                $formacao = $f;
+                break;
+            }
+        }
+        
+        if ($formacao) {
+            // Enviar notificação automática de confirmação
+            require_once '../../BLL/Comuns/BLL_notificacoes.php';
+            $notBLL = new NotificacoesManager();
+            
+            $dataInicio = date('d/m/Y', strtotime($formacao['data_inicio']));
+            $dataFim = date('d/m/Y', strtotime($formacao['data_fim']));
+            
+            $mensagem = "Inscrição confirmada na formação '{$formacao['nome']}'. " .
+                       "Período: {$dataInicio} a {$dataFim}. " .
+                       "A sua participação foi registada no sistema. " .
+                       "Receberá informações adicionais sobre localização e materiais necessários via email corporativo.";
+            
+            $notBLL->enviarNotificacao(null, $_SESSION['user_id'], $mensagem);
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -80,51 +108,182 @@ $formacoes = $formacoesBLL->listarFormacoesFuturas();
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
-                <a href="dashboard_colaborador.php">Dashboard</a>
                 <a href="ficha_colaborador.php">A Minha Ficha</a>
-                <a href="beneficios.php">Benefícios</a>
-                <a href="ferias.php">Férias</a>
-                <a href="formacoes.php">Formações</a>
-                <a href="recibos.php">Recibos</a>
                 <a href="../Comuns/notificacoes.php">Notificações</a>
-                <a href="../Comuns/perfil.php">Perfil</a>
+                <div class="dropdown-perfil">
+                    <a href="../Comuns/perfil.php" class="perfil-link">
+                        Perfil
+                        <span class="seta-baixo">&#9662;</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="ficha_colaborador.php">Ficha Colaborador</a>
+                        <a href="beneficios.php">Benefícios</a>
+                        <a href="ferias.php">Férias</a>
+                        <a href="formacoes.php">Formações</a>
+                        <a href="recibos.php">Recibos</a>
+                    </div>
+                </div>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php endif; ?>
         </nav>
     </header>
     <main>
+        <div class="portal-brand">
+            <div class="color-bar">
+                <div class="color-segment"></div>
+                <div class="color-segment"></div>
+                <div class="color-segment"></div>
+            </div>
+            <span class="portal-text">Portal Do Colaborador</span>
+        </div>
+        <h1>Formações Disponíveis</h1>
+        
         <div class="formacoes-container">
-            <h1>Formações Disponíveis</h1>
-            <table class="tabela-formacoes">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Descrição</th>
-                        <th>Data Início</th>
-                        <th>Ação</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <div class="formacoes-cards">
+                <?php if (!empty($formacoes)): ?>
                     <?php foreach ($formacoes as $f): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($f['nome']) ?></td>
-                        <td><?= htmlspecialchars($f['descricao']) ?></td>
-                        <td><?= htmlspecialchars(date('d/m/Y', strtotime($f['data_inicio']))) ?></td>
-                        <td>
+                    <div class="formacao-card">
+                        <div class="formacao-info">
+                            <div class="formacao-nome"><?= htmlspecialchars($f['nome']) ?></div>
+                            <div class="formacao-descricao"><?= htmlspecialchars($f['descricao']) ?></div>
+                        </div>
+                        <div class="formacao-acoes">
+                            <button class="btn-data" onclick="abrirModalData('<?= $f['id'] ?>', '<?= htmlspecialchars($f['nome']) ?>', '<?= htmlspecialchars($f['data_inicio']) ?>', '<?= htmlspecialchars($f['data_fim']) ?>', '<?= htmlspecialchars($f['horario_semanal'] ?? '') ?>')">
+                                Ver Datas
+                            </button>
                             <?php if ($formacoesBLL->jaInscrito($colaborador_id, $f['id'])): ?>
                                 <span class="inscrito-label">Inscrito</span>
                             <?php else: ?>
-                                <form method="post" style="display:inline;">
-                                    <input type="hidden" name="formacao_id" value="<?= $f['id'] ?>">
-                                    <button type="submit" class="btn-inscrever">Inscrever-se</button>
-                                </form>
+                                <button class="btn-inscrever" onclick="abrirModalInscricao('<?= $f['id'] ?>', '<?= htmlspecialchars($f['nome']) ?>')">
+                                    Inscrever-me
+                                </button>
                             <?php endif; ?>
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
                     <?php endforeach; ?>
-                </tbody>
-            </table>
+                <?php else: ?>
+                    <div style="grid-column: 1 / -1; text-align: center; color: #888; margin: 40px 0;">
+                        Não existem formações disponíveis no momento.
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Modal de Datas -->
+        <div id="modalDatas" class="formacao-modal">
+            <div class="modal-content">
+                <span class="close" onclick="fecharModalDatas()">&times;</span>
+                <h2 id="modalDatasTitle">Datas da Formação</h2>
+                <div class="datas-info">
+                    <div class="data-item">
+                        <strong>Data de Início:</strong>
+                        <span id="modalDataInicio"></span>
+                    </div>
+                    <div class="data-item">
+                        <strong>Data de Fim:</strong>
+                        <span id="modalDataFim"></span>
+                    </div>
+                    <div class="data-item horario-semanal">
+                        <strong>Horário Semanal:</strong>
+                        <div id="modalHorarioSemanal"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Inscrição -->
+        <div id="modalInscricao" class="formacao-modal">
+            <div class="modal-content">
+                <span class="close" onclick="fecharModalInscricao()">&times;</span>
+                <h2>Confirmar Inscrição</h2>
+                <p>Deseja inscrever-se na formação <strong id="modalInscricaoNome"></strong>?</p>
+                <div class="modal-actions">
+                    <form method="post" id="formInscricao">
+                        <input type="hidden" name="formacao_id" id="modalFormacaoId">
+                        <button type="submit" class="btn-confirmar">Confirmar Inscrição</button>
+                        <button type="button" class="btn-cancelar" onclick="fecharModalInscricao()">Cancelar</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </main>
+
+<script>
+// Modal de Datas
+function abrirModalData(id, nome, dataInicio, dataFim, horarioSemanal) {
+    document.getElementById('modalDatasTitle').textContent = nome;
+    document.getElementById('modalDataInicio').textContent = new Date(dataInicio).toLocaleDateString('pt-PT');
+    document.getElementById('modalDataFim').textContent = new Date(dataFim).toLocaleDateString('pt-PT');
+    
+    // Processar horário semanal
+    const horarioContainer = document.getElementById('modalHorarioSemanal');
+    if (horarioSemanal && horarioSemanal.trim() !== '') {
+        try {
+            // Assumindo que o horário vem em formato JSON ou texto estruturado
+            const horarios = JSON.parse(horarioSemanal);
+            let horarioHTML = '<div class="horario-grid">';
+            
+            // Corrigir: usar as chaves sem acentos que estão na base de dados
+            const diasSemana = [
+                { display: 'Segunda', key: 'segunda' },
+                { display: 'Terça', key: 'terca' },
+                { display: 'Quarta', key: 'quarta' },
+                { display: 'Quinta', key: 'quinta' },
+                { display: 'Sexta', key: 'sexta' },
+                { display: 'Sábado', key: 'sabado' },
+                { display: 'Domingo', key: 'domingo' }
+            ];
+            
+            diasSemana.forEach(dia => {
+                const horarioDia = horarios[dia.key] || 'Não definido';
+                horarioHTML += `
+                    <div class="horario-dia">
+                        <span class="dia-nome">${dia.display}:</span>
+                        <span class="dia-horario">${horarioDia}</span>
+                    </div>
+                `;
+            });
+            
+            horarioHTML += '</div>';
+            horarioContainer.innerHTML = horarioHTML;
+        } catch (e) {
+            // Se não for JSON, mostrar como texto simples
+            horarioContainer.innerHTML = `<div class="horario-texto">${horarioSemanal}</div>`;
+        }
+    } else {
+        horarioContainer.innerHTML = '<div class="horario-texto">Horário não definido</div>';
+    }
+    
+    document.getElementById('modalDatas').style.display = 'flex';
+}
+
+function fecharModalDatas() {
+    document.getElementById('modalDatas').style.display = 'none';
+}
+
+// Modal de Inscrição
+function abrirModalInscricao(id, nome) {
+    document.getElementById('modalInscricaoNome').textContent = nome;
+    document.getElementById('modalFormacaoId').value = id;
+    document.getElementById('modalInscricao').style.display = 'flex';
+}
+
+function fecharModalInscricao() {
+    document.getElementById('modalInscricao').style.display = 'none';
+}
+
+// Fechar modais ao clicar fora
+window.onclick = function(event) {
+    const modalDatas = document.getElementById('modalDatas');
+    const modalInscricao = document.getElementById('modalInscricao');
+    
+    if (event.target === modalDatas) {
+        fecharModalDatas();
+    }
+    if (event.target === modalInscricao) {
+        fecharModalInscricao();
+    }
+}
+</script>
 </body>
 </html>

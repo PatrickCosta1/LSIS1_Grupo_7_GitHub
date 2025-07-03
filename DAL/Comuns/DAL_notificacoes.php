@@ -19,6 +19,13 @@ class DAL_Notificacoes {
         return $stmt->fetch();
     }
 
+    public function getUtilizadorIdByColaboradorId($colaboradorId) {
+        $stmt = $this->db->prepare("SELECT utilizador_id FROM colaboradores WHERE id = ?");
+        $stmt->execute([$colaboradorId]);
+        $result = $stmt->fetch();
+        return $result ? $result['utilizador_id'] : null;
+    }
+
     public function getNotificacoesByUserId($userId) {
         $stmt = $this->db->prepare("SELECT * FROM notificacoes WHERE utilizador_id = ? ORDER BY data_envio DESC");
         $stmt->execute([$userId]);

@@ -19,7 +19,14 @@ class ColaboradorFichaManager {
 
         // Se for RH/Admin, altera diretamente
         if ($perfil === 'rh' || $perfil === 'admin') {
-            return $this->dal->updateColaboradorByUserId($userId, $dados);
+            // Se o $dados tiver 'id' (colaborador), atualizar por id, senão por utilizador_id
+            if (isset($dados['id'])) {
+                $colabId = $dados['id'];
+                unset($dados['id']);
+                return $this->dal->updateColaboradorById($colabId, $dados);
+            } else {
+                return $this->dal->updateColaboradorByUserId($userId, $dados);
+            }
         }
 
         // Caso contrário, cria pedidos de alteração para cada campo alterado
@@ -73,6 +80,36 @@ class ColaboradorFichaManager {
     }
     public function getPedidoFeriasById($pedidoId) {
         return $this->dal->getPedidoFeriasById($pedidoId);
+    }
+    public function getPedidosFeriasPorColaborador($colaboradorId) {
+        try {
+            return $this->dal->getPedidosFeriasPorColaborador($colaboradorId);
+        } catch (Exception $e) {
+            // Se der erro, retornar array vazio
+            error_log("Erro ao buscar pedidos de férias: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // --- PEDIDOS DE COMPROVATIVO ---
+    public function criarPedidoComprovativo($colaboradorId, $tipoComprovativo, $comprovantivoAntigo, $comprovantivoNovo) {
+        return $this->dal->criarPedidoComprovativo($colaboradorId, $tipoComprovativo, $comprovantivoAntigo, $comprovantivoNovo);
+    }
+
+    public function listarPedidosComprovantivosPendentes() {
+        return $this->dal->listarPedidosComprovantivosPendentes();
+    }
+
+    public function aprovarPedidoComprovativo($pedidoId) {
+        return $this->dal->aprovarPedidoComprovativo($pedidoId);
+    }
+
+    public function recusarPedidoComprovativo($pedidoId) {
+        return $this->dal->recusarPedidoComprovativo($pedidoId);
+    }
+
+    public function getPedidoComprovantivoById($pedidoId) {
+        return $this->dal->getPedidoComprovantivoById($pedidoId);
     }
 }
 ?>

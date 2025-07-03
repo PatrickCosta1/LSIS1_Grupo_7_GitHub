@@ -68,25 +68,71 @@ $nome = isset($_SESSION['nome']) ? htmlspecialchars($_SESSION['nome']) : 'Colabo
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
-                <a href="dashboard_colaborador.php">Dashboard</a>
-                <a href="ficha_colaborador.php">A Minha Ficha</a>
-                <a href="beneficios.php">Benefícios</a>
-                <a href="ferias.php">Férias</a>
-                <a href="formacoes.php">Formações</a>
-                <a href="recibos.php">Recibos</a>
-                <a href="../Comuns/notificacoes.php">Notificações</a>
-                <a href="../Comuns/perfil.php">Perfil</a>
-                <a href="../Comuns/logout.php">Sair</a>
+              <header>
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_colaborador.php';">
+        <nav>
+            <a href="ficha_colaborador.php">A Minha Ficha</a>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="ficha_colaborador.php">Ficha Colaborador</a>
+                    <a href="beneficios.php">Benefícios</a>
+                    <a href="ferias.php">Férias</a>
+                    <a href="formacoes.php">Formações</a>
+                    <a href="recibos.php">Recibos</a>
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a>
+        </nav>
+    </header>
             <?php endif; ?>
         </nav>
     </header>
     <div class="azul-container">
         <main>
-            <h1>Recibos de Vencimento</h1>
-            <p class="descricao-inicial">
-                Aqui pode consultar e descarregar todos os seus recibos de vencimento submetidos pelo RH.
-            </p>
-        </main>
-    </div>
+        <div class="portal-brand">
+            <div class="color-bar">
+                <div class="color-segment"></div>
+                <div class="color-segment"></div>
+                <div class="color-segment"></div>
+            </div>
+            <span class="portal-text">Portal Do Colaborador</span>
+        </div>
+        <h1>Recibos de Vencimento</h1>
+        <p class="descricao-inicial">
+            Aqui pode consultar e descarregar todos os seus recibos de vencimento submetidos pelo RH.
+        </p>
+
+        <div class="recibos-lista">
+            <?php if (!empty($recibos)): ?>
+                <?php foreach ($recibos as $recibo): ?>
+                <div class="recibo-card">
+                    <div class="recibo-info">
+                        <div class="recibo-nome"><?= htmlspecialchars($recibo['nome_ficheiro']) ?></div>
+                        <div class="recibo-data"><?= date('F Y', strtotime($recibo['mes_ano'])) ?></div>
+                    </div>
+                    <div class="recibo-acoes">
+                        <a href="../../Uploads/Recibos/<?= htmlspecialchars($recibo['caminho_ficheiro']) ?>" 
+                           target="_blank" class="btn-download">
+                            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                            </svg>
+                            Descarregar
+                        </a>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="recibos-vazio">
+                    Não existem recibos de vencimento disponíveis.
+                </div>
+            <?php endif; ?>
+        </div>
+    </main>
+</div>
 </body>
 </html>

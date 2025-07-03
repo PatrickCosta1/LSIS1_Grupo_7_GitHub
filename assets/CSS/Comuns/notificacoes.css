@@ -1,11 +1,11 @@
 body {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: #ffffff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     min-height: 100vh;
-    /* aumenta o padding-top para compensar o header mais largo e com margem */
-    padding-top: calc(100px + 2cm); /* 100px altura header + 0.5cm top + 0.5cm bottom */
+    padding-top: calc(100px + 2.5cm); /* Mudado de 1.5cm para 2.5cm */
 }
+
 header {
     position: fixed;
     top: 0.5cm;
@@ -16,7 +16,7 @@ header {
     background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
     border-radius: 24px;
     min-height: 100px;
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25);
+    box-shadow: 0 8px 32px rgba(3,96,233,0.18);
     display: flex;
     align-items: center;
     justify-content: flex-start; /* igual ao dashboard */
@@ -51,13 +51,56 @@ header nav a.active {
     color: #e0eaff !important;
 }
 
+/* Marca colorida acima do título */
+.portal-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 32px 0 12px 0; /* Mudado de 0px para 32px a margem superior */
+}
+
+.color-bar {
+    height: 6px;
+    width: 80px;
+    border-radius: 3px;
+    display: flex;
+}
+
+.color-segment {
+    flex: 1;
+    height: 100%;
+}
+
+.color-segment:first-child {
+    background: #8155ff;
+    border-radius: 3px 0 0 3px;
+}
+
+.color-segment:nth-child(2) {
+    background: #ff9b37;
+}
+
+.color-segment:last-child {
+    background: #3ed829;
+    border-radius: 0 3px 3px 0;
+}
+
+.portal-text {
+    font-size: 0.75rem;
+    color: #19365f;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
 /* Título principal */
 main h1 {
-    color: #0360e9;
+    color: #19365f;
     text-align: center;
     font-size: 2.2rem;
     font-weight: 700;
-    margin: 40px 0 32px 0;
+    margin: 4px 0 32px 0;
     letter-spacing: 1px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
@@ -68,8 +111,8 @@ main h1 {
     backdrop-filter: blur(20px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.10);
     max-width: 800px;
-    margin: 32px auto 40px auto;
-    padding: 40px 48px;
+    margin: 24px auto 32px auto; /* Reduzido margem */
+    padding: 32px 40px; /* Reduzido padding */
     border: 1px solid rgba(255, 255, 255, 0.3);
     position: relative;
     overflow: hidden;
@@ -90,59 +133,77 @@ main h1 {
     margin: 0;
 }
 
-/* Notificações modernas (extra opcional) */
+/* Notificações modernas */
 .notificacao {
     background: rgba(255,255,255,0.95);
     border-left: 6px solid #b6c4ff;
-    margin-bottom: 22px;
-    padding: 20px 26px 16px 26px;
+    margin-bottom: 16px; /* Reduzido de 22px para 16px */
+    padding: 16px 22px 12px 22px; /* Reduzido o padding */
     box-shadow: 0 2px 12px rgba(102, 126, 234, 0.10);
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px; /* Reduzido de 8px para 6px */
     position: relative;
-    transition: background 0.2s, box-shadow 0.2s;
-    cursor: pointer;
     transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
+    cursor: pointer;
 }
 
-
 .notificacao.unread {
-    background: rgba(102, 126, 234, 0.13);
-    border-left: 6px solid #0000ff;
-    box-shadow: 0 4px 18px rgba(118, 75, 162, 0.13);
+    background: rgba(102, 126, 234, 0.15); /* Aumentado de 0.13 para 0.15 */
+    border-left: 6px solid #ff6b35; /* Mudado para laranja mais visível */
+    box-shadow: 0 4px 18px rgba(255, 107, 53, 0.15); /* Sombra laranja */
+    position: relative;
+}
+
+/* Indicador visual para não lidas */
+.notificacao.unread::before {
+    content: '●';
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: #ff6b35;
+    font-size: 18px;
+    font-weight: bold;
+    animation: pulseNotification 2s infinite;
+}
+
+@keyframes pulseNotification {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
 }
 
 .notificacao .titulo {
-    color: #0360e9;
-    font-size: 1.15rem;
+    color: #19365f;
+    font-size: 1rem; /* Reduzido de 1.15rem para 1rem */
     font-weight: 700;
     margin-bottom: 2px;
+    line-height: 1.3; /* Melhor espaçamento de linha */
 }
 
 .notificacao .mensagem {
     color: #4a5568;
-    font-size: 1rem;
+    font-size: 0.9rem; /* Reduzido de 1rem para 0.9rem */
     margin-bottom: 4px;
+    line-height: 1.4;
 }
 
 .notificacao .data {
     color: #a0aec0;
-    font-size: 0.92rem;
+    font-size: 0.85rem; /* Reduzido de 0.92rem para 0.85rem */
     font-weight: 500;
     align-self: flex-end;
 }
 
 .notificacao .acao {
-    margin-top: 8px;
+    margin-top: 6px; /* Reduzido de 8px para 6px */
     align-self: flex-end;
 }
 
 .notificacao .btn {
-    font-size: 0.95rem;
-    padding: 8px 20px;
+    font-size: 0.85rem; /* Reduzido de 0.95rem para 0.85rem */
+    padding: 6px 16px; /* Reduzido de 8px 20px para 6px 16px */
     border: none;
-    background: linear-gradient(135deg,  #0360e9 0%, #299cf3 100%);
+    background: linear-gradient(135deg, #19365f 0%, #299cf3 100%);
     color: #fff;
     font-weight: 600;
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.13);
@@ -151,29 +212,40 @@ main h1 {
     letter-spacing: 0.5px;
     text-decoration: none;
     display: inline-block;
+    border-radius: 4px; /* Adicionado border-radius */
 }
 
 .notificacao .btn:hover {
-    background: linear-gradient(135deg,  #0360e9 0%, #299cf3 100%);
+    background: linear-gradient(135deg, #0f1e35 0%, #19365f 100%);
     transform: translateY(-2px);
     box-shadow: 0 4px 16px rgba(102, 126, 234, 0.18);
 }
 
+/* Botão de eliminar com estilo diferente */
+.notificacao .btn-danger {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    margin-left: 8px;
+}
+
+.notificacao .btn-danger:hover {
+    background: linear-gradient(135deg, #c53030 0%, #9c2626 100%);
+}
 
 .notificacao.expandida {
     background: #f6faff;
     box-shadow: 0 6px 24px rgba(102, 126, 234, 0.13);
     border-left: 5px solid #299cf3;
-    padding-bottom: 22px;
+    padding-bottom: 18px; /* Reduzido de 22px para 18px */
 }
 
 .notificacao .detalhes {
     display: none;
-    margin-top: 10px;
+    margin-top: 8px; /* Reduzido de 10px para 8px */
     border-top: 1px solid #e0e7ef;
-    padding-top: 10px;
-    font-size: 0.97rem;
+    padding-top: 8px; /* Reduzido de 10px para 8px */
+    font-size: 0.9rem; /* Reduzido de 0.97rem para 0.9rem */
     color: #333;
+    line-height: 1.4;
 }
 
 .notificacao.expandida .detalhes {
@@ -181,11 +253,10 @@ main h1 {
     animation: fadeInDetalhe 0.3s;
 }
 
-
 .notificacao:hover {
     background: #eaf1ff;
     box-shadow: 0 6px 24px rgba(102, 126, 234, 0.18);
-    transform: translateY(-2px) scale(1.012);
+    transform: translateY(-2px) scale(1.01); /* Reduzido de 1.012 para 1.01 */
 }
 
 @keyframes fadeInDetalhe {
@@ -200,6 +271,154 @@ main h1 {
     text-align: center;
     font-size: 1.1rem;
     margin: 40px 0;
+}
+
+/* Modal de notificações não lidas */
+.modal-nao-lidas {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-nao-lidas .modal-content {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: modalFadeIn 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-nao-lidas .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.modal-nao-lidas .modal-title {
+    color: #19365f;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-nao-lidas .modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.modal-nao-lidas .modal-close:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.modal-nao-lidas .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    margin: -8px;
+    padding: 8px;
+}
+
+.modal-nao-lidas .notificacao-modal {
+    background: rgba(255, 107, 53, 0.08);
+    border-left: 4px solid #ff6b35;
+    margin-bottom: 12px;
+    padding: 14px 18px 12px 18px;
+    border-radius: 0 6px 6px 0;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+}
+
+.modal-nao-lidas .notificacao-modal:hover {
+    background: rgba(255, 107, 53, 0.12);
+    transform: translateX(3px);
+}
+
+.modal-nao-lidas .notificacao-modal .titulo-modal {
+    color: #19365f;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.modal-nao-lidas .notificacao-modal .data-modal {
+    color: #888;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.modal-nao-lidas .notificacao-modal .indicador-novo {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 8px;
+    height: 8px;
+    background: #ff6b35;
+    border-radius: 50%;
+    animation: pulseModal 2s infinite;
+}
+
+@keyframes pulseModal {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+.modal-nao-lidas .modal-footer {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f0;
+    text-align: center;
+}
+
+.modal-nao-lidas .btn-marcar-todas {
+    background: linear-gradient(135deg, #19365f 0%, #299cf3 100%);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-nao-lidas .btn-marcar-todas:hover {
+    background: linear-gradient(135deg, #0f1e35 0%, #19365f 100%);
+    transform: translateY(-1px);
+}
+
+.modal-nao-lidas .notificacoes-vazio-modal {
+    text-align: center;
+    color: #888;
+    font-size: 1rem;
+    padding: 40px 20px;
 }
 
 /* Responsividade */

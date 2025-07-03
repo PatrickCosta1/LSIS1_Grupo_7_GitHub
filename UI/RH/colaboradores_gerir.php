@@ -50,7 +50,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                         <th>Username</th>
                         <th>Email</th>
                         <th>Tipo</th>
-                        <th>Equipa</th>
+                        <th>Equipas</th>
                         <th style="min-width:90px;">Ações</th>
                     </tr>
                 </thead>
@@ -80,7 +80,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                             }
                             ?>
                         </td>
-                        <td><?php echo htmlspecialchars($col['equipa']); ?></td>
+                        <td><?php echo htmlspecialchars($col['equipas']); ?></td>
                         <td>
                             <a href="../Colaborador/ficha_colaborador.php?id=<?php echo $col['id']; ?>" class="btn btn-sm">Ver</a>
                             <a href="#" class="btn btn-danger btn-sm">Remover</a>

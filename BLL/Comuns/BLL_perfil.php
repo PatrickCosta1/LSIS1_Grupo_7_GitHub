@@ -3,18 +3,17 @@ require_once __DIR__ . '/../../DAL/Comuns/DAL_perfil.php';
 
 class PerfilManager {
     private $dal;
+    
     public function __construct() {
         $this->dal = new DAL_Perfil();
     }
+    
     public function getUserById($id) {
         return $this->dal->getUserById($id);
     }
+    
     public function updateUserProfile($id, $nome, $email, $username) {
         $result = $this->dal->updateUserProfile($id, $nome, $email, $username);
-        if ($result) {
-            // Enviar email ao RH (exemplo simples)
-            mail('rh@tlantic.com', 'Alteração de dados', "O colaborador $nome ($username) alterou os seus dados.");
-        }
         return $result;
     }
 
@@ -25,6 +24,19 @@ class PerfilManager {
         }
         $ok = $this->dal->updatePassword($id, $pw_nova);
         return $ok === true ? true : "Erro ao atualizar a palavra-passe.";
+    }
+
+    // Métodos para o perfil - formações e férias
+    public function getColaboradorByUserId($userId) {
+        return $this->dal->getColaboradorByUserId($userId);
+    }
+
+    public function getFormacoesPorColaborador($colaboradorId) {
+        return $this->dal->getFormacoesPorColaborador($colaboradorId);
+    }
+
+    public function getPedidosFeriasPorColaborador($colaboradorId) {
+        return $this->dal->getPedidosFeriasPorColaborador($colaboradorId);
     }
 }
 ?>
