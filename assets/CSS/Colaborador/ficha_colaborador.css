@@ -7,6 +7,14 @@
             width:98vw;
             max-width: 98vw;
             overflow-x: hidden !important;
+            /* Linhas de fundo mais escuras */
+            background-image: 
+                linear-gradient(45deg, rgba(100, 100, 100, 0.15) 1px, transparent 1px),
+                linear-gradient(-45deg, rgba(100, 100, 100, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(80, 80, 80, 0.08) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(80, 80, 80, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px, 40px 40px, 20px 20px, 20px 20px;
+            background-position: 0 0, 0 0, 0 0, 0 0;
         }
 
         /* Cabeçalho hero azul arredondado no topo */
@@ -19,7 +27,7 @@
             margin: 0;
             background: linear-gradient(135deg, hsl(18, 100%, 43%) 0%, #ffab58 100%);
             border-radius: 24px;
-            min-height: 140px;
+            min-height: 100px; /* Reduzido de 140px para 100px */
             box-shadow: 0 8px 32px rgba(234, 164, 102, 0.25);
             display: flex;
             align-items: center;
@@ -34,11 +42,11 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 32px;
+            gap: 20px; /* Reduzido de 32px para 20px */
         }
 
         .logo-header {
-            width: 140px;
+            width: 120px;
             height: auto;
             filter: brightness(1.1);
             transition: transform 0.3s ease;
@@ -49,7 +57,7 @@
         }
 
         .logo-header2 {
-            width: 140px;
+            width: 120px;
             height: auto;
             filter: brightness(1.1);
             transition: transform 0.3s ease;
@@ -61,33 +69,29 @@
 
         .nav-links {
             display: flex;
-            justify-content: center;
-            align-items: center;
             gap: 1px;
-            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-left: 148px; /* Adicionado um pequeno deslocamento para a direita */
         }
 
         .nav-links a {
             color: #fff !important;
             font-weight: 500;
             text-decoration: none;
-            padding: 10px 16px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            padding: 7px 14px;
+            border-radius: 10px;
+            transition: all 0.3s;
             font-size: 0.95rem;
-            letter-spacing: 0.02em;
-            position: relative;
-            backdrop-filter: blur(10px);
-            font-size: 0.95rem; /* ou 0.8rem para ainda menor */
-
+            margin: 0;
+            display: inline-block;
         }
 
         .nav-links a:hover,
         .nav-links a.active {
             background: rgba(255, 255, 255, 0.2);
             color: #e0eaff !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .header-title {
@@ -123,7 +127,7 @@
             padding: 12px 32px;
             transition: all 0.5s ease-in-out;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #0360e9;
+            color: #e94803;
             transition: background 0.4s, color 0.4s;
             
     }
@@ -188,7 +192,14 @@
 
         /* Layout principal */
         body {
-            background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%) !important;
+            background: 
+                linear-gradient(45deg, rgba(200, 200, 200, 0.03) 25%, transparent 25%), 
+                linear-gradient(-45deg, rgba(200, 200, 200, 0.03) 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, rgba(200, 200, 200, 0.03) 75%), 
+                linear-gradient(-45deg, transparent 75%, rgba(200, 200, 200, 0.03) 75%),
+                linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+            background-size: 60px 60px;
+            background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
             min-height: 100vh;
         }
 
@@ -200,68 +211,164 @@
             max-width: 100vw !important;
             padding: 0 !important;
             margin: 0 !important;
+            margin-top: 80px !important; /* Adicionado margem maior para não ficar atrás do header */
             transition: margin-left 0.3s ease;
         }
 
-        /* Menu lateral */
         .menu-lateral-fichas {
             position: fixed;
-            top: 100px; /* mantém o valor atual de top */
-            left: 0;    /* cola ao lado esquerdo */
-            width: 250px;
+            top: 250px;
+            left: -180px; /* Esconde quase todo o menu */
+            width: 200px;
+            min-width: 0;
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            z-index: 100;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            padding: 24px 16px;
-            z-index: 100;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            max-height: calc(100vh - 180px);
-            overflow-y: auto;
+            gap: 0;
+            align-items: flex-start;
+            border-radius: 0 !important;
+            max-height: none;
+            overflow: visible;
+            transition: left 0.3s ease;
         }
 
-        .menu-link {
-            background: none;
+        .menu-lateral-fichas.show {
+            left: 0; /* Mostra completamente quando tem a classe 'show' */
+        }
+
+        .menu-lateral-fichas .menu-link {
+            background: rgba(255, 255, 255, 0.98);
+            color: #2d3748 !important; /* Texto sempre preto por defeito */
             border: none;
-            color: #0360e9; 
-            font-size: 0.95rem;
-            text-align: left;
-            padding: 12px 20px;
-            border-radius: 12px;
-            cursor: pointer;
+            border-radius: 0;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            padding: 14px 24px 14px 16px;
+            margin: 2px 0;
             font-weight: 600;
-            transition: all 0.3s ease;
+            font-size: 0.87rem;
+            min-width: 100px;
+            text-align: left;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            outline: none;
+            border-left: 3px solid transparent;
+            width: 100%;
+            display: flex;
+            align-items: center;
             position: relative;
-            white-space: nowrap;
+            overflow: hidden;
+            backdrop-filter: blur(12px) saturate(110%);
+            -webkit-backdrop-filter: blur(12px) saturate(110%);
+            z-index: 2;
         }
 
-        .menu-link:hover {
-            background: rgba(102, 126, 234, 0.1);
-            color: #0360e9;
-            transform: translateX(4px);
+        .menu-lateral-fichas .menu-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0;
+            background: linear-gradient(135deg, #e94803 0%, #ff9500 100%);
+            transition: width 0.3s ease;
+            border-radius: 0;
+            z-index: -1;
         }
 
-        .menu-link.active {
-            background: linear-gradient(135deg,#0360e9 0%, #299cf3 100%);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-            transform: translateX(4px);
+        /* Hover: texto preto, gradiente aparece mas não cobre o texto */
+        .menu-lateral-fichas .menu-link:hover {
+            background: rgba(255, 255, 255, 0.95);
+            color: #2d3748 !important; /* Texto preto no hover */
+            box-shadow: 0 6px 20px rgba(233, 72, 3, 0.15);
+            border-left: 3px solid #e94803;
+            transform: translateX(6px) scale(1.02);
+            z-index: 2;
+            position: relative;
         }
 
-        /* Containers das fichas */
+        /* Active: texto branco quando selecionado */
+        .menu-lateral-fichas .menu-link.active {
+            background: rgba(255, 255, 255, 0.95);
+            color: #ffffff !important; /* Texto branco quando ativo */
+            box-shadow: 0 6px 20px rgba(233, 72, 3, 0.15);
+            border-left: 3px solid #e94803;
+            transform: translateX(6px) scale(1.02);
+            z-index: 2;
+            position: relative;
+        }
+
+        /* Gradiente só aparece no hover e quando ativo */
+        .menu-lateral-fichas .menu-link.active::before,
+        .menu-lateral-fichas .menu-link:hover::before {
+            width: 100%;
+        }
+
+        /* Garantir que o texto fica sempre visível por cima do gradiente */
+        .menu-lateral-fichas .menu-link span,
+        .menu-lateral-fichas .menu-link {
+            position: relative;
+            z-index: 3 !important;
+        }
+
+        /* Indicador visual - só aparece quando o menu está escondido */
+        .menu-lateral-fichas::after {
+            content: '→';
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            color: #e94803;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            opacity: 1;
+        }
+
+        .menu-lateral-fichas.show::after {
+            opacity: 0;
+            transform: translateY(-50%) scale(0.8);
+        }
+
+        /* Zona invisível de trigger para facilitar o hover */
+        .menu-trigger-zone {
+            position: fixed;
+            top: 250px;
+            left: 0;
+            width: 50px;
+            height: 300px;
+            z-index: 99;
+            background: transparent;
+            pointer-events: auto;
+        }
+
+        /* Containers das fichas - Glassmorphism completo para TODAS */
         .ficha-container {
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(20px);
-            border-radius: 24px !important;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1) !important;
-            padding: 40px 48px !important;
-            max-width: 900px !important;
-            margin: 32px auto !important;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            max-width: 950px;
+            margin: 32px auto 0 auto;
+            /* Fundo completamente transparente com apenas blur */
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border-radius: 20px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.12),
+                0 1px 1px rgba(255, 255, 255, 0.3) inset,
+                0 -1px 1px rgba(0, 0, 0, 0.05) inset;
+            padding: 40px 48px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
             position: relative;
             overflow: hidden;
         }
@@ -272,86 +379,207 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #0360e9 0%, #299cf3 100%);
-            border-radius: 24px 24px 0 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.4) 20%, 
+                rgba(255, 255, 255, 0.7) 50%, 
+                rgba(255, 255, 255, 0.4) 80%, 
+                transparent 100%);
+            z-index: 1;
+        }
+
+        .ficha-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.03) 0%, 
+                rgba(255, 255, 255, 0.01) 50%, 
+                rgba(0, 0, 0, 0.02) 100%);
+            pointer-events: none;
+            z-index: 0;
         }
 
         .ficha-container:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15) !important;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(30px) saturate(200%);
+            -webkit-backdrop-filter: blur(30px) saturate(200%);
+            box-shadow: 
+                0 16px 48px rgba(0, 0, 0, 0.18),
+                0 2px 2px rgba(255, 255, 255, 0.4) inset,
+                0 -2px 2px rgba(0, 0, 0, 0.08) inset;
+            border-color: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
         }
 
+        /* Fichas específicas com cores personalizadas mantendo glassmorphism */
         #ficha-dados-pessoais.ficha-container-primarios {
-            position: relative;
-            left: 0;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            margin-top: 1.5cm !important;
-            max-width: 1500px !important;
-            width: calc(100vw - 280px); /* 280px = largura do menu lateral */
-            min-width: 600px;
-            background: rgba(255,255,255,0.97) !important;
-            border-radius: 24px !important;
-            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.10) !important;
-            padding: 48px 56px !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(234, 164, 102, 0.12);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(234, 164, 102, 0.3);
         }
 
-        @media (max-width: 1200px) {
-            #ficha-dados-pessoais.ficha-container-primarios {
-                max-width: 98vw !important;
-                width: 98vw !important;
-                padding: 32px 18px !important;
-                margin-right: 0.5cm !important;
-                min-width: unset;
-            }
-        }
-        @media (max-width: 900px) {
-            #ficha-dados-pessoais.ficha-container-primarios {
-                margin: 16px auto 16px auto !important;
-                width: 98vw !important;
-                max-width: 100vw !important;
-                padding: 20px 8px !important;
-                right: 0;
-            }
+        #ficha-dados-pessoais.ficha-container-primarios::before {
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(234, 164, 102, 0.4) 20%, 
+                rgba(234, 164, 102, 0.7) 50%, 
+                rgba(234, 164, 102, 0.4) 80%, 
+                transparent 100%);
         }
 
-        .ficha-container-rh {
-            background: linear-gradient(135deg, rgba(230, 126, 34, 0.1) 0%, rgba(246, 211, 101, 0.1) 100%) !important;
-            backdrop-filter: blur(20px);
-            border-radius: 24px !important;
-            box-shadow: 0 12px 40px rgba(230, 126, 34, 0.15) !important;
-            padding: 40px 48px !important;
-            max-width: 900px !important;
-            margin: 32px auto !important;
-            border: 1px solid rgba(230, 126, 34, 0.2);
+        #ficha-dados-pessoais.ficha-container-primarios:hover {
+            background: rgba(234, 164, 102, 0.18);
+            border-color: rgba(234, 164, 102, 0.45);
         }
 
-        .ficha-container-rh::before {
-            background: linear-gradient(90deg, #e67e22 0%, #f6d365 100%);
+        /* Ficha Morada - mesmo estilo dos dados pessoais (LARANJA) */
+        #ficha-morada.ficha-container {
+            background: rgba(234, 164, 102, 0.12);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(234, 164, 102, 0.3);
         }
 
+        #ficha-morada.ficha-container::before {
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(234, 164, 102, 0.4) 20%, 
+                rgba(234, 164, 102, 0.7) 50%, 
+                rgba(234, 164, 102, 0.4) 80%, 
+                transparent 100%);
+        }
+
+        #ficha-morada.ficha-container:hover {
+            background: rgba(234, 164, 102, 0.18);
+            border-color: rgba(234, 164, 102, 0.45);
+        }
+
+        /* Ficha Documentos - mesmo estilo dos dados pessoais (LARANJA) */
+        #ficha-documentos.ficha-container {
+            background: rgba(234, 164, 102, 0.12);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(234, 164, 102, 0.3);
+        }
+
+        #ficha-documentos.ficha-container::before {
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(234, 164, 102, 0.4) 20%, 
+                rgba(234, 164, 102, 0.7) 50%, 
+                rgba(234, 164, 102, 0.4) 80%, 
+                transparent 100%);
+        }
+
+        #ficha-documentos.ficha-container:hover {
+            background: rgba(234, 164, 102, 0.18);
+            border-color: rgba(234, 164, 102, 0.45);
+        }
+
+        /* Ficha Fiscais - estilo laranja (MUDADO DE AZUL PARA LARANJA) */
+        #ficha-fiscais.ficha-container {
+            background: rgba(234, 164, 102, 0.12);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(234, 164, 102, 0.3);
+        }
+
+        #ficha-fiscais.ficha-container::before {
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(234, 164, 102, 0.4) 20%, 
+                rgba(234, 164, 102, 0.7) 50%, 
+                rgba(234, 164, 102, 0.4) 80%, 
+                transparent 100%);
+        }
+
+        #ficha-fiscais.ficha-container:hover {
+            background: rgba(234, 164, 102, 0.18);
+            border-color: rgba(234, 164, 102, 0.45);
+        }
+
+        /* Ficha Vouchers - estilo laranja (MUDADO DE AZUL PARA LARANJA) */
+        #ficha-vouchers.ficha-container {
+            background: rgba(234, 164, 102, 0.12);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(234, 164, 102, 0.3);
+        }
+
+        #ficha-vouchers.ficha-container::before {
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(234, 164, 102, 0.4) 20%, 
+                rgba(234, 164, 102, 0.7) 50%, 
+                rgba(234, 164, 102, 0.4) 80%, 
+                transparent 100%);
+        }
+
+        #ficha-vouchers.ficha-container:hover {
+            background: rgba(234, 164, 102, 0.18);
+            border-color: rgba(234, 164, 102, 0.45);
+        }
+
+        /* Ficha Contacto Emergência - mesmo estilo dos dados pessoais (LARANJA) */
+        #ficha-emergencia.ficha-container {
+            background: rgba(234, 164, 102, 0.12);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(234, 164, 102, 0.3);
+        }
+
+        #ficha-emergencia.ficha-container::before {
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(234, 164, 102, 0.4) 20%, 
+                rgba(234, 164, 102, 0.7) 50%, 
+                rgba(234, 164, 102, 0.4) 80%, 
+                transparent 100%);
+        }
+
+        #ficha-emergencia.ficha-container:hover {
+            background: rgba(234, 164, 102, 0.18);
+            border-color: rgba(234, 164, 102, 0.45);
+        }
+
+        /* Ficha Contratual - estilo azul (ÚNICA FICHA AZUL) */
         .ficha-container-contratual {
-            background: linear-gradient(135deg, rgba(255, 111, 0, 0.18) 0%, rgba(233, 160, 97, 0.1) 100%) !important;
-            backdrop-filter: blur(20px);
-            border-radius: 24px !important;
-            box-shadow: 0 12px 40px rgba(230, 126, 34, 0.15) !important;
-            padding: 40px 48px !important;
-            max-width: 900px !important;
-            margin: 32px auto !important;
-            border: 1px solid rgba(196, 92, 0, 0.2);
+            background: rgba(102, 126, 234, 0.08);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(102, 126, 234, 0.25);
         }
-
-
 
         .ficha-container-contratual::before {
-            background: linear-gradient(90deg, #0360e9 0%, #299cf3 100%);
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(102, 126, 234, 0.4) 20%, 
+                rgba(102, 126, 234, 0.7) 50%, 
+                rgba(102, 126, 234, 0.4) 80%, 
+                transparent 100%);
+        }
+
+        .ficha-container-contratual::after {
+            background: linear-gradient(135deg, 
+                rgba(102, 126, 234, 0.03) 0%, 
+                rgba(102, 126, 234, 0.01) 50%, 
+                rgba(0, 0, 0, 0.02) 100%);
+        }
+
+        .ficha-container-contratual:hover {
+            background: rgba(102, 126, 234, 0.14);
+            border-color: rgba(102, 126, 234, 0.35);
         }
 
         /* Títulos */
         .ficha-titulo {
-            color: #0360e9 !important;
+            color: #1b1a74 !important;
             text-align: center;
             font-size: 2.2rem;
             font-weight: 700;
@@ -360,7 +588,7 @@
         }
 
         .ficha-subtitulo {
-            color: #8892b0 !important;
+            color: #112f83 !important;
             text-align: center;
             font-size: 1.2rem;
             font-weight: 500;
@@ -368,7 +596,7 @@
         }
 
         .ficha-section-titulo {
-            color: #0360e9 !important;
+            color: #112f83 !important;
             font-size: 1.4rem;
             font-weight: 700;
             margin-bottom: 28px;
@@ -385,7 +613,7 @@
             transform: translateX(-50%);
             width: 60px;
             height: 3px;
-            background: linear-gradient(90deg, #0360e9 0%, #299cf3 100%);
+            background: linear-gradient(90deg, #8155ff 0%, #ff9b37 50%, #3ed829 100%);
             border-radius: 2px;
         }
 
@@ -423,15 +651,21 @@
 
         .ficha-campo input,
         .ficha-campo select {
-            background: rgba(255, 255, 255, 0.8) !important;
-            border: 2px solid #e2e8f0 !important;
-            color: #2d3748 !important;
-            border-radius: 12px;
-            font-size: 0.95rem !important;
+            width: 100%;
             padding: 12px 16px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            font-size: 1rem;
+            /* Campos com efeito glassmorphism completo */
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px) saturate(150%);
+            -webkit-backdrop-filter: blur(15px) saturate(150%);
+            color: #2d3748;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.06),
+                0 1px 1px rgba(255, 255, 255, 0.2) inset;
         }
 
         .ficha-campo select option {
@@ -448,11 +682,15 @@
 
         .ficha-campo input:focus,
         .ficha-campo select:focus {
-            border: 2px solid #667eea !important;
-            background: rgba(255, 255, 255, 0.95) !important;
             outline: none;
-            color: #2d3748;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+            border-color: rgba(102, 126, 234, 0.6);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            box-shadow: 
+                0 0 0 3px rgba(102, 126, 234, 0.1),
+                0 4px 12px rgba(0, 0, 0, 0.1),
+                0 2px 2px rgba(255, 255, 255, 0.3) inset;
             transform: translateY(-1px);
         }
 
@@ -465,21 +703,39 @@
         }
 
         .ficha-campo input[type="file"] {
+            padding: 12px;
+            border: 2px dashed rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px) saturate(120%);
+            -webkit-backdrop-filter: blur(10px) saturate(120%);
             color: #4a5568;
-            border: 2px dashed #cbd5e0 !important;
-            padding: 16px;
-            background: rgba(247, 250, 252, 0.8) !important;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
         }
 
         .ficha-campo input[type="file"]:hover {
-            border-color: #667eea !important;
-            background: rgba(102, 126, 234, 0.05) !important;
+            border-color: rgba(102, 126, 234, 0.6);
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(15px) saturate(140%);
+            -webkit-backdrop-filter: blur(15px) saturate(140%);
+            transform: translateY(-1px);
+        }
+
+        /* Campos readonly também com glassmorphism */
+        .ficha-campo input[readonly],
+        .ficha-campo select[disabled] {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px) saturate(120%);
+            -webkit-backdrop-filter: blur(10px) saturate(120%);
+            color: #6b7280;
+            border-color: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
         }
 
         .ficha-campo a {
-            color: #667eea !important;
+            color: #e94803 !important;
             text-decoration: none;
             font-weight: 600;
             font-size: 0.9rem;
@@ -489,8 +745,8 @@
         }
 
         .ficha-campo a:hover {
-            color: #5a67d8 !important;
-            border-bottom-color: #5a67d8;
+            color: #e94803 !important;
+            border-bottom-color: #e94803;
         }
 
         /* Botão flutuante guardar */
@@ -510,7 +766,7 @@
             padding: 14px 40px;
             border-radius: 16px;
             border: none;
-            background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+            background: linear-gradient(135deg, #e94803 0%, #ffc5ac 100%);
             color: #fff;
             font-weight: 700;
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
@@ -520,7 +776,7 @@
         }
 
         #btn-flutuante-guardar .btn:hover {
-            background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+            background: linear-gradient(135deg, #e94803 0%, #ffba9c 100%);
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
@@ -533,7 +789,7 @@
         /* Espaçamento para o menu lateral */
         @media (min-width: 901px) {
             main {
-                margin-left: 280px !important;
+                margin-left: 220px !important; /* Reduzido de 280px para 220px */
                 padding-right: 20px !important;
             }
         }
@@ -577,24 +833,6 @@
             }
         }
 
-        .menu-lateral-fichas {
-            position: fixed;
-            top: 300px; /* aumenta este valor para descer o menu */
-            left: 80px;
-            width: 250px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            padding: 24px 16px;
-            z-index: 100;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            max-height: calc(100vh - 180px);
-            overflow-y: auto;
-        }
 
         @media (max-width: 900px) {
             main {
@@ -604,36 +842,68 @@
 
             .menu-lateral-fichas {
                 position: static;
+                left: 0; /* Reset para mobile */
                 width: 100%;
                 flex-direction: row;
                 gap: 8px;
-                border-radius: 0;
-                box-shadow: none;
-                padding: 16px 12px;
+                border-radius: 20px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                padding: 18px 14px;
                 margin-bottom: 20px;
                 justify-content: center;
                 flex-wrap: wrap;
-                background: rgba(255, 255, 255, 0.9);
-                backdrop-filter: blur(10px);
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(15px) saturate(120%);
+                -webkit-backdrop-filter: blur(15px) saturate(120%);
                 top: 250px;
-                left: auto;
                 max-height: none;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                transition: none; /* Remove transição no mobile */
+            }
+
+            .menu-lateral-fichas::after {
+                display: none; /* Remove indicador no mobile */
             }
             
             .menu-link {
-                font-size: 0.85rem;
-                padding: 10px 12px;
-                border-radius: 10px;
+                font-size: 0.82rem;
+                padding: 12px 18px;
+                border-radius: 14px;
                 white-space: nowrap;
                 min-width: auto;
+                background: rgba(255, 255, 255, 0.95);
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+                border-left: none;
+                position: relative;
+                overflow: hidden;
+                z-index: 2;
+                color: #2d3748 !important; /* Texto sempre preto no mobile por defeito */
+            }
+
+            .menu-link::before {
+                border-radius: 14px;
+                background: linear-gradient(135deg, #e94803 0%, #ff9500 100%);
+                z-index: -1;
             }
             
-            .menu-link:hover,
+            /* Mobile hover: texto preto */
+            .menu-link:hover {
+                transform: translateY(-2px) scale(1.03);
+                color: #2d3748 !important; /* Texto preto no hover mobile */
+                box-shadow: 0 6px 18px rgba(233, 72, 3, 0.2);
+                position: relative;
+                z-index: 3;
+            }
+
+            /* Mobile active: texto branco */
             .menu-link.active {
-                transform: translateX(0);
-                transform: translateY(-2px);
+                transform: translateY(-2px) scale(1.03);
+                color: #ffffff !important; /* Texto branco quando ativo mobile */
+                box-shadow: 0 6px 18px rgba(233, 72, 3, 0.2);
+                position: relative;
+                z-index: 3;
             }
-            
+
             .ficha-container, 
             .ficha-container-primarios, 
             .ficha-container-rh, 
@@ -747,12 +1017,12 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000000 0%, #000000 100%);
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #f09267 100%);
         }
 
         /* Estados de carregamento e feedback visual */
@@ -854,3 +1124,357 @@
 .dropdown-perfil:hover .dropdown-menu {
     display: block;
 }
+
+.dropdown-perfil {
+    position: relative;
+    display: inline-block;
+}
+
+.perfil-link {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.seta-baixo {
+    font-size: 0.8em;
+    margin-left: 3px;
+    transition: transform 0.2s;
+}
+
+.dropdown-perfil:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #ffbf8b;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;  /* aumenta o padding à esquerda */
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;            /* garante alinhamento à esquerda */
+}
+
+.dropdown-menu a:hover {
+    background: #ffd1a6; /* tom mais escuro de laranja claro */
+    color: #b94e00 !important;         /* texto branco ao passar o rato */
+}
+
+.dropdown-perfil:hover .dropdown-menu {
+    display: block;
+}
+
+/* Dropdown Equipa */
+.dropdown-equipa {
+    position: relative;
+    display: inline-block;
+}
+
+.equipa-link {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+    background: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    z-index: 2;
+}
+
+.equipa-link:hover,
+.equipa-link:focus {
+    background: rgba(255, 171, 88, 0.18); /* laranja claro */
+}
+
+.seta-baixo {
+    margin-left: 6px;
+    font-size: 0.9em;
+    transition: transform 0.2s;
+}
+
+.dropdown-equipa:hover .seta-baixo,
+.dropdown-equipa:focus-within .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-equipa .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #ffbf8b;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-equipa .dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;  /* aumenta o padding à esquerda */
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;            /* garante alinhamento à esquerda */
+}
+
+.dropdown-equipa .dropdown-menu a:hover {
+    background: #ffd1a6; /* tom mais escuro de laranja claro */
+    color: #b94e00 !important;
+}
+
+.dropdown-equipa:hover .dropdown-menu,
+.dropdown-equipa:focus-within .dropdown-menu {
+    display: block;
+}
+
+/* Marca colorida acima do título */
+.portal-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 32px 0 12px 0; /* Mudado de 0px para 32px a margem superior */
+}
+
+.color-bar {
+    height: 6px;
+    width: 80px;
+    border-radius: 3px;
+    display: flex;
+}
+
+.color-segment {
+    flex: 1;
+    height: 100%;    
+}
+
+.color-segment:first-child {
+    background: #8155ff;
+    border-radius: 3px 0 0 3px;
+}
+
+.color-segment:nth-child(2) {
+    background: #ff9b37;
+}
+
+.color-segment:last-child {
+    background: #3ed829;
+    border-radius: 0 3px 3px 0;
+}
+
+.portal-text {
+    font-size: 0.75rem;
+    color: #19365f;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.comprovativo-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 12px;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #e94803;
+}
+
+.comprovativo-section label {
+    color: #666 !important;
+    font-weight: 500 !important;
+    font-size: 0.8rem !important;
+    margin-bottom: 4px !important;
+}
+
+.comprovativo-section input[type="file"] {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px dashed #cbd5e0 !important;
+    padding: 12px !important;
+    font-size: 0.85rem !important;
+    border-radius: 6px !important;
+}
+
+.comprovativo-section input[type="file"]:hover {
+    border-color: #e94803 !important;
+    background: rgba(233, 72, 3, 0.05) !important;
+}
+
+.comprovativo-link {
+    color: #e94803 !important;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem !important;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(233, 72, 3, 0.1);
+    display: inline-block;
+    margin-top: 4px;
+    transition: all 0.2s ease;
+}
+
+.comprovativo-link:hover {
+    background: rgba(233, 72, 3, 0.15);
+    transform: translateX(2px);
+}
+
+/* Dropdown Equipa no sticky */
+        #header-sticky .dropdown-equipa {
+            position: relative;
+            display: inline-block;
+        }
+
+        #header-sticky .equipa-link {
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            z-index: 2;
+        }
+
+        #header-sticky .equipa-link:hover,
+        #header-sticky .equipa-link:focus {
+            background: linear-gradient(135deg, #e94803 0%, #f39529 100%);
+            transform: translateY(-1px);
+        }
+
+        #header-sticky .dropdown-equipa .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            background: #ffbf8b;
+            min-width: 180px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+            border-radius: 10px;
+            z-index: 10;
+            padding: 8px 0;
+        }
+
+        #header-sticky .dropdown-equipa .dropdown-menu a {
+            display: block;
+            padding: 5px 24px 5px 25px;
+            color: #111 !important;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.80rem;
+            transition: background 0.18s, color 0.18s;
+            border-radius: 6px;
+            text-align: left;
+        }
+
+        #header-sticky .dropdown-equipa .dropdown-menu a:hover {
+            background: #ffd1a6;
+            color: #b94e00 !important;
+        }
+
+        #header-sticky .dropdown-equipa:hover .dropdown-menu,
+        #header-sticky .dropdown-equipa:focus-within .dropdown-menu {
+            display: block;
+        }
+
+        /* Dropdown Perfil no sticky */
+        #header-sticky .dropdown-perfil {
+            position: relative;
+            display: inline-block;
+        }
+
+        #header-sticky .perfil-link {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        #header-sticky .perfil-link:hover {
+            background: linear-gradient(135deg, #e94803 0%, #f39529 100%);
+            transform: translateY(-1px);
+        }
+
+        #header-sticky .dropdown-perfil .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            background: #ffbf8b;
+            min-width: 180px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+            border-radius: 10px;
+            z-index: 10;
+            padding: 8px 0;
+        }
+
+        #header-sticky .dropdown-perfil .dropdown-menu a {
+            display: block;
+            padding: 5px 24px 5px 25px;
+            color: #111 !important;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.80rem;
+            transition: background 0.18s, color 0.18s;
+            border-radius: 6px;
+            text-align: left;
+        }
+
+        #header-sticky .dropdown-perfil .dropdown-menu a:hover {
+            background: #ffd1a6;
+            color: #b94e00 !important;
+        }
+
+        #header-sticky .dropdown-perfil:hover .dropdown-menu,
+        #header-sticky .dropdown-perfil:focus-within .dropdown-menu {
+            display: block;
+        }
+
+        #header-sticky .seta-baixo {
+            font-size: 0.8em;
+            margin-left: 3px;
+            transition: transform 0.2s;
+        }
+
+        #header-sticky .dropdown-perfil:hover .seta-baixo,
+        #header-sticky .dropdown-equipa:hover .seta-baixo {
+            transform: rotate(180deg);
+        }

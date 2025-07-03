@@ -1,0 +1,263 @@
+body {
+    background: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    padding-top: calc(100px + 2.5cm); /* Aumentado para 2.5cm */
+}
+
+header {
+    position: fixed;
+    top: 0.5cm;
+    left: 0.5cm;
+    right: 0.5cm;
+    width: auto;
+    margin: 0;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 24px;
+    min-height: 100px;
+    box-shadow: 0 8px 32px rgba(3,96,233,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 60px;
+    z-index: 1000;
+}
+
+.logo-header {
+    width: 120px;
+    height: auto;
+}
+
+header nav {
+    display: flex;
+    gap: 1px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+header nav a {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+}
+
+header nav a:hover,
+header nav a.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+/* Dropdown */
+.dropdown-perfil {
+    position: relative;
+    display: inline-block;
+}
+
+.perfil-link {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.seta-baixo {
+    font-size: 0.8em;
+    margin-left: 3px;
+    transition: transform 0.2s;
+}
+
+.dropdown-perfil:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-perfil:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+
+.dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}
+
+main h1, main .descricao-inicial {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Marca colorida acima do título */
+.portal-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0px 0 12px 0;
+}
+
+.color-bar {
+    height: 6px;
+    width: 80px;
+    border-radius: 3px;
+    display: flex;
+}
+
+.color-segment {
+    flex: 1;
+    height: 100%;
+}
+
+.color-segment:first-child {
+    background: #8155ff;
+    border-radius: 3px 0 0 3px;
+}
+
+.color-segment:nth-child(2) {
+    background: #ff9b37;
+}
+
+.color-segment:last-child {
+    background: #3ed829;
+    border-radius: 0 3px 3px 0;
+}
+
+.portal-text {
+    font-size: 0.75rem;
+    color: #19365f;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+main h1 {
+    color: #19365f;
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 4px 0 32px 0;
+    letter-spacing: 1px;
+}
+
+.descricao-inicial {
+    color: #19365f;
+    font-size: 1.13rem;
+    margin-bottom: 36px;
+    opacity: 0.85;
+    max-width: 600px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Calendário de férias sempre visível - mais pequeno */
+.calendario-ferias {
+    max-width: 380px; /* Reduzido de 500px para 380px */
+    margin: 30px auto 0 auto; /* Reduzido de 40px para 30px */
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px; /* Reduzido de 24px para 18px */
+}
+
+.calendario-header h2 {
+    color: #19365f;
+    text-align: center;
+    font-size: 1.3rem; /* Reduzido de 1.5rem para 1.3rem */
+    font-weight: 700;
+    margin: 0;
+}
+
+.calendario-selecao {
+    display: flex;
+    flex-direction: column;
+    gap: 14px; /* Reduzido de 18px para 14px */
+}
+
+.data-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* Reduzido de 8px para 6px */
+}
+
+.data-campo label {
+    color: #19365f;
+    font-weight: 600;
+    font-size: 0.95rem; /* Reduzido de 1rem para 0.95rem */
+}
+
+.data-campo input[type="date"] {
+    padding: 10px 14px; /* Reduzido de 12px 16px para 10px 14px */
+    border-radius: 6px; /* Reduzido de 8px para 6px */
+    border: 2px solid #b3cfff;
+    font-size: 0.95rem; /* Reduzido de 1rem para 0.95rem */
+    color: #19365f;
+    transition: border-color 0.2s;
+}
+
+.data-campo input[type="date"]:focus {
+    border-color: #19365f;
+    outline: none;
+}
+
+.btn-pedir-ferias {
+    background: linear-gradient(135deg, #19365f 0%, #299cf3 100%);
+    color: #fff;
+    border: none;
+    border-radius: 6px; /* Reduzido de 8px para 6px */
+    padding: 14px 0; /* Reduzido de 16px para 14px */
+    font-weight: 700;
+    font-size: 1rem; /* Reduzido de 1.1rem para 1rem */
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    margin-top: 8px; /* Reduzido de 10px para 8px */
+}
+
+.btn-pedir-ferias:hover {
+    background: linear-gradient(135deg, #0f1e35 0%, #19365f 100%);
+    transform: translateY(-2px);
+}
+
+.ferias-msg {
+    margin: 20px auto 0 auto; /* Reduzido de 24px para 20px */
+    max-width: 380px; /* Reduzido de 500px para 380px */
+    border-radius: 8px; /* Reduzido de 10px para 8px */
+    padding: 12px 16px; /* Reduzido de 14px 18px para 12px 16px */
+    font-size: 1rem; /* Reduzido de 1.08rem para 1rem */
+    text-align: center;
+    font-weight: 600;
+}

@@ -4,20 +4,23 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admi
     header('Location: ../Comuns/erro.php');
     exit();
 }
-require_once '../../BLL/RH/BLL_equipas.php';
-$equipasBLL = new RHEquipasManager();
+require_once '../../BLL/RH/BLL_equipa_nova.php';
+$equipasBLL = new EquipaNovaManager();
 
-$coordenadores = $equipasBLL->getCoordenadores();
-$colaboradores = $equipasBLL->getColaboradores(); // Adiciona este método na BLL para buscar todos os colaboradores
+$tipo = $_POST['tipo'] ?? 'colaboradores';
+$responsaveis = $equipasBLL->getResponsaveisPorTipo($tipo);
+$membros = $equipasBLL->getMembrosPorTipo($tipo);
+
 $success = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = trim($_POST['nome'] ?? '');
-    $coordenador_id = $_POST['coordenador_id'] ?? null;
+    $responsavel_id = $_POST['responsavel_id'] ?? null;
     $elementos = $_POST['elementos'] ?? [];
-    if ($nome && $coordenador_id) {
-        $resultado = $equipasBLL->addEquipa($nome, $coordenador_id, $elementos);
+    $tipo = $_POST['tipo'] ?? 'colaboradores';
+    if ($nome && $responsavel_id && $tipo) {
+        $resultado = $equipasBLL->addEquipa($nome, $responsavel_id, $elementos, $tipo);
         if ($resultado === true) {
             $success = "Equipa criada com sucesso!";
         } else {
@@ -26,6 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $error = "Preencha todos os campos obrigatórios.";
     }
+    // Atualizar listas após submit
+    $responsaveis = $equipasBLL->getResponsaveisPorTipo($tipo);
+    $membros = $equipasBLL->getMembrosPorTipo($tipo);
 }
 ?>
 <!DOCTYPE html>
@@ -54,33 +60,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1>Criar Nova Equipa</h1>
         <?php if ($success): ?><div class="success-message"><?php echo $success; ?></div><?php endif; ?>
         <?php if ($error): ?><div class="error-message"><?php echo $error; ?></div><?php endif; ?>
-        <form method="POST" class="ficha-form ficha-form-moderna">
+        <form method="POST" class="ficha-form ficha-form-moderna" id="form-equipa-nova">
             <div class="ficha-grid">
                 <div class="ficha-campo">
-                    <label>Nome da Equipa:</label>
-                    <input type="text" name="nome" required>
+                    <label>Tipo de Equipa:</label>
+                    <select name="tipo" id="tipo" required onchange="this.form.submit()">
+                        <option value="colaboradores" <?= $tipo === 'colaboradores' ? 'selected' : '' ?>>Equipa de Colaboradores</option>
+                        <option value="coordenadores" <?= $tipo === 'coordenadores' ? 'selected' : '' ?>>Equipa de Coordenadores</option>
+                        <option value="rh" <?= $tipo === 'rh' ? 'selected' : '' ?>>Equipa de RH</option>
+                    </select>
                 </div>
                 <div class="ficha-campo">
-                    <label>Coordenador:</label>
-                    <select name="coordenador_id" required>
+                    <label>Nome da Equipa:</label>
+                    <input type="text" name="nome" required autocomplete="off" value="<?= htmlspecialchars($_POST['nome'] ?? '') ?>">
+                </div>
+                <div class="ficha-campo">
+                    <label>Responsável:</label>
+                    <select name="responsavel_id" required>
                         <option value="">Selecione</option>
-                        <?php foreach ($coordenadores as $c): ?>
-                            <option value="<?php echo $c['utilizador_id']; ?>"><?php echo htmlspecialchars($c['nome']); ?></option>
+                        <?php foreach ($responsaveis as $c): ?>
+                            <option value="<?php echo $c['colaborador_id']; ?>" <?= (isset($_POST['responsavel_id']) && $_POST['responsavel_id'] == $c['colaborador_id']) ? 'selected' : '' ?>>
+                                <?php echo htmlspecialchars($c['nome']); ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="ficha-campo">
-                    <label>Elementos da Equipa:</label>
-                    <div class="lista-colaboradores">
-                        <?php foreach ($colaboradores as $col): ?>
-                            <label style="display:block; margin-bottom:6px;">
-                                <input type="checkbox" name="elementos[]" value="<?php echo $col['colaborador_id']; ?>">
-                                <?php echo htmlspecialchars($col['nome']); ?>
-                            </label>
-                        <?php endforeach; ?>
+                    <label>Membros da Equipa:</label>
+                    <div class="lista-colaboradores" data-count="<?= count($membros) ?>">
+                        <?php if (empty($membros)): ?>
+                            <span style="color:#888;">Não existem membros disponíveis para adicionar.</span>
+                        <?php else: ?>
+                            <?php foreach ($membros as $col): ?>
+                                <label>
+                                    <input type="checkbox" name="elementos[]" value="<?php echo $col['colaborador_id']; ?>"
+                                        <?= (isset($_POST['elementos']) && in_array($col['colaborador_id'], $_POST['elementos'])) ? 'checked' : '' ?>>
+                                    <?php echo htmlspecialchars($col['nome']); ?>
+                                </label>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
-                    <small>Selecione os colaboradores que vão pertencer à equipa.</small>
+                    <small>Selecione os membros que vão pertencer à equipa.<br>
+                    <span style="color:#888;">Apenas membros do tipo selecionado aparecem aqui.</span></small>
                 </div>
+            </div>
             <div style="text-align:center; margin-top: 24px;">
                 <button type="submit" class="btn">Criar Equipa</button>
             </div>

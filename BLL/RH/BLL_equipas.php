@@ -18,5 +18,14 @@ class RHEquipasManager {
     public function getColaboradores() {
         return $this->dal->getColaboradores();
     }
+    public function getEquipaById($id) {
+        return $this->dal->getEquipaById($id);
+    }
+    public function getCoordenadoresDisponiveis($equipaId = null) {
+        return $this->dal->getCoordenadoresDisponiveis($equipaId);
+    }
+    public function getColaboradoresDaEquipa($equipaId) {
+        return $this->dal->getColaboradoresDaEquipa($equipaId);
+    }
 }
 ?>

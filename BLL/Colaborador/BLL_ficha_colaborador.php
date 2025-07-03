@@ -9,13 +9,100 @@ class ColaboradorFichaManager {
     public function getColaboradorByUserId($userId) {
         return $this->dal->getColaboradorByUserId($userId);
     }
-    public function updateColaboradorByUserId($userId, $dados) {
-        // Aceita comprovativo_estado_civil se existir
-        $comprovativo = isset($dados['comprovativo_estado_civil']) ? $dados['comprovativo_estado_civil'] : null;
-        return $this->dal->updateColaboradorByUserId($userId, $dados, $comprovativo);
-    }
     public function getColaboradorById($colabId) {
         return $this->dal->getColaboradorById($colabId);
+    }
+    public function updateColaboradorByUserId($userId, $dados, $perfil = null) {
+        $colab = $this->dal->getColaboradorByUserId($userId);
+        $colabId = $colab['id'] ?? null;
+        if (!$colabId) return false;
+
+        // Se for RH/Admin, altera diretamente
+        if ($perfil === 'rh' || $perfil === 'admin') {
+            return $this->dal->updateColaboradorByUserId($userId, $dados);
+        }
+
+        // Caso contrário, cria pedidos de alteração para cada campo alterado
+        $camposPermitidos = [
+            'morada_fiscal', 'sexo', 'situacao_irs', 'dependentes', 'iban', 'habilitacoes', 'curso',
+            'telemovel', 'matricula_viatura', 'nome_contacto_emergencia', 'grau_relacionamento',
+            'contacto_emergencia', 'cartao_continente'
+        ];
+        $alterou = false;
+        foreach ($camposPermitidos as $campo) {
+            if (isset($dados[$campo]) && $dados[$campo] != ($colab[$campo] ?? null)) {
+                $this->dal->criarPedidoAlteracao($colabId, $campo, $dados[$campo], $colab[$campo] ?? null);
+                $alterou = true;
+            }
+        }
+        return $alterou;
+    }
+
+    // Métodos para RH aprovar/recusar pedidos
+    public function listarPedidosPendentes() {
+        return $this->dal->listarPedidosPendentes();
+    }
+    public function getPedidoById($pedidoId) {
+        return $this->dal->getPedidoById($pedidoId);
+    }
+    public function aprovarPedido($pedidoId) {
+        $pedido = $this->dal->getPedidoById($pedidoId);
+        if ($pedido && $pedido['estado'] === 'pendente') {
+            $this->dal->aplicarAlteracao($pedido['colaborador_id'], $pedido['campo'], $pedido['valor_novo']);
+            $this->dal->atualizarEstadoPedido($pedidoId, 'aprovado');
+            return true;
+        }
+        return false;
+    }
+    public function recusarPedido($pedidoId) {
+        return $this->dal->atualizarEstadoPedido($pedidoId, 'recusado');
+    }
+
+    // --- PEDIDOS DE FÉRIAS ---
+    public function criarPedidoFerias($colaboradorId, $dataInicio, $dataFim) {
+        return $this->dal->criarPedidoFerias($colaboradorId, $dataInicio, $dataFim);
+    }
+    public function listarPedidosFeriasPendentes() {
+        return $this->dal->listarPedidosFeriasPendentes();
+    }
+    public function aprovarPedidoFerias($pedidoId) {
+        return $this->dal->atualizarEstadoPedidoFerias($pedidoId, 'aceite');
+    }
+    public function recusarPedidoFerias($pedidoId) {
+        return $this->dal->atualizarEstadoPedidoFerias($pedidoId, 'recusado');
+    }
+    public function getPedidoFeriasById($pedidoId) {
+        return $this->dal->getPedidoFeriasById($pedidoId);
+    }
+    public function getPedidosFeriasPorColaborador($colaboradorId) {
+        try {
+            return $this->dal->getPedidosFeriasPorColaborador($colaboradorId);
+        } catch (Exception $e) {
+            // Se der erro, retornar array vazio
+            error_log("Erro ao buscar pedidos de férias: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // --- PEDIDOS DE COMPROVATIVO ---
+    public function criarPedidoComprovativo($colaboradorId, $tipoComprovativo, $comprovantivoAntigo, $comprovantivoNovo) {
+        return $this->dal->criarPedidoComprovativo($colaboradorId, $tipoComprovativo, $comprovantivoAntigo, $comprovantivoNovo);
+    }
+
+    public function listarPedidosComprovantivosPendentes() {
+        return $this->dal->listarPedidosComprovantivosPendentes();
+    }
+
+    public function aprovarPedidoComprovativo($pedidoId) {
+        return $this->dal->aprovarPedidoComprovativo($pedidoId);
+    }
+
+    public function recusarPedidoComprovativo($pedidoId) {
+        return $this->dal->recusarPedidoComprovativo($pedidoId);
+    }
+
+    public function getPedidoComprovantivoById($pedidoId) {
+        return $this->dal->getPedidoComprovantivoById($pedidoId);
     }
 }
 ?>
