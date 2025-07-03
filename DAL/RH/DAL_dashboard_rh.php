@@ -186,4 +186,5 @@ class DAL_DashboardRH {
         return $result;
     }
 }
+// Nenhuma alteração necessária para centralização dos gráficos
 ?>

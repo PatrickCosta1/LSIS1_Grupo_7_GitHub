@@ -59,4 +59,6 @@ class RHDashboardManager {
         return $this->dal->getLocalidadesPorEquipa();
     }
 }
+
+// Nenhuma alteração necessária para centralização dos gráficos
 ?>
