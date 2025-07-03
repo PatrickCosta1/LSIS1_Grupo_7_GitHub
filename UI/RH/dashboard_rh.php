@@ -267,6 +267,9 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
                 <div class="chart-card-title">Nível Hierárquico/Cargo</div>
                 <div id="chartNivelHierarquico" class="chart-area"></div>
                 <div id="statsNivelHierarquico" class="stats-nivel"></div>
+                 <span style="display:block;font-size:0.95em;font-weight:400;color:#888;margin-top:4px;">
+                    <em>Legenda: 1 = Colaborador, 2 = Coordenador, 3 = RH</em>
+                </span>
             </div>
             <div class="chart-card">
                 <div class="chart-card-title">Distribuição Geográfica</div>
@@ -277,12 +280,10 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
                 <div class="chart-card-title">Distribuição de Género</div>
                 <div id="chartGenero" class="chart-area"></div>
                 <div id="statsGenero" class="stats-nivel"></div>
+                
             </div>
         </div>
     </main>
-
- 
-
     <script>
         const equipasLabels = <?php echo json_encode($equipas_labels); ?>;
         const equipasMembros = <?php echo json_encode($equipas_membros); ?>;
@@ -402,8 +403,10 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
             }
         }
 
+        // Função para filtrar e desenhar gráficos
         function filtrarPorEquipa(idx) {
             atualizarKPIs(idx);
+
             // Colaboradores por Equipa - Column moderno
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartContainer")) {
                 setChartContainerStyle("chartContainer");
@@ -422,6 +425,7 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
                         labelMaxWidth: 120
                     },
                     axisY: { title: "Colaboradores", minimum: 0, labelFontColor: "#19365f", gridColor: "#ecebfa" },
+                    toolTip: { enabled: false },
                     data: [{
                         type: "column",
                         color: "#36a2eb",
@@ -464,6 +468,7 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
                     title: { text: "" },
                     axisX: { labelFontSize: 11, labelAngle: -30, interval: 1, labelFontColor: "#19365f", valueFormatString: "#", labelFormatter: function(e) { return axisXLabels[e.value - 1] || ""; } },
                     axisY: { title: "Idade", minimum: 0, labelFontColor: "#19365f", gridColor: "#ecebfa" },
+                    toolTip: { enabled: false },
                     data: [{ type: "splineArea", markerSize: 8, color: "#764ba2", fillOpacity: 0.3, toolTipContent: "{indexLabel}", dataPoints: dataPointsIdade }]
                 });
                 chartIdade.render();
@@ -487,6 +492,7 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
                         labelMaxWidth: 120
                     },
                     axisY: { title: "Anos", minimum: 0, labelFontColor: "#19365f", gridColor: "#ecebfa" },
+                    toolTip: { enabled: false },
                     data: [{
                         type: "bar",
                         color: "#ff9f40",
@@ -502,54 +508,111 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
             // Nível Hierárquico/Cargo - Doughnut moderno
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartNivelHierarquico")) {
                 setChartContainerStyle("chartNivelHierarquico");
-                var dataPointsNivel = nivelLabels.map((l, i) => ({ label: l, y: nivelData[i], color: pieColors[i % pieColors.length] }));
+                let dataPointsNivel;
+                if (idx === "all") {
+                    dataPointsNivel = nivelLabels.map((l, i) => ({ label: l, y: nivelData[i], color: pieColors[i % pieColors.length] }));
+                } else {
+                    // Filtrar por equipa selecionada
+                    const equipaNome = equipasLabels[idx];
+                    // Obter dados de colaboradores por equipa e nível hierárquico
+                    const colabsNivel = <?php echo json_encode($rhBLL->getColaboradoresNivelHierarquicoPorEquipa()); ?>;
+                    const nivelCount = {};
+                    colabsNivel.forEach(row => {
+                        if (row.equipa_nome === equipaNome) {
+                            nivelCount[row.nivel_hierarquico] = (nivelCount[row.nivel_hierarquico] || 0) + 1;
+                        }
+                    });
+                    dataPointsNivel = Object.keys(nivelCount).map((nivel, i) => ({
+                        label: nivel,
+                        y: nivelCount[nivel],
+                        color: pieColors[i % pieColors.length]
+                    }));
+                }
                 var chartNivel = new CanvasJS.Chart("chartNivelHierarquico", {
                     animationEnabled: true,
                     backgroundColor: "transparent",
                     theme: "light1",
                     title: { text: "" },
                     legend: { verticalAlign: "bottom", fontSize: 13, fontColor: "#19365f" },
-                    data: [{ type: "doughnut", indexLabel: "{label}: {y}", showInLegend: true, legendText: "{label}", dataPoints: dataPointsNivel, indexLabelLineThickness: 0, toolTipContent: "{label}: {y}" }]
+                    toolTip: { enabled: false },
+                    data: [{ type: "doughnut", indexLabel: "{label}: {y}", showInLegend: true, legendText: "{label}", dataPoints: dataPointsNivel, indexLabelLineThickness: 0 }]
                 });
                 chartNivel.render();
                 setChartCanvasStyle("chartNivelHierarquico");
             }
+
             // Distribuição Geográfica - Pie moderno
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartGeografia")) {
                 setChartContainerStyle("chartGeografia");
-                let geoLabels = <?php echo json_encode($geo_labels); ?>;
-                let geoData = <?php echo json_encode($geo_data); ?>;
-                let totalGeo = geoData.reduce((a, b) => a + b, 0);
-                let dataPointsGeo = geoLabels.map((label, i) => ({
-                    y: totalGeo > 0 ? Math.round((geoData[i] / totalGeo) * 1000) / 10 : 0,
-                    label: label,
-                    toolTipContent: `${label}: ${geoData[i]} (${Math.round((geoData[i] / totalGeo) * 1000) / 10}%)`,
-                    color: pieColors[i % pieColors.length]
-                }));
+                let dataPointsGeo;
+                if (idx === "all") {
+                    let geoLabels = <?php echo json_encode($geo_labels); ?>;
+                    let geoData = <?php echo json_encode($geo_data); ?>;
+                    let totalGeo = geoData.reduce((a, b) => a + b, 0);
+                    dataPointsGeo = geoLabels.map((label, i) => ({
+                        y: totalGeo > 0 ? Math.round((geoData[i] / totalGeo) * 1000) / 10 : 0,
+                        label: label,
+                        color: pieColors[i % pieColors.length]
+                    }));
+                } else {
+                    // Filtrar por equipa selecionada
+                    const equipaNome = equipasLabels[idx];
+                    const colabsLocalidade = <?php echo json_encode($rhBLL->getColaboradoresLocalidadePorEquipa()); ?>;
+                    const locCount = {};
+                    let total = 0;
+                    colabsLocalidade.forEach(row => {
+                        if (row.equipa_nome === equipaNome) {
+                            locCount[row.localidade] = (locCount[row.localidade] || 0) + 1;
+                            total++;
+                        }
+                    });
+                    dataPointsGeo = Object.keys(locCount).map((loc, i) => ({
+                        y: total > 0 ? Math.round((locCount[loc] / total) * 1000) / 10 : 0,
+                        label: loc,
+                        color: pieColors[i % pieColors.length]
+                    }));
+                }
                 var chartGeo = new CanvasJS.Chart("chartGeografia", {
                     animationEnabled: true,
                     backgroundColor: "transparent",
                     theme: "light1",
                     title: { text: "" },
                     legend: { verticalAlign: "bottom", fontSize: 13, fontColor: "#19365f" },
-                    data: [{ type: "pie", indexLabel: "{label}: {y}%", showInLegend: true, legendText: "{label}", dataPoints: dataPointsGeo, indexLabelLineThickness: 0, toolTipContent: "{toolTipContent}" }]
+                    toolTip: { enabled: false },
+                    data: [{ type: "pie", indexLabel: "{label}: {y}%", showInLegend: true, legendText: "{label}", dataPoints: dataPointsGeo, indexLabelLineThickness: 0 }]
                 });
                 chartGeo.render();
                 setChartCanvasStyle("chartGeografia");
             }
-            // Distribuição de género
+
+            // Distribuição de género - Pie moderno
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartGenero")) {
                 setChartContainerStyle("chartGenero");
-                let totalMasc = 0, totalFem = 0, totalOutro = 0;
-                for (let i = 0; i < equipasLabels.length; i++) {
-                    totalMasc += isNaN(percentMasc[i]) ? 0 : percentMasc[i] / 100 * equipasMembros[i];
-                    totalFem += isNaN(percentFem[i]) ? 0 : percentFem[i] / 100 * equipasMembros[i];
-                    totalOutro += isNaN(percentOutro[i]) ? 0 : percentOutro[i] / 100 * equipasMembros[i];
+                let masc = 0, fem = 0, outro = 0, total = 0;
+                if (idx === "all") {
+                    for (let i = 0; i < equipasLabels.length; i++) {
+                        masc += isNaN(percentMasc[i]) ? 0 : percentMasc[i] / 100 * equipasMembros[i];
+                        fem += isNaN(percentFem[i]) ? 0 : percentFem[i] / 100 * equipasMembros[i];
+                        outro += isNaN(percentOutro[i]) ? 0 : percentOutro[i] / 100 * equipasMembros[i];
+                    }
+                    total = masc + fem + outro;
+                } else {
+                    // Filtrar por equipa selecionada
+                    const equipaNome = equipasLabels[idx];
+                    const generoEquipa = <?php echo json_encode($rhBLL->getDistribuicaoGeneroPorEquipa()); ?>;
+                    if (generoEquipa[equipaNome]) {
+                        Object.entries(generoEquipa[equipaNome]).forEach(([genero, count]) => {
+                            const g = genero.trim().toLowerCase();
+                            if (g === 'm' || g === 'masculino') masc += count;
+                            else if (g === 'f' || g === 'feminino') fem += count;
+                            else outro += count;
+                            total += count;
+                        });
+                    }
                 }
-                let totalGeral = totalMasc + totalFem + totalOutro;
-                let mascPercent = totalGeral > 0 ? (totalMasc / totalGeral * 100) : 0;
-                let femPercent = totalGeral > 0 ? (totalFem / totalGeral * 100) : 0;
-                let outroPercent = totalGeral > 0 ? (totalOutro / totalGeral * 100) : 0;
+                let mascPercent = total > 0 ? (masc / total * 100) : 0;
+                let femPercent = total > 0 ? (fem / total * 100) : 0;
+                let outroPercent = total > 0 ? (outro / total * 100) : 0;
                 let arr = [{ val: mascPercent, idx: 0 }, { val: femPercent, idx: 1 }, { val: outroPercent, idx: 2 }];
                 arr.forEach(a => a.rounded = Math.round(a.val * 10) / 10);
                 let soma = arr[0].rounded + arr[1].rounded + arr[2].rounded;
@@ -568,18 +631,18 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
                     theme: "light1",
                     title: { text: "" },
                     legend: { verticalAlign: "bottom", fontSize: 13, fontColor: "#19365f" },
+                    toolTip: { enabled: false },
                     data: [{
                         type: "pie",
                         indexLabel: "{label}: {y}%",
                         showInLegend: true,
                         legendText: "{label}",
                         dataPoints: [
-                            { y: mascPercent, label: "Masculino", color: "#36a2eb", toolTipContent: `Masculino: ${Math.round(totalMasc)} (${mascPercent}%)` },
-                            { y: femPercent, label: "Feminino", color: "#ff6384", toolTipContent: `Feminino: ${Math.round(totalFem)} (${femPercent}%)` },
-                            { y: outroPercent, label: "Outro", color: "#b2dfdb", toolTipContent: `Outro: ${Math.round(totalOutro)} (${outroPercent}%)` }
+                            { y: mascPercent, label: "Masculino", color: "#36a2eb" },
+                            { y: femPercent, label: "Feminino", color: "#ff6384" },
+                            { y: outroPercent, label: "Outro", color: "#b2dfdb" }
                         ],
-                        indexLabelLineThickness: 0,
-                        toolTipContent: "{toolTipContent}"
+                        indexLabelLineThickness: 0
                     }]
                 });
                 chartGenero.render();
@@ -680,8 +743,25 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
                     animationEnabled: true,
                     backgroundColor: "#fff",
                     theme: "light2",
-                    legend: { verticalAlign: "bottom", fontSize: 13, fontColor: "#19365f" },
-                    data: [{ type: "doughnut", indexLabel: "{label}: {y}", showInLegend: true, legendText: "{label}", dataPoints: dataPointsNivel, indexLabelLineThickness: 0, toolTipContent: "{label}: {y}" }]
+                    legend: { 
+                        verticalAlign: "bottom", 
+                        fontSize: 13, 
+                        fontColor: "#19365f",
+                        // Adiciona legenda extra
+                        itemclick: null,
+                        dockInsidePlotArea: false,
+                        fontFamily: "inherit"
+                    },
+                    subtitles: [{
+                        text: "Legenda: 1 = Colaborador, 2 = Coordenador, 3 = RH",
+                        fontSize: 13,
+                        fontColor: "#888",
+                        fontStyle: "italic",
+                        margin: 8,
+                        verticalAlign: "bottom",
+                        dockInsidePlotArea: false
+                    }],
+                    data: [{ type: "doughnut", indexLabel: "{label}: {y}", showInLegend: true, legendText: "{label}", dataPoints: dataPointsNivel, indexLabelLineThickness: 0 }]
                 });
                 chartNivel.render();
             }
@@ -701,7 +781,7 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
                     backgroundColor: "#fff",
                     theme: "light2",
                     legend: { verticalAlign: "bottom", fontSize: 13, fontColor: "#19365f" },
-                    data: [{ type: "pie", indexLabel: "{label}: {y}%", showInLegend: true, legendText: "{label}", dataPoints: dataPointsGeo, indexLabelLineThickness: 0, toolTipContent: "{toolTipContent}" }]
+                    data: [{ type: "pie", indexLabel: "{label}: {y}%", showInLegend: true, legendText: "{label}", dataPoints: dataPointsGeo, indexLabelLineThickness: 0 }]
                 });
                 chartGeo.render();
             }
