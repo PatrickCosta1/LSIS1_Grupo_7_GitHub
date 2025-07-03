@@ -161,37 +161,47 @@ if ($colaborador_id) {
                     </div>
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
-            <?php elseif ($_SESSION['profile'] === 'rh'): ?>
-               <div class="dropdown-equipas">
-                <a href="../RH/equipas.php" class="equipas-link">
-                    Equipas
-                    <span class="seta-baixo">&#9662;</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../RH/relatorios.php">Relatórios</a>
-                    <a href="../RH/dashboard_rh.php">Dashboard</a>
-                </div>
-            </div>
-            <div class="dropdown-colaboradores">
-                <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
-                    Colaboradores
-                    <span class="seta-baixo">&#9662;</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../RH/exportar.php">Exportar</a>
-                </div>
-            </div>
-            <a href="../Comuns/notificacoes.php">Notificações</a>
-            <div class="dropdown-perfil">
-                <a href="../Comuns/perfil.php" class="perfil-link">
-                    Perfil
-                    <span class="seta-baixo">&#9662;</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
-                </div>
-            </div>
-            <a href="../Comuns/logout.php">Sair</a>
+                    <?php elseif ($_SESSION['profile'] === 'rh'): ?>
+                    <div class="dropdown-equipas">
+                        <a href="../RH/equipas.php" class="equipas-link">
+                            Equipas
+                            <span class="seta-baixo">&#9662;</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="../RH/relatorios.php">Relatórios</a>
+                            <a href="../RH/dashboard_rh.php">Dashboard</a>
+                        </div>
+                    </div>
+                    <div class="dropdown-colaboradores">
+                        <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
+                            Colaboradores
+                            <span class="seta-baixo">&#9662;</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="../RH/exportar.php">Exportar</a>
+                        </div>
+                    </div>
+                    <div class="dropdown-gestao">
+                        <a href="#" class="gestao-link">
+                            Gestão
+                            <span class="seta-baixo">&#9662;</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="../RH/gerir_beneficios.php">Gerir Benefícios</a>
+                            <a href="../RH/gerir_formacoes.php">Gerir Formações</a>
+                        </div>
+                    </div>
+                    <a href="../Comuns/notificacoes.php">Notificações</a>
+                    <div class="dropdown-perfil">
+                        <a href="../Comuns/perfil.php" class="perfil-link">
+                            Perfil
+                            <span class="seta-baixo">&#9662;</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
+                        </div>
+                    </div>
+                    <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
                 <a href="../Convidado/onboarding_convidado.php">Preencher Dados</a>
                 <a href="../Comuns/logout.php">Sair</a>
@@ -228,6 +238,7 @@ if ($colaborador_id) {
     </div>
 
     <!-- Novos blocos de formações e férias -->
+    <?php if ($_SESSION['profile'] !== 'rh'): ?>
     <div class="perfil-info-blocks">
         <!-- Bloco Formações -->
         <div class="info-block formacoes-block">
@@ -257,16 +268,11 @@ if ($colaborador_id) {
                     <button class="btn-ver-calendario" onclick="abrirModalFerias()">Ver Calendário</button>
                 <?php else: ?>
                     <p>Não tens pedidos de férias registados.</p>
-                    <!-- Debug info temporário -->
-                    <p style="font-size: 0.8rem; color: #666; margin-top: 8px;">
-                        Debug: User ID = <?php echo $_SESSION['user_id']; ?><br>
-                        Colaborador ID = <?php echo $colaborador_id ?: 'null'; ?><br>
-                        Colaborador encontrado = <?php echo $colab ? 'SIM' : 'NÃO'; ?>
-                    </p>
                 <?php endif; ?>
             </div>
         </div>
     </div>
+    <?php endif; ?>
 </main>
 
 <!-- Modal de alteração de palavra-passe -->

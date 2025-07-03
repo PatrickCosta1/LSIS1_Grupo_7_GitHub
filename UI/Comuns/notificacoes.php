@@ -262,37 +262,47 @@ if ($_SESSION['profile'] === 'rh') {
                     </div>
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
-            <?php elseif ($_SESSION['profile'] === 'rh'): ?>
-               <div class="dropdown-equipas">
-                <a href="../RH/equipas.php" class="equipas-link">
-                    Equipas
-                    <span class="seta-baixo">&#9662;</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../RH/relatorios.php">Relatórios</a>
-                    <a href="../RH/dashboard_rh.php">Dashboard</a>
-                </div>
-            </div>
-            <div class="dropdown-colaboradores">
-                <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
-                    Colaboradores
-                    <span class="seta-baixo">&#9662;</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../RH/exportar.php">Exportar</a>
-                </div>
-            </div>
-            <a href="../Comuns/notificacoes.php">Notificações</a>
-            <div class="dropdown-perfil">
-                <a href="../Comuns/perfil.php" class="perfil-link">
-                    Perfil
-                    <span class="seta-baixo">&#9662;</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
-                </div>
-            </div>
-            <a href="../Comuns/logout.php">Sair</a>
+                    <?php elseif ($_SESSION['profile'] === 'rh'): ?>
+                    <div class="dropdown-equipas">
+                        <a href="../RH/equipas.php" class="equipas-link">
+                            Equipas
+                            <span class="seta-baixo">&#9662;</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="../RH/relatorios.php">Relatórios</a>
+                            <a href="../RH/dashboard_rh.php">Dashboard</a>
+                        </div>
+                    </div>
+                    <div class="dropdown-colaboradores">
+                        <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
+                            Colaboradores
+                            <span class="seta-baixo">&#9662;</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="../RH/exportar.php">Exportar</a>
+                        </div>
+                    </div>
+                    <div class="dropdown-gestao">
+                        <a href="#" class="gestao-link">
+                            Gestão
+                            <span class="seta-baixo">&#9662;</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="../RH/gerir_beneficios.php">Gerir Benefícios</a>
+                            <a href="../RH/gerir_formacoes.php">Gerir Formações</a>
+                        </div>
+                    </div>
+                    <a href="../Comuns/notificacoes.php">Notificações</a>
+                    <div class="dropdown-perfil">
+                        <a href="../Comuns/perfil.php" class="perfil-link">
+                            Perfil
+                            <span class="seta-baixo">&#9662;</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
+                        </div>
+                    </div>
+                    <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
                 <a href="../Convidado/onboarding_convidado.php">Preencher Dados</a>
                 <a href="../Comuns/logout.php">Sair</a>
@@ -340,8 +350,10 @@ if ($_SESSION['profile'] === 'rh') {
         ?>
         
         <?php if ($totalNaoLidas > 0): ?>
-            <div id="banner-nao-lidas" class="banner-nao-lidas" onclick="abrirModalNaoLidas()">
-                📢 Tem <?php echo $totalNaoLidas; ?> notificação<?php echo $totalNaoLidas > 1 ? 'ões' : ''; ?> por ler - Clique para ver
+            <div id="banner-nao-lidas" class="banner-nao-lidas" onclick="abrirModalNaoLidas()" style="display:flex;justify-content:center;">
+                <button type="button" class="btn-nao-lidas">
+                    📢 Tem <?php echo $totalNaoLidas; ?> notificação<?php echo $totalNaoLidas > 1 ? 'ões' : ''; ?> por ler - Clique para ver
+                </button>
             </div>
         <?php endif; ?>
 

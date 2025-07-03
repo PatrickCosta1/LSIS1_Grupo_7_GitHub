@@ -21,22 +21,32 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_RH.php';">
         <nav>
             <div class="dropdown-equipas">
-                <a href="../RH/equipas.php" class="equipas-link">
+                <a href="equipas.php" class="equipas-link">
                     Equipas
                     <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
-                    <a href="../RH/relatorios.php">Relatórios</a>
-                    <a href="../RH/dashboard_rh.php">Dashboard</a>
+                    <a href="relatorios.php">Relatórios</a>
+                    <a href="dashboard_rh.php">Dashboard</a>
                 </div>
             </div>
             <div class="dropdown-colaboradores">
-                <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
+                <a href="colaboradores_gerir.php" class="colaboradores-link">
                     Colaboradores
                     <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
-                    <a href="../RH/exportar.php">Exportar</a>
+                    <a href="exportar.php">Exportar</a>
+                </div>
+            </div>
+            <div class="dropdown-gestao">
+                <a href="#" class="gestao-link">
+                    Gestão
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="gerir_beneficios.php">Gerir Benefícios</a>
+                    <a href="gerir_formacoes.php">Gerir Formações</a>
                 </div>
             </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>
@@ -46,7 +56,7 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
                     <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
-                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
+                    <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
                 </div>
             </div>
             <a href="../Comuns/logout.php">Sair</a>

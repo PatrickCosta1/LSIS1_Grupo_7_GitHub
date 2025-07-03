@@ -7,6 +7,11 @@ if (!$userId || !in_array($perfil, ['colaborador', 'coordenador', 'rh', 'admin']
     header('Location: ../Comuns/erro.php');
     exit();
 }
+
+// Buscar benefícios da base de dados
+require_once '../../BLL/RH/BLL_gerir_beneficios.php';
+$beneficiosBLL = new RHBeneficiosGerirManager();
+$beneficios = $beneficiosBLL->listarBeneficios();
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -101,141 +106,32 @@ if (!$userId || !in_array($perfil, ['colaborador', 'coordenador', 'rh', 'admin']
         </p>
         <section class="beneficios-lista">
             <div class="beneficios-cards">
-                <div class="beneficio-card" onclick="abrirModal('modal1')">
-                    <span>Seguro de Saúde</span>
-                </div>
-                <div class="beneficio-card" onclick="abrirModal('modal2')">
-                    <span>Plano de Formação Contínua</span>
-                </div>
-                <div class="beneficio-card" onclick="abrirModal('modal3')">
-                    <span>Horário Flexível</span>
-                </div>
-                <div class="beneficio-card" onclick="abrirModal('modal4')">
-                    <span>Dia de Aniversário Livre</span>
-                </div>
-                <div class="beneficio-card" onclick="abrirModal('modal5')">
-                    <span>Protocolos com Ginásios</span>
-                </div>
-                <div class="beneficio-card" onclick="abrirModal('modal6')">
-                    <span>Cartão Refeição</span>
-                </div>
-                <div class="beneficio-card" onclick="abrirModal('modal7')">
-                    <span>Programa de Reconhecimento</span>
-                </div>
-                <div class="beneficio-card" onclick="abrirModal('modal8')">
-                    <span>Teletrabalho Parcial</span>
-                </div>
-                <div class="beneficio-card" onclick="abrirModal('modal9')">
-                    <span>Apoio à Família</span>
-                </div>
-                <div class="beneficio-card" onclick="abrirModal('modal10')">
-                    <span>Eventos Corporativos</span>
-                </div>
-                <div class="beneficio-card" onclick="abrirModal('modal11')">
-                    <span>Subsídio de Transporte</span>
-                </div>
-                <div class="beneficio-card" onclick="abrirModal('modal12')">
-                    <span>Programa de Wellness</span>
-                </div>
+                <?php if (!empty($beneficios)): ?>
+                    <?php foreach ($beneficios as $b): ?>
+                        <div class="beneficio-card" onclick="abrirModal('modal<?= $b['id'] ?>')">
+                            <span><?= htmlspecialchars($b['titulo']) ?></span>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div style="grid-column: 1 / -1; text-align: center; color: #888; margin: 40px 0;">
+                        Nenhum benefício disponível de momento.
+                    </div>
+                <?php endif; ?>
             </div>
         </section>
 
         <!-- Modais -->
-        <div id="modal1" class="beneficio-modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModal('modal1')">&times;</span>
-                <h2>Seguro de Saúde</h2>
-                <p>Cobertura médica abrangente para colaboradores e familiares diretos.</p>
-            </div>
-        </div>
-
-        <div id="modal2" class="beneficio-modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModal('modal2')">&times;</span>
-                <h2>Plano de Formação Contínua</h2>
-                <p>Acesso a cursos, workshops e certificações profissionais.</p>
-            </div>
-        </div>
-
-        <div id="modal3" class="beneficio-modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModal('modal3')">&times;</span>
-                <h2>Horário Flexível</h2>
-                <p>Possibilidade de ajustar o horário de trabalho para melhor conciliação pessoal.</p>
-            </div>
-        </div>
-
-        <div id="modal4" class="beneficio-modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModal('modal4')">&times;</span>
-                <h2>Dia de Aniversário Livre</h2>
-                <p>Folga no dia de aniversário do colaborador.</p>
-            </div>
-        </div>
-
-        <div id="modal5" class="beneficio-modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModal('modal5')">&times;</span>
-                <h2>Protocolos com Ginásios</h2>
-                <p>Descontos em ginásios e academias parceiras.</p>
-            </div>
-        </div>
-
-        <div id="modal6" class="beneficio-modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModal('modal6')">&times;</span>
-                <h2>Cartão Refeição</h2>
-                <p>Subsídio de alimentação em cartão para maior comodidade.</p>
-            </div>
-        </div>
-
-        <div id="modal7" class="beneficio-modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModal('modal7')">&times;</span>
-                <h2>Programa de Reconhecimento</h2>
-                <p>Prémios e distinções para colaboradores de excelência.</p>
-            </div>
-        </div>
-
-        <div id="modal8" class="beneficio-modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModal('modal8')">&times;</span>
-                <h2>Teletrabalho Parcial</h2>
-                <p>Opção de trabalho remoto em determinados dias da semana.</p>
-            </div>
-        </div>
-
-        <div id="modal9" class="beneficio-modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModal('modal9')">&times;</span>
-                <h2>Apoio à Família</h2>
-                <p>Licenças parentais alargadas e apoio em situações familiares especiais.</p>
-            </div>
-        </div>
-
-        <div id="modal10" class="beneficio-modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModal('modal10')">&times;</span>
-                <h2>Eventos Corporativos</h2>
-                <p>Participação em eventos, team buildings e iniciativas internas.</p>
-            </div>
-        </div>
-
-        <div id="modal11" class="beneficio-modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModal('modal11')">&times;</span>
-                <h2>Subsídio de Transporte</h2>
-                <p>Apoio financeiro para deslocações casa-trabalho através de passes de transporte público ou ajuda de custo para combustível.</p>
-            </div>
-        </div>
-
-        <div id="modal12" class="beneficio-modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModal('modal12')">&times;</span>
-                <h2>Programa de Wellness</h2>
-                <p>Iniciativas de bem-estar incluindo sessões de mindfulness, workshops de gestão de stress e atividades de relaxamento no local de trabalho.</p>
-            </div>
-        </div>
+        <?php if (!empty($beneficios)): ?>
+            <?php foreach ($beneficios as $b): ?>
+                <div id="modal<?= $b['id'] ?>" class="beneficio-modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="fecharModal('modal<?= $b['id'] ?>')">&times;</span>
+                        <h2><?= htmlspecialchars($b['titulo']) ?></h2>
+                        <p><?= nl2br(htmlspecialchars($b['descricao'])) ?></p>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </main>
 </div>
 
