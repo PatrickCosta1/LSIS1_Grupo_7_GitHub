@@ -62,7 +62,7 @@ if (!$userId || !in_array($perfil, ['colaborador', 'coordenador', 'rh', 'admin']
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
                <header>
-        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_colaborador.php';">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
         <nav>
             <a href="ficha_colaborador.php">A Minha Ficha</a>
             <a href="../Comuns/notificacoes.php">Notificações</a>

@@ -340,14 +340,14 @@ if ($_SESSION['profile'] === 'rh') {
         ?>
         
         <?php if ($totalNaoLidas > 0): ?>
-            <div id="banner-nao-lidas" style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;" onclick="abrirModalNaoLidas()">
+            <div id="banner-nao-lidas" class="banner-nao-lidas" onclick="abrirModalNaoLidas()">
                 📢 Tem <?php echo $totalNaoLidas; ?> notificação<?php echo $totalNaoLidas > 1 ? 'ões' : ''; ?> por ler - Clique para ver
             </div>
         <?php endif; ?>
 
         <div id="notificacoes-sistema">
             <?php if (!empty($notificacoes)): ?>
-                <h2 style="margin-top:16px;">Notificações do Sistema</h2>
+                <h2 class="notificacoes-section-title">Notificações do Sistema</h2>
                 <ul class="notificacoes-lista">
                     <?php foreach ($notificacoes as $not): ?>
                         <li class="notificacao<?php if (!$not['lida']) echo ' unread'; ?>">
@@ -357,13 +357,13 @@ if ($_SESSION['profile'] === 'rh') {
                             <span class="data"><?php echo date('d/m/Y H:i', strtotime($not['data_envio'])); ?></span>
                             <div class="acao">
                                 <?php if (!$not['lida']): ?>
-                                    <form method="get" style="display:inline;">
+                                    <form method="get" class="acao-form">
                                         <input type="hidden" name="marcar_lida" value="<?php echo $not['id']; ?>">
                                         <button type="submit" class="btn">Marcar como lida</button>
                                     </form>
                                 <?php endif; ?>
                                 <?php if ($not['lida']): ?>
-                                    <form method="get" style="display:inline;">
+                                    <form method="get" class="acao-form">
                                         <input type="hidden" name="eliminar" value="<?php echo $not['id']; ?>">
                                         <button type="submit" class="btn btn-danger" onclick="return confirm('Eliminar esta notificação?')">Eliminar</button>
                                     </form>
@@ -373,7 +373,7 @@ if ($_SESSION['profile'] === 'rh') {
                     <?php endforeach; ?>
                 </ul>
             <?php else: ?>
-                <div style="color:#888; text-align:center; margin:32px 0;">
+                <div class="notificacoes-vazio">
                     Não existem notificações.
                 </div>
             <?php endif; ?>
@@ -381,9 +381,9 @@ if ($_SESSION['profile'] === 'rh') {
 
         <?php if ($_SESSION['profile'] === 'rh'): ?>
             <div id="pedidos-alteracao">
-                <h2 style="margin-top:32px;">Pedidos de Alteração de Ficha</h2>
+                <h2 class="notificacoes-section-title">Pedidos de Alteração de Ficha</h2>
                 <?php if ($aprovacao_msg): ?>
-                    <div class="success-message" style="margin-bottom:16px;"><?php echo htmlspecialchars($aprovacao_msg); ?></div>
+                    <div class="success-message"><?php echo htmlspecialchars($aprovacao_msg); ?></div>
                 <?php endif; ?>
                 <?php if (!empty($pedidosPendentes)): ?>
                     <ul class="notificacoes-lista">
@@ -393,11 +393,11 @@ if ($_SESSION['profile'] === 'rh') {
                                 <strong><?php echo htmlspecialchars($p['colaborador_nome']); ?></strong> pediu alteração:
                                 <strong><?php echo htmlspecialchars($p['campo']); ?></strong>
                                 <br>
-                                <span style="color:#888;">De:</span> <?php echo htmlspecialchars($p['valor_antigo']); ?>
-                                <span style="color:#888;">Para:</span> <strong><?php echo htmlspecialchars($p['valor_novo']); ?></strong>
+                                <span class="valor-info">De:</span> <?php echo htmlspecialchars($p['valor_antigo']); ?>
+                                <span class="valor-info">Para:</span> <strong><?php echo htmlspecialchars($p['valor_novo']); ?></strong>
                             </span>
                             <span class="data"><?php echo date('d/m/Y H:i', strtotime($p['data_pedido'])); ?></span>
-                            <form method="post" style="display:inline;">
+                            <form method="post" class="acao-form">
                                 <input type="hidden" name="pedido_id" value="<?php echo $p['id']; ?>">
                                 <button type="submit" name="aprovar_pedido" class="btn btn-sm">Aprovar</button>
                                 <button type="submit" name="recusar_pedido" class="btn btn-danger btn-sm">Recusar</button>
@@ -406,14 +406,14 @@ if ($_SESSION['profile'] === 'rh') {
                     <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
-                    <div style="color:#888; text-align:center; margin:16px 0;">
+                    <div class="notificacoes-vazio">
                         Não existem pedidos de alteração pendentes.
                     </div>
                 <?php endif; ?>
             </div>
 
             <div id="pedidos-ferias">
-                <h2 style="margin-top:32px;">Pedidos de Férias Pendentes</h2>
+                <h2 class="notificacoes-section-title">Pedidos de Férias Pendentes</h2>
                 <?php if (!empty($pedidosFeriasPendentes)): ?>
                     <ul class="notificacoes-lista">
                     <?php foreach ($pedidosFeriasPendentes as $pf): ?>
@@ -421,11 +421,11 @@ if ($_SESSION['profile'] === 'rh') {
                             <span class="titulo">
                                 <strong><?php echo htmlspecialchars($pf['colaborador_nome']); ?></strong> pediu férias:
                                 <br>
-                                <span style="color:#888;">De:</span> <?php echo htmlspecialchars($pf['data_inicio']); ?>
-                                <span style="color:#888;">Até:</span> <strong><?php echo htmlspecialchars($pf['data_fim']); ?></strong>
+                                <span class="valor-info">De:</span> <?php echo htmlspecialchars($pf['data_inicio']); ?>
+                                <span class="valor-info">Até:</span> <strong><?php echo htmlspecialchars($pf['data_fim']); ?></strong>
                             </span>
                             <span class="data"><?php echo date('d/m/Y H:i', strtotime($pf['data_pedido'])); ?></span>
-                            <form method="post" style="display:inline;">
+                            <form method="post" class="acao-form">
                                 <input type="hidden" name="pedido_ferias_id" value="<?php echo $pf['id']; ?>">
                                 <button type="submit" name="aprovar_pedido_ferias" class="btn btn-sm">Aprovar</button>
                                 <button type="submit" name="recusar_pedido_ferias" class="btn btn-danger btn-sm">Recusar</button>
@@ -434,14 +434,14 @@ if ($_SESSION['profile'] === 'rh') {
                     <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
-                    <div style="color:#888; text-align:center; margin:16px 0;">
+                    <div class="notificacoes-vazio">
                         Não existem pedidos de férias pendentes.
                     </div>
                 <?php endif; ?>
             </div>
 
             <div id="pedidos-comprovativos">
-                <h2 style="margin-top:32px;">Pedidos de Comprovativos Pendentes</h2>
+                <h2 class="notificacoes-section-title">Pedidos de Comprovativos Pendentes</h2>
                 <?php if (!empty($pedidosComprovantivosPendentes)): ?>
                     <ul class="notificacoes-lista">
                     <?php foreach ($pedidosComprovantivosPendentes as $pc): ?>
@@ -449,34 +449,34 @@ if ($_SESSION['profile'] === 'rh') {
                             <span class="titulo">
                                 <strong><?php echo htmlspecialchars($pc['colaborador_nome']); ?></strong> enviou novo comprovativo:
                                 <br>
-                                <span style="color:#888;">Tipo:</span> <strong><?php echo ucfirst(str_replace('_', ' ', $pc['tipo_comprovativo'])); ?></strong>
+                                <span class="valor-info">Tipo:</span> <strong><?php echo ucfirst(str_replace('_', ' ', $pc['tipo_comprovativo'])); ?></strong>
                             </span>
-                            <div class="comprovativo-comparacao" style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 6px;">
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="comprovativo-comparacao">
+                                <div class="comprovativo-grid">
                                     <div>
-                                        <strong style="color: #dc3545;">Anterior:</strong>
+                                        <strong class="comprovativo-anterior">Anterior:</strong>
                                         <?php if ($pc['comprovativo_antigo']): ?>
                                             <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($pc['comprovativo_antigo']); ?>" 
                                                target="_blank" 
-                                               style="display: block; color: #dc3545; text-decoration: none; font-size: 0.9rem;">
+                                               class="comprovativo-link anterior">
                                                 📄 Ver arquivo anterior
                                             </a>
                                         <?php else: ?>
-                                            <span style="color: #888; font-style: italic;">Sem comprovativo anterior</span>
+                                            <span class="comprovativo-sem-arquivo">Sem comprovativo anterior</span>
                                         <?php endif; ?>
                                     </div>
                                     <div>
-                                        <strong style="color: #28a745;">Novo:</strong>
+                                        <strong class="comprovativo-novo">Novo:</strong>
                                         <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($pc['comprovativo_novo']); ?>" 
                                            target="_blank" 
-                                           style="display: block; color: #28a745; text-decoration: none; font-size: 0.9rem;">
+                                           class="comprovativo-link novo">
                                             📄 Ver novo arquivo
                                         </a>
                                     </div>
                                 </div>
                             </div>
                             <span class="data"><?php echo date('d/m/Y H:i', strtotime($pc['data_pedido'])); ?></span>
-                            <form method="post" style="display:inline;">
+                            <form method="post" class="acao-form">
                                 <input type="hidden" name="pedido_comprovativo_id" value="<?php echo $pc['id']; ?>">
                                 <button type="submit" name="aprovar_comprovativo" class="btn btn-sm">Aprovar</button>
                                 <button type="submit" name="recusar_comprovativo" class="btn btn-danger btn-sm">Recusar</button>
@@ -485,7 +485,7 @@ if ($_SESSION['profile'] === 'rh') {
                     <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
-                    <div style="color:#888; text-align:center; margin:16px 0;">
+                    <div class="notificacoes-vazio">
                         Não existem pedidos de comprovativos pendentes.
                     </div>
                 <?php endif; ?>
@@ -493,7 +493,7 @@ if ($_SESSION['profile'] === 'rh') {
         <?php endif; ?>
 
         <?php if (!empty($mensagensRecebidas)): ?>
-            <h2 style="margin-top:32px;">Mensagens Recebidas</h2>
+            <h2 class="notificacoes-section-title">Mensagens Recebidas</h2>
             <ul class="notificacoes-lista">
                 <?php foreach ($mensagensRecebidas as $msg): ?>
                     <li class="notificacao<?php if (!$msg['lida']) echo ' unread'; ?>">

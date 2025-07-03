@@ -5,12 +5,12 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admi
     exit();
 }
 
-require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
-$colabBLL = new RHColaboradoresManager();
+require_once '../../BLL/RH/BLL_exportar.php';
+$exportBLL = new RHExportarManager();
 
 // Carregar equipas e perfis para o formulário
-$equipas = method_exists($colabBLL, 'getAllEquipas') ? $colabBLL->getAllEquipas() : [];
-$perfis = method_exists($colabBLL, 'getAllPerfis') ? $colabBLL->getAllPerfis() : [];
+$equipas = $exportBLL->getAllEquipas();
+$perfis = $exportBLL->getAllPerfis();
 
 // Exportação
 if (isset($_GET['export'])) {
@@ -18,41 +18,64 @@ if (isset($_GET['export'])) {
     $filtro = isset($_GET['filtro']) ? $_GET['filtro'] : null;
 
     $colaboradores = [];
+    $nomeArquivo = 'colaboradores';
+    
+    // Debug: log dos parâmetros recebidos
+    error_log("Exportação - Tipo: $tipo, Filtro: $filtro");
+    
     if ($tipo === 'colaboradores') {
-        $colaboradores = $colabBLL->getAllColaboradores();
+        $colaboradores = $exportBLL->getAllColaboradores();
+        $nomeArquivo = 'todos_colaboradores';
     } elseif ($tipo === 'equipa' && $filtro !== null && $filtro !== '') {
-        // O select envia sempre string, pode ser '0', por isso valida se é numérico e maior que zero
         if (is_numeric($filtro) && (int)$filtro > 0) {
-            $colaboradores = $colabBLL->getColaboradoresPorEquipa((int)$filtro);
+            $colaboradores = $exportBLL->getColaboradoresPorEquipa((int)$filtro);
+            $nomeArquivo = 'colaboradores_equipa_' . $filtro;
+            
+            // Debug: verificar se encontrou colaboradores
+            error_log("Colaboradores encontrados para equipa $filtro: " . count($colaboradores));
         }
     } elseif ($tipo === 'perfil' && $filtro !== null && $filtro !== '') {
         if (is_numeric($filtro) && (int)$filtro > 0) {
-            $colaboradores = $colabBLL->getColaboradoresPorPerfil((int)$filtro);
+            $colaboradores = $exportBLL->getColaboradoresPorPerfil((int)$filtro);
+            $nomeArquivo = 'colaboradores_perfil_' . $filtro;
         }
     }
 
-    // Para debug: descomente para ver o resultado no log do PHP
-    // error_log("Tipo: $tipo | Filtro: $filtro | Resultado: " . print_r($colaboradores, true));
+    // Log final para debug
+    error_log("Total de colaboradores para exportar: " . count($colaboradores));
 
+    // Limpar qualquer output anterior
+    if (ob_get_level()) {
+        ob_end_clean();
+    }
+
+    // Headers para download
     header('Content-Type: text/csv; charset=UTF-8');
-    header('Content-Disposition: attachment;filename="colaboradores.csv"');
-    $out = fopen('php://output', 'w');
-    // BOM para Excel abrir corretamente em UTF-8
-    fprintf($out, chr(0xEF).chr(0xBB).chr(0xBF));
-    fputcsv($out, ['Nome', 'Cargo', 'Equipas', 'Email', 'Estado']);
+    header('Content-Disposition: attachment; filename="' . $nomeArquivo . '_' . date('Y-m-d') . '.csv"');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+    
+    // Abrir output stream
+    $output = fopen('php://output', 'w');
+    
+    // BOM para Excel UTF-8
+    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+    
+    // Cabeçalhos CSV
+    fputcsv($output, $exportBLL->getCabecalhosCSV(), ';');
+    
+    // Dados
     if (!empty($colaboradores)) {
         foreach ($colaboradores as $col) {
-            fputcsv($out, [
-                $col['nome'] ?? '',
-                $col['cargo'] ?? '',
-                $col['equipas'] ?? '',
-                $col['email'] ?? '',
-                (isset($col['ativo']) && $col['ativo'] ? 'Ativo' : 'Inativo')
-            ]);
+            fputcsv($output, $exportBLL->formatarColaboradorParaCSV($col), ';');
         }
+    } else {
+        // Linha indicando que não há dados
+        fputcsv($output, ['Nenhum colaborador encontrado para os critérios selecionados'], ';');
     }
-    fclose($out);
-    exit;
+    
+    fclose($output);
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -68,6 +91,12 @@ if (isset($_GET['export'])) {
         var tipo = document.getElementById('tipo-export').value;
         document.getElementById('filtro-equipa').style.display = (tipo === 'equipa') ? 'block' : 'none';
         document.getElementById('filtro-perfil').style.display = (tipo === 'perfil') ? 'block' : 'none';
+        
+        // Limpar selects quando mudamos o tipo
+        var selectEquipa = document.querySelector('#filtro-equipa select[name="filtro"]');
+        var selectPerfil = document.querySelector('#filtro-perfil select[name="filtro"]');
+        if (selectEquipa) selectEquipa.value = '';
+        if (selectPerfil) selectPerfil.value = '';
     }
     </script>
 </head>
@@ -133,6 +162,7 @@ if (isset($_GET['export'])) {
             <div id="filtro-equipa" style="display:none;">
                 <label>Selecione a equipa:
                     <select name="filtro">
+                        <option value="">Selecione...</option>
                         <?php foreach ($equipas as $e): ?>
                             <option value="<?php echo $e['id']; ?>"><?php echo htmlspecialchars($e['nome']); ?></option>
                         <?php endforeach; ?>
@@ -142,6 +172,7 @@ if (isset($_GET['export'])) {
             <div id="filtro-perfil" style="display:none;">
                 <label>Selecione o perfil:
                     <select name="filtro">
+                        <option value="">Selecione...</option>
                         <?php foreach ($perfis as $p): ?>
                             <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['nome']); ?></option>
                         <?php endforeach; ?>
@@ -151,6 +182,7 @@ if (isset($_GET['export'])) {
             <button type="submit" class="btn">Exportar para Excel</button>
         </form>
     </main>
+    
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
       <button id="open-chatbot" style="
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -181,6 +213,18 @@ if (isset($_GET['export'])) {
     <script>
         // Inicializa selects corretos ao recarregar
         onTipoChange();
+        
+        // Validar formulário antes de enviar
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const tipo = document.getElementById('tipo-export').value;
+            const filtro = document.querySelector('select[name="filtro"]');
+            
+            if ((tipo === 'equipa' || tipo === 'perfil') && filtro && filtro.value === '') {
+                e.preventDefault();
+                alert('Por favor, selecione uma opção de filtro.');
+                return false;
+            }
+        });
     </script>
 </body>
 </html>

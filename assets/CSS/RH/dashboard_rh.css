@@ -1,13 +1,14 @@
-/* Fundo geral */
 body {
-    background: linear-gradient(135deg, #e9f0fb 0%, #c3dafe 100%);
-    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     min-height: 100vh;
     padding-top: calc(100px + 2cm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Header */
 header {
     position: fixed;
     top: 0.5cm;
@@ -15,20 +16,22 @@ header {
     right: 0.5cm;
     width: auto;
     margin: 0;
-    background: linear-gradient(135deg, #3b5bdb 0%, #299cf3 100%);
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
     border-radius: 24px;
     min-height: 100px;
-    box-shadow: 0 8px 32px rgba(51, 102, 204, 0.18);
+    box-shadow: 0 8px 32px rgba(3,96,233,0.18);
     display: flex;
     align-items: center;
     justify-content: flex-start;
     padding: 24px 60px;
     z-index: 1000;
 }
+
 .logo-header {
     width: 120px;
     height: auto;
 }
+
 header nav {
     display: flex;
     gap: 1px;
@@ -36,6 +39,7 @@ header nav {
     justify-content: center;
     width: 100%;
 }
+
 header nav a {
     color: #fff !important;
     font-weight: 500;
@@ -47,254 +51,389 @@ header nav a {
     margin: 0;
     display: inline-block;
 }
+
 header nav a:hover,
 header nav a.active {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.2);
     color: #e0eaff !important;
 }
 
-/* Tabs dos gráficos */
-.dashboard-graph-tabs {
-    display: flex;
-    justify-content: center;
-    gap: 18px;
-    margin: 32px 0 12px 0;
-}
-.tab-btn {
-    color: #fff;
-    border: none;
-    border-radius: 24px; /* Borda redonda em todas as pontas */
-    padding: 12px 28px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(51,102,204,0.09);
-    transition: background 0.2s, color 0.2s;
-    outline: none;
-}
-
-/* Botão Pessoas por Equipa */
-.tab-btn[data-target="card-equipa"] {
-    background: linear-gradient(135deg, #3b5bdb 0%, #299cf3 100%);
-}
-.tab-btn[data-target="card-equipa"].active,
-.tab-btn[data-target="card-equipa"]:hover {
-    background: linear-gradient(135deg, #299cf3 0%, #3b5bdb 100%);
-    color: #e0eaff;
-}
-
-/* Botão Idade Média por Equipa */
-.tab-btn[data-target="card-idade"] {
-    background: linear-gradient(135deg, #764ba2 0%, #b2e0ff 100%);
-}
-.tab-btn[data-target="card-idade"].active,
-.tab-btn[data-target="card-idade"]:hover {
-    background: linear-gradient(135deg, #b2e0ff 0%, #764ba2 100%);
-    color: #fffbe7;
-}
-
-/* Botão Nível Hierárquico/Cargo */
-.tab-btn[data-target="card-nivel"] {
-    background: linear-gradient(135deg, #36a2eb 0%, #4bc0c0 100%);
-}
-.tab-btn[data-target="card-nivel"].active,
-.tab-btn[data-target="card-nivel"]:hover {
-    background: linear-gradient(135deg, #4bc0c0 0%, #36a2eb 100%);
-    color: #e0eaff;
-}
-
-/* Card base */
-.card {
-    border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(51,102,204,0.13);
-    padding: 32px 24px 24px 24px;
-    max-width: 420px;
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 16px;
+    margin-top: 36px;
+    max-width: 1600px;
     width: 100%;
-    margin: 0 auto 24px auto;
+    padding: 0 20px;
+}
+
+.kpi-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+    border: 1px solid rgba(25, 54, 95, 0.08);
+    border-radius: 10px;
+    padding: 13px 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(25, 54, 95, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-width: 120px;
+}
+
+.kpi-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 15px rgba(25, 54, 95, 0.1);
+    border-color: rgba(25, 54, 95, 0.12);
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #19365f 0%, #299cf3 100%);
+}
+
+.kpi-titulo {
+    color: #64748b;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.kpi-valor {
+    color: #19365f;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 3px;
+    line-height: 1;
+}
+
+.kpi-descricao {
+    color: #19365f;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+/* Estilos para os gráficos */
+.dashboard-main-charts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+    max-width: 1600px;
+    width: 100%;
+    padding: 0 20px;
+}
+
+.chart-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 255, 0.9) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(25, 54, 95, 0.1);
+    transition: all 0.3s ease;
+    min-height: 400px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    color: #fff;
-    box-sizing: border-box;
-    transition: box-shadow 0.18s, transform 0.18s;
 }
 
-/* Pessoas por Equipa */
-.dashboard-equipa {
-    background: linear-gradient(135deg, #3b5bdb 0%, #299cf3 100%);
-    border: 2px solid #667eea;
-    max-width: 1480px; /* Mais largo */
-    
-}
-.dashboard-equipa h2 { color: #e0eaff; }
-.dashboard-equipa .chart-equipa,
-.dashboard-equipa .stats-equipa {
-    max-width: 800px;
-    background: #e9f0fb;
-    border-radius: 12px;
-    color: #3b5bdb;
-    margin-top: 100px;
+.chart-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(25, 54, 95, 0.15);
+    border-color: rgba(38, 0, 255, 0.5);
 }
 
-/* Idade Média por Equipa */
-.dashboard-idade {
-    background: linear-gradient(135deg, #764ba2 0%, #b2e0ff 100%);
-    border: 2px solid #764ba2;
-    max-width: 1480px; /* Mais largo */
-}
-.dashboard-idade h2 { color: #fffbe7; }
-.dashboard-idade .chart-idade,
-.dashboard-idade .stats-idade {
-    max-width: 340px;
-    background: #f3eaff;
-    border-radius: 12px;
-    color: #764ba2;
-}
-
-/* Nível Hierárquico/Cargo */
-.dashboard-nivel {
-    background: linear-gradient(135deg, #36a2eb 0%, #4bc0c0 100%);
-    border: 2px solid #36a2eb;
-    max-width: 1480px; /* Mais largo */
-}
-.dashboard-nivel h2 { color: #e0eaff; }
-.dashboard-nivel .chart-nivel,
-.dashboard-nivel .stats-nivel {
-    max-width: 340px;
-    background: #eaf6ff;
-    border-radius: 12px;
-    color: #36a2eb;
-}
-.dashboard-nivel .nivel-legenda {
-    color: #fff;
-    max-width: 340px;
-}
-
-/* Gráficos e stats - centrados no card */
-/* Pessoas por Equipa */
-.dashboard-equipa .chart-equipa,
-.dashboard-equipa .card > div[id^="chart"] {
-    border-radius: 16px;
-    border: 2px solid #3b5bdb;
-    box-shadow: 0 2px 12px rgba(51,91,219,0.07);
-    width: 800px;      /* Mais largo */
-    height: 220px;
-    margin: 0 auto;
-    padding: 12px 0;
-    display: block;
-}
-
-/* Idade Média por Equipa */
-.dashboard-idade .chart-idade,
-.dashboard-idade .card > div[id^="chart"] {
-    border-radius: 16px;
-    border: 2px solid #764ba2;
-    box-shadow: 0 2px 12px rgba(118,75,162,0.07);
-    width: 260px;
-    height: 220px;
-    margin: 0 auto;
-    padding: 12px 0;
-}
-
-/* Nível Hierárquico/Cargo */
-.dashboard-nivel .chart-nivel,
-.dashboard-nivel .card > div[id^="chart"] {
-    border-radius: 16px;
-    border: 2px solid #36a2eb;
-    box-shadow: 0 2px 12px rgba(54,162,235,0.07);
-    width: 260px;
-    height: 220px;
-    margin: 0 auto;
-    padding: 12px 0;
-}
-
-
-
-/* Stats containers */
-#statsContainer,
-#statsIdadeMedia,
-#statsNivelHierarquico,
-.stats-equipa,
-.stats-idade,
-.stats-nivel {
-    margin-top: 18px;
-    border-radius: 8px;
-    padding: 10px 0;
-    font-size: 1rem;
+.chart-card-title {
+    color: #19365f;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
     text-align: center;
-    width: 100%;
-    max-width: 340px;
-    box-shadow: 0 2px 8px rgba(51,102,204,0.08);
-    box-sizing: border-box;
-}
-
-/* Legenda dos níveis */
-.nivel-legenda ul {
-    margin: 0;
-    padding-left: 18px;
-}
-.nivel-legenda li {
-    margin-bottom: 2px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.nivel-legenda .pie-color {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    margin-right: 7px;
-    border: 1px solid #fff;
-}
-
-/* KPI de remuneração média */
-.kpi-card {
-    color: #444;
-}
-.kpi-card #kpiRemuneracao {
-    color: #cddc39;
-}
-.kpi-card #kpiPercentMasc {
-    color: #36a2eb;
-}
-.kpi-card #kpiPercentFem {
-    color: #ff6384;
+    padding-bottom: 12px;
+    border-bottom: 2px solid rgba(25, 54, 95, 0.1);
 }
 
 
-
-/* Responsivo */
+/* Responsividade extra para gráficos em telas pequenas */
 @media (max-width: 900px) {
-    .dashboard-cards { margin-top: 18px; }
-    .card { min-width: 0; max-width: 98vw; }
-    .dashboard-graph-tabs { flex-direction: column; gap: 10px; }
-    .card > div[id^="chart"], 
-    .card canvas[id^="chart"] {
-        max-width: 98vw !important;
-        min-width: 0;
+    .chart-card {
+        min-height: 220px;
     }
-    #statsContainer,
-    #statsIdadeMedia,
-    #statsNivelHierarquico,
-    .stats-equipa,
-    .stats-idade,
-    .stats-nivel {
-        max-width: 98vw;
-        min-width: 0;
+    .chart-area,
+    #chartContainer,
+    #chartIdadeMedia,
+    #chartTempoMedio,
+    #chartNivelHierarquico,
+    #chartGeografia,
+    #chartGenero {
+        min-height: 120px;
+    }
+    .chart-area canvas,
+    #chartContainer canvas,
+    #chartIdadeMedia canvas,
+    #chartTempoMedio canvas,
+    #chartNivelHierarquico canvas,
+    #chartGeografia canvas,
+    #chartGenero canvas {
+        min-height: 100px !important;
     }
 }
+
+@media (max-width: 1400px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+    }
+    
+    .dashboard-main-charts {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+    
+    .kpi-card {
+        padding: 10px 6px;
+        min-width: 100px;
+    }
+    
+    .kpi-valor {
+        font-size: 1.4rem;
+    }
+    
+    .kpi-titulo {
+        font-size: 0.68rem;
+    }
+    
+    .kpi-descricao {
+        font-size: 0.65rem;
+    }
+    
+    .dashboard-main-charts {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .kpi-card {
+        padding: 8px 4px;
+        min-width: 90px;
+    }
+    
+    .kpi-valor {
+        font-size: 1.2rem;
+    }
+    
+    .dashboard-main-charts {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-card {
+        min-height: 350px;
+        padding: 20px;
+    }
+    
+    .chart-area {
+        min-height: 250px;
+    }
+}
+
+@media (max-width: 600px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .kpi-card {
+        padding: 8px 3px;
+        min-width: 80px;
+    }
+    
+    .kpi-valor {
+        font-size: 1.1rem;
+    }
+    
+    .kpi-titulo {
+        font-size: 0.62rem;
+        margin-bottom: 4px;
+    }
+    
+    .kpi-descricao {
+        font-size: 0.6rem;
+    }
+    
+    .chart-card {
+        min-height: 300px;
+        padding: 16px;
+    }
+    
+    .chart-card-title {
+        font-size: 1rem;
+        margin-bottom: 16px;
+    }
+    
+    .chart-area {
+        min-height: 200px;
+    }
+}
+
 h1 {
-    color: #3b5bdb;
+    color: #19365f;
     font-size: 2.1rem;
     margin-top: 32px;
     text-align: center;
     letter-spacing: 1px;
 }
 
-.dashboard-desc {
-    color: #fff;
-    border-radius: 10px;
-    padding: 40px 500px;
-    font-size: 1.05rem;
+.portal-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0px 0 12px 0;
 }
+
+.color-bar {
+    height: 6px;
+    width: 80px;
+    border-radius: 3px;
+    display: flex;
+}
+
+.color-segment {
+    flex: 1;
+    height: 100%;
+}
+
+.color-segment:first-child {
+    background: #8155ff;
+    border-radius: 3px 0 0 3px;
+}
+
+.color-segment:nth-child(2) {
+    background: #ff9b37;
+}
+
+.color-segment:last-child {
+    background: #3ed829;
+    border-radius: 0 3px 3px 0;
+}
+
+.portal-text {
+    font-size: 0.75rem;
+    color: #19365f;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* --- CORREÇÃO CANVASJS --- */
+.chart-card {
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+}
+
+.chart-area {
+    flex: 1 1 0;
+    min-height: 250px;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    width: 100%;
+    position: relative;
+    background: none;
+    box-sizing: border-box;
+}
+
+#chartContainer,
+#chartIdadeMedia,
+#chartTempoMedio,
+#chartNivelHierarquico,
+#chartGeografia,
+#chartGenero {
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: none;
+}
+
+.chart-area > div,
+#chartContainer > div,
+#chartIdadeMedia > div,
+#chartTempoMedio > div,
+#chartNivelHierarquico > div,
+#chartGeografia > div,
+#chartGenero > div {
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-area canvas,
+#chartContainer canvas,
+#chartIdadeMedia canvas,
+#chartTempoMedio canvas,
+#chartNivelHierarquico canvas,
+#chartGeografia canvas,
+#chartGenero canvas {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 200px !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    margin: 0 auto;
+    display: block;
+    background: none !important;
+}
+
+@media (max-width: 900px) {
+    .chart-card {
+        min-height: 220px;
+    }
+    .chart-area,
+    #chartContainer,
+    #chartIdadeMedia,
+    #chartTempoMedio,
+    #chartNivelHierarquico,
+    #chartGeografia,
+    #chartGenero {
+        min-height: 120px;
+    }
+    .chart-area canvas,
+    #chartContainer canvas,
+    #chartIdadeMedia canvas,
+    #chartTempoMedio canvas,
+    #chartNivelHierarquico canvas,
+    #chartGeografia canvas,
+    #chartGenero canvas {
+        min-height: 100px !important;
+    }
+}
+/* --- FIM CORREÇÃO CANVASJS --- */
