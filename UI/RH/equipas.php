@@ -62,6 +62,14 @@ $equipas = $equipasBLL->getAllEquipas();
             <?php endif; ?>
         </nav>
     </header>
+    <div class="portal-brand">
+        <div class="color-bar">
+            <div class="color-segment"></div>
+            <div class="color-segment"></div>
+            <div class="color-segment"></div>
+        </div>
+        <span class="portal-text">Portal Do Colaborador</span>
+    </div>
     <div class="equipas-container">
         <div class="equipas-header">
             <h1>Gestão de Equipas</h1>

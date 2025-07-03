@@ -65,6 +65,14 @@ $indicadores = $relatoriosBLL->getIndicadoresGlobais();
             <?php endif; ?>
         </nav>
     </header>
+    <div class="portal-brand">
+        <div class="color-bar">
+            <div class="color-segment"></div>
+            <div class="color-segment"></div>
+            <div class="color-segment"></div>
+        </div>
+        <span class="portal-text">Portal Do Colaborador</span>
+    </div>
     <main>
         <h1 class="relatorios-titulo">Relatórios e Dashboards</h1>
         <section>

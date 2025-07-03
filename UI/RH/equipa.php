@@ -197,6 +197,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="../Comuns/logout.php">Sair</a>
     </nav>
 </header>
+<div class="portal-brand">
+    <div class="color-bar">
+        <div class="color-segment"></div>
+        <div class="color-segment"></div>
+        <div class="color-segment"></div>
+    </div>
+    <span class="portal-text">Portal Do Colaborador</span>
+</div>
 <main>
     <h1>Editar Equipa</h1>
     <?php if ($success): ?><div class="success-message"><?= $success ?></div><?php endif; ?>

@@ -704,3 +704,46 @@ header nav a:hover::before,
 .dropdown-colaboradores:hover .dropdown-menu {
     display: block;
 }
+
+/* Estilos da marca do portal */
+.portal-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 32px 0 12px 0; /* Adiciona mais espaço acima da marca do portal */
+}
+
+.color-bar {
+    height: 6px;
+    width: 80px;
+    border-radius: 3px;
+    display: flex;
+}
+
+.color-segment {
+    flex: 1;
+    height: 100%;
+}
+
+.color-segment:first-child {
+    background: #8155ff;
+    border-radius: 3px 0 0 3px;
+}
+
+.color-segment:nth-child(2) {
+    background: #ff9b37;
+}
+
+.color-segment:last-child {
+    background: #3ed829;
+    border-radius: 0 3px 3px 0;
+}
+
+.portal-text {
+    font-size: 0.75rem;
+    color: #19365f;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}

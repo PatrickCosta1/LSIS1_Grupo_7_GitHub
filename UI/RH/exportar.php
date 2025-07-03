@@ -149,6 +149,14 @@ if (isset($_GET['export'])) {
             <?php endif; ?>
         </nav>
     </header>
+    <div class="portal-brand">
+        <div class="color-bar">
+            <div class="color-segment"></div>
+            <div class="color-segment"></div>
+            <div class="color-segment"></div>
+        </div>
+        <span class="portal-text">Portal Do Colaborador</span>
+    </div>
     <main>
         <h1>Exportar Dados</h1>
         <form method="get" action="exportar.php" style="max-width:400px;margin:0 auto;">
