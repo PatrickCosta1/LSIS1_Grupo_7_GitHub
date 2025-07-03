@@ -44,5 +44,19 @@ class RHDashboardManager {
     public function getDistribuicaoGeneroPorEquipa() {
         return $this->dal->getDistribuicaoGeneroPorEquipa();
     }
+
+    public function getNomesColaboradoresPorEquipa() {
+        return $this->dal->getNomesColaboradoresPorEquipa();
+    }
+
+    // Novo: distribuição geográfica
+    public function getDistribuicaoGeografica() {
+        return $this->dal->getDistribuicaoGeografica();
+    }
+
+    // Novo: localidades dos colaboradores por equipa
+    public function getLocalidadesPorEquipa() {
+        return $this->dal->getLocalidadesPorEquipa();
+    }
 }
 ?>
