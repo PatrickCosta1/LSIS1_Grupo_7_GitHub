@@ -9,10 +9,11 @@ class DAL_ColaboradoresGerir {
                 LEFT JOIN equipa_colaboradores ec ON c.id = ec.colaborador_id
                 LEFT JOIN equipas e ON ec.equipa_id = e.id
                 LEFT JOIN utilizadores u ON c.utilizador_id = u.id
-                LEFT JOIN perfis p ON u.perfil_id = p.id";
+                LEFT JOIN perfis p ON u.perfil_id = p.id
+                WHERE u.perfil_id <> 5"; // 5 = admin
         $params = [];
         if ($excludeUserId !== null) {
-            $sql .= " WHERE u.id <> ?";
+            $sql .= " AND u.id <> ?";
             $params[] = $excludeUserId;
         }
         $stmt = $pdo->prepare($sql);

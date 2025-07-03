@@ -44,11 +44,11 @@ $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
                     <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
-                        <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
-                    <a href="beneficios.php">Benefícios</a>
-                    <a href="ferias.php">Férias</a>
-                    <a href="formacoes.php">Formações</a>
-                    <a href="recibos.php">Recibos</a>
+                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
+                    <a href="../Colaborador/beneficios.php">Benefícios</a>
+                    <a href="../Colaborador/ferias.php">Férias</a>
+                    <a href="../Colaborador/formacoes.php">Formações</a>
+                    <a href="../Colaborador/recibos.php">Recibos</a>
                     <!-- Adiciona mais opções se quiseres -->
                 </div>
             </div>

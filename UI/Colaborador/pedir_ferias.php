@@ -3,24 +3,34 @@ session_start();
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
-    http_response_code(403);
-    echo json_encode(['success' => false, 'error' => 'Não autenticado.']);
+    echo json_encode(['success' => false, 'error' => 'Sessão expirada.']);
     exit;
 }
 
 $data = json_decode(file_get_contents('php://input'), true);
-$data_inicio = $data['data_inicio'] ?? '';
-$data_fim = $data['data_fim'] ?? '';
 
-if ($data_inicio && $data_fim) {
-    require_once '../../BLL/Colaborador/BLL_ferias.php';
-    $feriasManager = new FeriasManager();
-    $ok = $feriasManager->pedirFerias($_SESSION['user_id'], $data_inicio, $data_fim);
-    if ($ok) {
-        echo json_encode(['success' => true]);
-    } else {
-        echo json_encode(['success' => false, 'error' => 'Erro ao registar pedido.']);
-    }
-} else {
+if (!isset($data['data_inicio'], $data['data_fim'])) {
     echo json_encode(['success' => false, 'error' => 'Dados em falta.']);
+    exit;
+}
+
+require_once '../../BLL/Colaborador/BLL_ficha_colaborador.php';
+require_once '../../BLL/Comuns/BLL_notificacoes.php';
+
+$colabBLL = new ColaboradorFichaManager();
+$notBLL = new NotificacoesManager();
+$colab = $colabBLL->getColaboradorByUserId($_SESSION['user_id']);
+$dataInicio = $data['data_inicio'];
+$dataFim = $data['data_fim'];
+
+if ($dataInicio > $dataFim) {
+    echo json_encode(['success' => false, 'error' => 'A data de início não pode ser posterior à data de fim.']);
+    exit;
+}
+
+if ($colabBLL->criarPedidoFerias($colab['id'], $dataInicio, $dataFim)) {
+    $notBLL->notificarRH("Novo pedido de férias de " . htmlspecialchars($colab['nome']) . " de $dataInicio até $dataFim.");
+    echo json_encode(['success' => true]);
+} else {
+    echo json_encode(['success' => false, 'error' => 'Erro ao submeter pedido de férias.']);
 }

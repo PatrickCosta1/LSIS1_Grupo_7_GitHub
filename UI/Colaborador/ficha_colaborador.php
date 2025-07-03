@@ -243,7 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     
-<!-- Container azul arredondado no topo -->
+<!-- Container laranja arredondado no topo -->
 <div id="header-hero">
     <div class="header-content">
         <img
@@ -333,7 +333,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
         </nav>
     </div>
-    
 </div>
 
 <!-- Barra sticky branca (aparece ao fazer scroll) -->
@@ -341,22 +340,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header-small logo-sticky-branco">
     <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header-small logo-sticky-azul">
     <nav class="nav-links">
-        <?php if ($perfil === 'coordenador'): ?>
-            <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
-            <a href="ficha_colaborador.php">Minha Ficha</a>
-            <a href="../Coordenador/equipa.php">Minha Equipa</a>
-            <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
+        <?php if ($perfil === 'colaborador'): ?>
+            <a href="ficha_colaborador.php">A Minha Ficha</a>
             <a href="../Comuns/notificacoes.php">Notificações</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="ficha_colaborador.php">Ficha Colaborador</a>
+                    <a href="beneficios.php">Benefícios</a>
+                    <a href="ferias.php">Férias</a>
+                    <a href="formacoes.php">Formações</a>
+                    <a href="recibos.php">Recibos</a>
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a>
+        <?php elseif ($perfil === 'coordenador'): ?>
+            <?php
+                require_once '../../BLL/Coordenador/BLL_dashboard_coordenador.php';
+                $coordBLL = new CoordenadorDashboardManager();
+                $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
+                $equipaLink = "../Coordenador/equipa.php";
+                if (!empty($equipas) && isset($equipas[0]['id'])) {
+                    $equipaLink = "../Coordenador/equipa.php?id=" . urlencode($equipas[0]['id']);
+                }
+            ?>
+            <div class="dropdown-equipa">
+                <a href="<?php echo $equipaLink; ?>" class="equipa-link">
+                    Equipa
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
+                    <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
+                </div>
+            </div>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
+                    <a href="../Colaborador/beneficios.php">Benefícios</a>
+                    <a href="../Colaborador/ferias.php">Férias</a>
+                    <a href="../Colaborador/formacoes.php">Formações</a>
+                    <a href="../Colaborador/recibos.php">Recibos</a>
+                </div>
+            </div>
             <a href="../Comuns/logout.php">Sair</a>
         <?php elseif ($perfil === 'rh'): ?>
-            <a href="../RH/dashboard_rh.php">Dashboard</a>
             <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
             <a href="../RH/equipas.php">Equipas</a>
             <a href="../RH/relatorios.php">Relatórios</a>
             <a href="../RH/exportar.php">Exportar</a>
             <a href="../Comuns/notificacoes.php">Notificações</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
             <a href="../Comuns/logout.php">Sair</a>
         <?php elseif ($perfil === 'admin'): ?>
             <a href="../Admin/utilizadores.php">Utilizadores</a>
@@ -364,13 +405,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
             <a href="../Admin/alertas.php">Alertas</a>
             <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
-            <a href="../Comuns/logout.php">Sair</a>
-        <?php else: ?>
-            <a href="dashboard_colaborador.php">Dashboard</a>
-            <a href="ficha_colaborador.php">A Minha Ficha</a>
-            <a href="../Comuns/notificacoes.php">Notificações</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
             <a href="../Comuns/logout.php">Sair</a>
         <?php endif; ?>
     </nav>
@@ -388,6 +422,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <main>
+<div class="portal-brand">
+    <div class="color-bar">
+        <div class="color-segment"></div>
+        <div class="color-segment"></div>
+        <div class="color-segment"></div>
+    </div>
+    <span class="portal-text">Portal Do Colaborador</span>
+</div>
 <form method="POST" enctype="multipart/form-data">
 
 <div id="ficha-dados-pessoais" class="ficha-container ficha-container-primarios">
@@ -416,10 +458,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="date" name="data_nascimento" value="<?php echo htmlspecialchars($colab['data_nascimento'] ?? ''); ?>" <?php echo fieldAttr('data_nascimento', $canEditAll, $colabEditable); ?>>
             </div>
             <div class="ficha-campo">
-                <label>Morada Fiscal:</label>
-                <input type="text" name="morada_fiscal" value="<?php echo htmlspecialchars($colab['morada_fiscal'] ?? ''); ?>" <?php echo fieldAttr('morada_fiscal', $canEditAll, $colabEditable); ?>>
-            </div>
-            <div class="ficha-campo">
                 <label>Email Pessoal:</label>
                 <input type="email" name="email" value="<?php echo htmlspecialchars($colab['email'] ?? ''); ?>" <?php echo fieldAttr('email', $canEditAll, $colabEditable); ?>>
             </div>
@@ -428,31 +466,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" name="telemovel" value="<?php echo htmlspecialchars($colab['telemovel'] ?? ''); ?>" <?php echo fieldAttr('telemovel', $canEditAll, $colabEditable); ?>>
             </div>
             <div class="ficha-campo">
-                <label style="font-size:12px;">Comprovativo Morada Fiscal (Mod. 99) (PDF/JPG):</label>
-                <?php if ($canEditAll || in_array('morada_fiscal', $colabEditable)): ?>
-                    <input type="file" name="comprovativo_morada_fiscal" accept=".pdf,.jpg,.jpeg,.png">
-                <?php endif; ?>
-                <?php if (!empty($colab['comprovativo_morada_fiscal'])): ?>
-                    <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_morada_fiscal']); ?>" target="_blank">Ver comprovativo atual</a>
-                <?php endif; ?>
-            </div>
-            <div class="ficha-campo">
                 <label>Género:</label>
                 <select name="sexo" <?php echo selectAttr('sexo', $canEditAll, $colabEditable); ?>>
                     <option value="">Selecione</option>
                     <option value="Masculino" <?php if (($colab['sexo'] ?? '') === 'Masculino') echo 'selected'; ?>>Masculino</option>
                     <option value="Feminino" <?php if (($colab['sexo'] ?? '') === 'Feminino') echo 'selected'; ?>>Feminino</option>
                     <option value="Outro" <?php if (($colab['sexo'] ?? '') === 'Outro') echo 'selected'; ?>>Outro</option>
-                </select>
-            </div>
-            <div class="ficha-campo">
-                <label>Estado Civil:</label>
-                <select name="estado_civil"> <?php echo selectAttr('estado_civil', $canEditAll, $colabEditable); ?>>
-                    <option value="">Selecione</option>
-                    <option value="Solteiro" <?php if (($colab['estado_civil'] ?? '') === 'Solteiro') echo 'selected'; ?>>Solteiro</option>
-                    <option value="Casado" <?php if (($colab['estado_civil'] ?? '') === 'Casado') echo 'selected'; ?>>Casado</option>
-                    <option value="Divorciado" <?php if (($colab['estado_civil'] ?? '') === 'Divorciado') echo 'selected'; ?>>Divorciado</option>
-                    <option value="Viúvo" <?php if (($colab['estado_civil'] ?? '') === 'Viúvo') echo 'selected'; ?>>Viúvo</option>
                 </select>
             </div>
             <div class="ficha-campo">
@@ -494,10 +513,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="ficha-campo">
                 <label>Nome Abreviado:</label>
                 <input type="text" value="<?php echo htmlspecialchars($colab['nome_abreviado'] ?? ''); ?>" readonly>
-            </div>
-            <div class="ficha-campo">
-                <label>Morada Fiscal:</label>
-                <input type="text" value="<?php echo htmlspecialchars($colab['morada_fiscal'] ?? ''); ?>" readonly>
             </div>
             <div class="ficha-campo">
                 <label>Género:</label>
@@ -565,15 +580,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="ficha-campo">
                 <label>CC (Cartão de Cidadão):</label>
                 <input type="text" name="cc" value="<?php echo htmlspecialchars($colab['cc'] ?? ''); ?>" <?php echo fieldAttr('cc', $canEditAll, []); ?>>
-                <label style="font-size:12px;">Comprovativo CC (PDF/JPG):</label>
-                <input type="file" name="comprovativo_cc" accept=".pdf,.jpg,.jpeg,.png">
-                <?php if (!empty($colab['comprovativo_cc'])): ?>
-                    <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_cc']); ?>" target="_blank">Ver comprovativo atual</a>
-                <?php endif; ?>
-            </div>
-            <div class="ficha-campo">
-                <label>NIF:</label>
-                <input type="text" name="nif" value="<?php echo htmlspecialchars($colab['nif'] ?? ''); ?>" <?php echo fieldAttr('nif', $canEditAll, []); ?>>
+                <div class="comprovativo-section">
+                    <label style="font-size:12px; margin-top:8px;">Comprovativo CC (PDF/JPG):</label>
+                    <input type="file" name="comprovativo_cc" accept=".pdf,.jpg,.jpeg,.png">
+                    <?php if (!empty($colab['comprovativo_cc'])): ?>
+                        <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_cc']); ?>" target="_blank" class="comprovativo-link">Ver comprovativo atual</a>
+                    <?php endif; ?>
+                </div>
             </div>
             <div class="ficha-campo">
                 <label>NISS:</label>
@@ -582,11 +595,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="ficha-campo">
                 <label>IBAN:</label>
                 <input type="text" name="iban" value="<?php echo htmlspecialchars($colab['iban'] ?? ''); ?>" <?php echo fieldAttr('iban', $canEditAll, ['iban']); ?>>
-                <label style="font-size:12px;">Comprovativo IBAN (PDF/JPG):</label>
-                <input type="file" name="comprovativo_iban" accept=".pdf,.jpg,.jpeg,.png">
-                <?php if (!empty($colab['comprovativo_iban'])): ?>
-                    <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_iban']); ?>" target="_blank">Ver comprovativo atual</a>
-                <?php endif; ?>
+                <div class="comprovativo-section">
+                    <label style="font-size:12px; margin-top:8px;">Comprovativo IBAN (PDF/JPG):</label>
+                    <input type="file" name="comprovativo_iban" accept=".pdf,.jpg,.jpeg,.png">
+                    <?php if (!empty($colab['comprovativo_iban'])): ?>
+                        <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_iban']); ?>" target="_blank" class="comprovativo-link">Ver comprovativo atual</a>
+                    <?php endif; ?>
+                </div>
             </div>
         <?php elseif ($isCoord): ?>
             <!-- Coordenador NÃO vê esta secção na ficha de outro colaborador -->
@@ -602,6 +617,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="ficha-section-titulo">Informações Fiscais (IRS)</div>
     <div class="ficha-grid">
         <?php if ($canEditAll || $isColab || $isOwnFicha): ?>
+            <!-- Campos movidos para esta seção -->
+            <div class="ficha-campo">
+                <label>Morada Fiscal:</label>
+                <input type="text" name="morada_fiscal" value="<?php echo htmlspecialchars($colab['morada_fiscal'] ?? ''); ?>" <?php echo fieldAttr('morada_fiscal', $canEditAll, $colabEditable); ?>>
+                <div class="comprovativo-section">
+                    <label style="font-size:12px; margin-top:8px;">Comprovativo Morada Fiscal (Mod. 99) (PDF/JPG):</label>
+                    <?php if ($canEditAll || in_array('morada_fiscal', $colabEditable)): ?>
+                        <input type="file" name="comprovativo_morada_fiscal" accept=".pdf,.jpg,.jpeg,.png">
+                    <?php endif; ?>
+                    <?php if (!empty($colab['comprovativo_morada_fiscal'])): ?>
+                        <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_morada_fiscal']); ?>" target="_blank" class="comprovativo-link">Ver comprovativo atual</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="ficha-campo">
+                <label>Estado Civil:</label>
+                <select name="estado_civil" <?php echo selectAttr('estado_civil', $canEditAll, $colabEditable); ?>>
+                    <option value="">Selecione</option>
+                    <option value="Solteiro" <?php if (($colab['estado_civil'] ?? '') === 'Solteiro') echo 'selected'; ?>>Solteiro</option>
+                    <option value="Casado" <?php if (($colab['estado_civil'] ?? '') === 'Casado') echo 'selected'; ?>>Casado</option>
+                    <option value="Divorciado" <?php if (($colab['estado_civil'] ?? '') === 'Divorciado') echo 'selected'; ?>>Divorciado</option>
+                    <option value="Viúvo" <?php if (($colab['estado_civil'] ?? '') === 'Viúvo') echo 'selected'; ?>>Viúvo</option>
+                </select>
+            </div>
+            <div class="ficha-campo">
+                <label>NIF:</label>
+                <input type="text" name="nif" value="<?php echo htmlspecialchars($colab['nif'] ?? ''); ?>" <?php echo fieldAttr('nif', $canEditAll, []); ?>>
+            </div>
+            <!-- Campos originais da seção fiscal -->
             <div class="ficha-campo">
                 <label>Situação IRS:</label>
                 <select name="situacao_irs">
@@ -653,11 +697,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="ficha-campo">
                 <label>Nº Cartão Continente:</label>
                 <input type="text" name="cartao_continente" value="<?php echo htmlspecialchars($colab['cartao_continente'] ?? ''); ?>">
-                <label style="font-size:12px;">Comprovativo Cartão Continente (PDF/JPG):</label>
-                <input type="file" name="comprovativo_cartao_continente" accept=".pdf,.jpg,.jpeg,.png">
-                <?php if (!empty($colab['comprovativo_cartao_continente'])): ?>
-                    <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_cartao_continente']); ?>" target="_blank">Ver comprovativo atual</a>
-                <?php endif; ?>
+                <div class="comprovativo-section">
+                    <label style="font-size:12px; margin-top:8px;">Comprovativo Cartão Continente (PDF/JPG):</label>
+                    <input type="file" name="comprovativo_cartao_continente" accept=".pdf,.jpg,.jpeg,.png">
+                    <?php if (!empty($colab['comprovativo_cartao_continente'])): ?>
+                        <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_cartao_continente']); ?>" target="_blank" class="comprovativo-link">Ver comprovativo atual</a>
+                    <?php endif; ?>
+                </div>
             </div>
             <div class="ficha-campo">
                 <label>Voucher NOS (Data):</label>
@@ -887,8 +933,133 @@ window.addEventListener('scroll', function() {
 </div>
 <?php endif; ?>
 
+<script>
+// Menu lateral hover functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const menuLateral = document.querySelector('.menu-lateral-fichas');
+    
+    // Criar zona de trigger invisível
+    const triggerZone = document.createElement('div');
+    triggerZone.className = 'menu-trigger-zone';
+    document.body.appendChild(triggerZone);
+    
+    let hoverTimeout;
+    
+    // Função para mostrar o menu
+    function showMenu() {
+        clearTimeout(hoverTimeout);
+        menuLateral.classList.add('show');
+    }
+    
+    // Função para esconder o menu (com delay)
+    function hideMenu() {
+        hoverTimeout = setTimeout(() => {
+            menuLateral.classList.remove('show');
+        }, 200); // Delay para evitar flicker
+    }
+    
+    // Event listeners para a zona de trigger
+    triggerZone.addEventListener('mouseenter', showMenu);
+    triggerZone.addEventListener('mouseleave', hideMenu);
+    
+    // Event listeners para o próprio menu
+    menuLateral.addEventListener('mouseenter', showMenu);
+    menuLateral.addEventListener('mouseleave', hideMenu);
+    
+    // Esconder o menu quando o rato sai completamente da área
+    document.addEventListener('mousemove', function(e) {
+        const menuRect = menuLateral.getBoundingClientRect();
+        const triggerRect = triggerZone.getBoundingClientRect();
+        
+        const isOverMenu = (
+            e.clientX >= menuRect.left && 
+            e.clientX <= menuRect.right && 
+            e.clientY >= menuRect.top && 
+            e.clientY <= menuRect.bottom
+        );
+        
+        const isOverTrigger = (
+            e.clientX >= triggerRect.left && 
+            e.clientX <= triggerRect.right && 
+            e.clientY >= triggerRect.top && 
+            e.clientY <= triggerRect.bottom
+        );
+        
+        if (!isOverMenu && !isOverTrigger) {
+            hideMenu();
+        } else if (isOverMenu || isOverTrigger) {
+            showMenu();
+        }
+    });
+});
+
+// Header sticky functionality
+window.addEventListener('scroll', function() {
+    const sticky = document.getElementById('header-sticky');
+    const hero = document.getElementById('header-hero');
+    if (window.scrollY > (hero.offsetHeight - 1)) {
+        sticky.style.display = 'flex';
+    } else {
+        sticky.style.display = 'none';
+    }
+});
+
+// Menu navigation functionality
+document.querySelectorAll('.menu-link').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.menu-link').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const target = document.querySelector(this.getAttribute('data-scroll'));
+        if (target) {
+            const targetRect = target.getBoundingClientRect();
+            const scrollTo = window.scrollY + targetRect.top - (window.innerHeight / 2) + (targetRect.height / 2);
+            window.scrollTo({
+                top: scrollTo,
+                behavior: 'smooth'
+            });
+        }
+    });
+});
+
+// Auto highlight on scroll
+window.addEventListener('scroll', function() {
+    const sections = [
+        '#ficha-dados-pessoais',
+        '#ficha-morada',
+        '#ficha-documentos',
+        '#ficha-fiscais',
+        '#ficha-vouchers',
+        '#ficha-emergencia',
+        '#ficha-contratual'
+    ];
+    let scrollPos = window.scrollY + window.innerHeight / 2;
+    let active = 0;
+    sections.forEach((id, idx) => {
+        const el = document.querySelector(id);
+        if (el && (el.offsetTop <= scrollPos)) active = idx;
+    });
+    document.querySelectorAll('.menu-link').forEach((b, i) => {
+        b.classList.toggle('active', i === active);
+    });
+});
+
+// Header color change on scroll
+window.addEventListener('scroll', function() {
+    const sticky = document.getElementById('header-sticky');
+    const hero = document.getElementById('header-hero');
+    if (window.scrollY > 0) {
+        sticky.style.display = 'flex';
+        if (window.scrollY > (hero.offsetHeight - 1)) {
+            sticky.classList.add('azul');
+        } else {
+            sticky.classList.remove('azul');
+        }
+    } else {
+        sticky.style.display = 'none';
+        sticky.classList.remove('azul');
+    }
+});
+</script>
 
 </body>
-
-
 </html>

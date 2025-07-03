@@ -12,47 +12,138 @@ if ($equipaId <= 0) {
     exit();
 }
 
-$equipasBLL = new RHEquipaEditarManager(); // Use a classe da BLL de editar equipa
+$equipasBLL = new RHEquipaEditarManager();
 $equipa = $equipasBLL->getEquipaById($equipaId);
 if (!$equipa) {
     header('Location: equipas.php');
     exit();
 }
 
-$coordenadores = $equipasBLL->getCoordenadoresDisponiveis($equipaId);
-$colaboradoresFora = $equipasBLL->getColaboradoresSemEquipaSoColaboradores();
+// Determinar o tipo da equipa
+$tipoEquipa = $equipa['tipo'] ?? 'colaboradores';
+
+// Buscar membros disponíveis conforme o tipo da equipa
+function getMembrosDisponiveis($tipo, $equipasBLL) {
+    if ($tipo === 'colaboradores') {
+        // Apenas colaboradores (perfil_id = 2)
+        return $equipasBLL->getColaboradoresSemEquipaSoColaboradores();
+    } elseif ($tipo === 'coordenadores') {
+        // Apenas coordenadores (perfil_id = 3)
+        require_once '../../DAL/Database.php';
+        $pdo = Database::getConnection();
+        $sql = "SELECT c.id as colaborador_id, c.nome
+                FROM colaboradores c
+                INNER JOIN utilizadores u ON c.utilizador_id = u.id
+                WHERE u.perfil_id = 3 AND u.ativo = 1
+                  AND c.id NOT IN (
+                      SELECT colaborador_id FROM equipa_colaboradores
+                  )";
+        $stmt = $pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } elseif ($tipo === 'rh') {
+        // Apenas RH (perfil_id = 4)
+        require_once '../../DAL/Database.php';
+        $pdo = Database::getConnection();
+        $sql = "SELECT c.id as colaborador_id, c.nome
+                FROM colaboradores c
+                INNER JOIN utilizadores u ON c.utilizador_id = u.id
+                WHERE u.perfil_id = 4 AND u.ativo = 1
+                  AND c.id NOT IN (
+                      SELECT colaborador_id FROM equipa_colaboradores
+                  )";
+        $stmt = $pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    return [];
+}
+
+// Buscar responsáveis corretos conforme o tipo da equipa
+function getResponsaveisDisponiveis($tipo, $equipaId = null, $responsavelIdAtual = null) {
+    require_once '../../DAL/Database.php';
+    $pdo = Database::getConnection();
+    $responsaveis = [];
+    if ($tipo === 'colaboradores' || $tipo === 'coordenadores') {
+        $sql = "SELECT c.id, c.nome
+                FROM colaboradores c
+                INNER JOIN utilizadores u ON c.utilizador_id = u.id
+                WHERE u.perfil_id = 3 AND u.ativo = 1";
+        $responsaveis = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    } elseif ($tipo === 'rh') {
+        $sql = "SELECT c.id, c.nome
+                FROM colaboradores c
+                INNER JOIN utilizadores u ON c.utilizador_id = u.id
+                WHERE u.perfil_id = 4 AND u.ativo = 1";
+        $responsaveis = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+    // Garante que o responsável atual aparece na lista (mesmo se não ativo)
+    if ($responsavelIdAtual) {
+        $existe = false;
+        foreach ($responsaveis as $r) {
+            if ($r['id'] == $responsavelIdAtual) {
+                $existe = true;
+                break;
+            }
+        }
+        if (!$existe) {
+            // Buscar o responsável atual pelo ID
+            $stmt = $pdo->prepare("SELECT c.id, c.nome FROM colaboradores c WHERE c.id = ?");
+            $stmt->execute([$responsavelIdAtual]);
+            $atual = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($atual) {
+                $responsaveis[] = $atual;
+            }
+        }
+    }
+    return $responsaveis;
+}
+
+$coordenadores = getResponsaveisDisponiveis($tipoEquipa, $equipaId, $equipa['responsavel_id'] ?? null);
+$colaboradoresFora = getMembrosDisponiveis($tipoEquipa, $equipasBLL);
 $colaboradoresEquipa = $equipasBLL->getColaboradoresDaEquipa($equipaId);
+
+// Remover o responsável da lista de adicionar caso seja equipa RH
+if ($tipoEquipa === 'rh' && !empty($equipa['responsavel_id'])) {
+    $colaboradoresFora = array_filter($colaboradoresFora, function($colab) use ($equipa) {
+        // O campo pode ser 'colaborador_id' ou 'id' dependendo da query
+        $id = isset($colab['colaborador_id']) ? $colab['colaborador_id'] : (isset($colab['id']) ? $colab['id'] : null);
+        return $id != $equipa['responsavel_id'];
+    });
+    // Reindexar array para evitar problemas no foreach
+    $colaboradoresFora = array_values($colaboradoresFora);
+}
 
 $success = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $success = '';
+    $error = '';
     if (isset($_POST['remover_colab_id'])) {
         $colabId = intval($_POST['remover_colab_id']);
-        $ok = $equipasBLL->removerColaboradorDaEquipa($equipaId, $colabId);
-        if ($ok) {
-            $success = "Colaborador removido da equipa.";
+        $okRemover = $equipasBLL->removerColaboradorDaEquipa($equipaId, $colabId);
+        if ($okRemover) {
+            $success = "Membro removido da equipa.";
         } else {
-            $error = "Erro ao remover colaborador.";
+            $error = "Erro ao remover membro.";
         }
     }
     if (isset($_POST['adicionar_colab_id'])) {
         $colabId = intval($_POST['adicionar_colab_id']);
-        $ok = $equipasBLL->adicionarColaboradorAEquipa($equipaId, $colabId);
-        if ($ok) {
-            $success = "Colaborador adicionado à equipa.";
+        $okAdicionar = $equipasBLL->adicionarColaboradorAEquipa($equipaId, $colabId);
+        if ($okAdicionar) {
+            $success = "Membro adicionado à equipa.";
         } else {
-            $error = "Erro ao adicionar colaborador.";
+            $error = "Erro ao adicionar membro.";
         }
     }
-    if (isset($_POST['nome']) && isset($_POST['coordenador_id'])) {
+    if (isset($_POST['nome']) && isset($_POST['responsavel_id'])) {
         $novoNome = trim($_POST['nome']);
-        $novoCoord = intval($_POST['coordenador_id']);
-        $ok = $equipasBLL->atualizarNomeCoordenador($equipaId, $novoNome, $novoCoord);
-        if ($ok) {
+        $novoResp = intval($_POST['responsavel_id']); // ID do colaborador
+        $okAtualizar = $equipasBLL->atualizarNomeCoordenador($equipaId, $novoNome, $novoResp);
+        if ($okAtualizar) {
             $success = "Equipa atualizada com sucesso!";
         } else {
-            $error = "Erro ao atualizar equipa.";
+            $error = "Erro ao atualizar equipa. Verifique se o coordenador selecionado é válido.";
         }
     }
     if (isset($_POST['remover_equipa'])) {
@@ -64,8 +155,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     $equipa = $equipasBLL->getEquipaById($equipaId);
+    $tipoEquipa = $equipa['tipo'] ?? 'colaboradores';
     $colaboradoresEquipa = $equipasBLL->getColaboradoresDaEquipa($equipaId);
-    $colaboradoresFora = $equipasBLL->getColaboradoresSemEquipaSoColaboradores();
+    $colaboradoresFora = getMembrosDisponiveis($tipoEquipa, $equipasBLL);
+    // Recarregar responsáveis após alteração
+    $coordenadores = getResponsaveisDisponiveis($tipoEquipa, $equipaId, $equipa['responsavel_id'] ?? null);
 }
 ?>
 <!DOCTYPE html>
@@ -101,10 +195,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" name="nome" id="nome" value="<?= htmlspecialchars($equipa['nome']) ?>" required>
             </div>
             <div class="ficha-campo">
-                <label for="coordenador_id">Coordenador:</label>
-                <select name="coordenador_id" id="coordenador_id" required>
+                <label for="responsavel_id">Coordenador:</label>
+                <select name="responsavel_id" id="responsavel_id" required>
                     <?php foreach ($coordenadores as $coord): ?>
-                        <option value="<?= $coord['id'] ?>" <?= $coord['id'] == $equipa['coordenador_id'] ? 'selected' : '' ?>>
+                        <option value="<?= $coord['id'] ?>" <?= $coord['id'] == $equipa['responsavel_id'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($coord['nome']) ?>
                         </option>
                     <?php endforeach; ?>

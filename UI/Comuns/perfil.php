@@ -53,10 +53,76 @@ $user = $userBLL->getUserById($_SESSION['user_id']);
                 </div>
             </div>
             <a href="../Comuns/logout.php">Sair</a>
+        <?php elseif ($_SESSION['profile'] === 'coordenador'): ?>
+            <?php
+                // Get coordinator's team link
+                require_once '../../BLL/Coordenador/BLL_dashboard_coordenador.php';
+                $coordBLL = new CoordenadorDashboardManager();
+                $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
+                $equipaLink = "../Coordenador/equipa.php";
+                if (!empty($equipas) && isset($equipas[0]['id'])) {
+                    $equipaLink = "../Coordenador/equipa.php?id=" . urlencode($equipas[0]['id']);
+                }
+            ?>
+            <div class="dropdown-equipa">
+                <a href="<?php echo $equipaLink; ?>" class="equipa-link">
+                    Equipa
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
+                    <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
+                </div>
+            </div>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
+                    <a href="../Colaborador/beneficios.php">Benefícios</a>
+                    <a href="../Colaborador/ferias.php">Férias</a>
+                    <a href="../Colaborador/formacoes.php">Formações</a>
+                    <a href="../Colaborador/recibos.php">Recibos</a>
+                    <!-- Adiciona mais opções se quiseres -->
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a>
+        <?php elseif ($_SESSION['profile'] === 'rh'): ?>
+            <a href="../RH/dashboard_rh.php">Dashboard</a>
+            <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
+            <a href="../RH/equipas.php">Equipas</a>
+            <a href="../RH/relatorios.php">Relatórios</a>
+            <a href="../RH/exportar.php">Exportar</a>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
+                    <a href="../Colaborador/beneficios.php">Benefícios</a>
+                    <a href="../Colaborador/ferias.php">Férias</a>
+                    <a href="../Colaborador/formacoes.php">Formações</a>
+                    <a href="../Colaborador/recibos.php">Recibos</a>
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a>
         <?php /* ...outros perfis... */ endif; ?>
     </nav>
 </header>
 <main>
+    <div class="portal-brand">
+        <div class="color-bar">
+            <div class="color-segment"></div>
+            <div class="color-segment"></div>
+            <div class="color-segment"></div>
+        </div>
+        <span class="portal-text">Portal Do Colaborador</span>
+    </div>
     <h1>O Teu Perfil, <?php echo htmlspecialchars($user['nome'] ?? ''); ?>:</h1>
     <div class="perfil-edit-container">
         <form class="perfil-edit-form" autocomplete="off">

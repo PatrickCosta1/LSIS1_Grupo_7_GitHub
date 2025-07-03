@@ -57,5 +57,22 @@ class ColaboradorFichaManager {
     public function recusarPedido($pedidoId) {
         return $this->dal->atualizarEstadoPedido($pedidoId, 'recusado');
     }
+
+    // --- PEDIDOS DE FÉRIAS ---
+    public function criarPedidoFerias($colaboradorId, $dataInicio, $dataFim) {
+        return $this->dal->criarPedidoFerias($colaboradorId, $dataInicio, $dataFim);
+    }
+    public function listarPedidosFeriasPendentes() {
+        return $this->dal->listarPedidosFeriasPendentes();
+    }
+    public function aprovarPedidoFerias($pedidoId) {
+        return $this->dal->atualizarEstadoPedidoFerias($pedidoId, 'aceite');
+    }
+    public function recusarPedidoFerias($pedidoId) {
+        return $this->dal->atualizarEstadoPedidoFerias($pedidoId, 'recusado');
+    }
+    public function getPedidoFeriasById($pedidoId) {
+        return $this->dal->getPedidoFeriasById($pedidoId);
+    }
 }
 ?>

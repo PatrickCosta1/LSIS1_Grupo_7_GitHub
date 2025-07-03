@@ -11,9 +11,11 @@ class DALEquipa {
 
     public function getCoordenadoresDisponiveis($equipaId = null) {
         $pdo = Database::getConnection();
+        // Seleciona todos os coordenadores ativos + o responsável atual da equipa (caso exista)
         $sql = "SELECT c.id, c.nome FROM colaboradores c
-                WHERE c.cargo = 'Coordenador'
-                " . ($equipaId ? "OR c.id = (SELECT coordenador_id FROM equipas WHERE id = ?)" : "");
+                INNER JOIN utilizadores u ON c.utilizador_id = u.id
+                WHERE u.perfil_id = 3 AND u.ativo = 1
+                " . ($equipaId ? "OR c.id = (SELECT responsavel_id FROM equipas WHERE id = ?)" : "");
         $stmt = $pdo->prepare($sql);
         if ($equipaId) {
             $stmt->execute([$equipaId]);
@@ -65,27 +67,29 @@ class DALEquipa {
         return $stmt->execute([$equipaId, $colabId]);
     }
 
-    public function atualizarNomeCoordenador($equipaId, $nome, $coordenadorId) {
+    public function atualizarNomeCoordenador($equipaId, $nome, $responsavelId) {
         $pdo = Database::getConnection();
-        // Verifica se o coordenador existe e está ativo
-        $stmtCheck = $pdo->prepare("SELECT id FROM utilizadores WHERE id = ? AND ativo = 1");
-        $stmtCheck->execute([$coordenadorId]);
-        $coordenadorExiste = $stmtCheck->fetchColumn();
+        // Verifica se o NOVO responsável existe, é RH e está ativo
+        $stmtCheck = $pdo->prepare("SELECT c.id FROM colaboradores c
+            INNER JOIN utilizadores u ON c.utilizador_id = u.id
+            WHERE c.id = ? AND u.perfil_id = 4 AND u.ativo = 1");
+        $stmtCheck->execute([$responsavelId]);
+        $responsavelExiste = $stmtCheck->fetchColumn();
 
-        if (!$coordenadorExiste) {
+        if (!$responsavelExiste) {
             return false;
         }
 
-        $stmt = $pdo->prepare("UPDATE equipas SET nome = ?, coordenador_id = ? WHERE id = ?");
-        return $stmt->execute([$nome, $coordenadorId, $equipaId]);
+        $stmt = $pdo->prepare("UPDATE equipas SET nome = ?, responsavel_id = ? WHERE id = ?");
+        return $stmt->execute([$nome, $responsavelId, $equipaId]);
     }
 
     public function removerEquipa($equipaId) {
         $pdo = Database::getConnection();
         $pdo->beginTransaction();
         try {
-            // Antes de remover a equipa, defina o coordenador_id como NULL para evitar violação de FK
-            $pdo->prepare("UPDATE equipas SET coordenador_id = NULL WHERE id = ?")->execute([$equipaId]);
+            // Antes de remover a equipa, defina o responsavel_id como NULL para evitar violação de FK
+            $pdo->prepare("UPDATE equipas SET responsavel_id = NULL WHERE id = ?")->execute([$equipaId]);
             $pdo->prepare("DELETE FROM equipa_colaboradores WHERE equipa_id = ?")->execute([$equipaId]);
             $pdo->prepare("DELETE FROM equipas WHERE id = ?")->execute([$equipaId]);
             $pdo->commit();

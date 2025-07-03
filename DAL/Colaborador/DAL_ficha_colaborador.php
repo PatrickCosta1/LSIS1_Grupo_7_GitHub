@@ -60,4 +60,30 @@ class DAL_FichaColaborador {
         $stmt->execute([$pedidoId]);
         return $stmt->fetch();
     }
+
+    // --- PEDIDOS DE FÉRIAS ---
+    public function criarPedidoFerias($colaboradorId, $dataInicio, $dataFim) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("INSERT INTO pedidos_ferias (colaborador_id, data_inicio, data_fim, data_pedido, estado) VALUES (?, ?, ?, NOW(), 'pendente')");
+        return $stmt->execute([$colaboradorId, $dataInicio, $dataFim]);
+    }
+
+    public function listarPedidosFeriasPendentes() {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->query("SELECT pf.*, c.nome as colaborador_nome FROM pedidos_ferias pf INNER JOIN colaboradores c ON pf.colaborador_id = c.id WHERE pf.estado = 'pendente' ORDER BY pf.data_pedido DESC");
+        return $stmt->fetchAll();
+    }
+
+    public function atualizarEstadoPedidoFerias($pedidoId, $estado) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("UPDATE pedidos_ferias SET estado = ? WHERE id = ?");
+        return $stmt->execute([$estado, $pedidoId]);
+    }
+
+    public function getPedidoFeriasById($pedidoId) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT * FROM pedidos_ferias WHERE id = ?");
+        $stmt->execute([$pedidoId]);
+        return $stmt->fetch();
+    }
 }

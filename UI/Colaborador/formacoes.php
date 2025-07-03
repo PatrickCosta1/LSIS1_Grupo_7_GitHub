@@ -1,191 +1,289 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id'])) {
+$perfil = $_SESSION['profile'] ?? '';
+$userId = $_SESSION['user_id'] ?? null;
+
+if (!$userId || !in_array($perfil, ['colaborador', 'coordenador', 'rh', 'admin'])) {
     header('Location: ../Comuns/erro.php');
-    exit;
+    exit();
 }
 
-// Exemplo de formações disponíveis (substitui por dados da BD no futuro)
-$formacoes = [
-    [
-        'nome' => 'Excel Avançado',
-        'data' => '2025-08-24',
-        'horas' => 4,
-        'admin' => 'Joana Silva',
-        'certificacao' => 'Microsoft Office Specialist',
-        'sessoes' => [
-            ['data' => '2025-08-24', 'hora_inicio' => '18:00', 'hora_fim' => '20:00'],
-            ['data' => '2025-08-25', 'hora_inicio' => '18:00', 'hora_fim' => '20:00'],
-        ]
-    ],
-    [
-        'nome' => 'Gestão de Equipas',
-        'data' => '2025-08-28',
-        'horas' => 3,
-        'admin' => 'Carlos Pereira',
-        'certificacao' => 'Certificado Interno',
-        'sessoes' => [
-            ['data' => '2025-08-28', 'hora_inicio' => '17:00', 'hora_fim' => '20:00'],
-        ]
-    ],
-    [
-        'nome' => 'Comunicação Eficaz',
-        'data' => '2025-09-02',
-        'horas' => 2,
-        'admin' => 'Ana Costa',
-        'certificacao' => 'Certificado Interno',
-        'sessoes' => [
-            ['data' => '2025-09-02', 'hora_inicio' => '18:00', 'hora_fim' => '20:00'],
-        ]
-    ],
-];
+require_once '../../BLL/Colaborador/BLL_formacoes.php';
+require_once '../../BLL/Colaborador/BLL_ficha_colaborador.php';
+
+$colabBLL = new ColaboradorFichaManager();
+$colab = $colabBLL->getColaboradorByUserId($_SESSION['user_id']);
+$colaborador_id = $colab['id'] ?? null;
+
+if (!$colaborador_id) {
+    die('Erro: Não foi possível identificar o colaborador.');
+}
+
+$formacoesBLL = new FormacoesManager();
+
+// Buscar formações ANTES de processar o POST
+$formacoes = $formacoesBLL->listarFormacoesFuturas();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['formacao_id'])) {
+    $resultado = $formacoesBLL->inscrever($colaborador_id, intval($_POST['formacao_id']));
+    
+    if ($resultado) {
+        // Buscar dados da formação para a notificação
+        $formacao = null;
+        foreach ($formacoes as $f) {
+            if ($f['id'] == $_POST['formacao_id']) {
+                $formacao = $f;
+                break;
+            }
+        }
+        
+        if ($formacao) {
+            // Enviar notificação automática de confirmação
+            require_once '../../BLL/Comuns/BLL_notificacoes.php';
+            $notBLL = new NotificacoesManager();
+            
+            $dataInicio = date('d/m/Y', strtotime($formacao['data_inicio']));
+            $dataFim = date('d/m/Y', strtotime($formacao['data_fim']));
+            
+            $mensagem = "Inscrição confirmada na formação '{$formacao['nome']}'. " .
+                       "Período: {$dataInicio} a {$dataFim}. " .
+                       "A sua participação foi registada no sistema. " .
+                       "Receberá informações adicionais sobre localização e materiais necessários via email corporativo.";
+            
+            $notBLL->enviarNotificacao(null, $_SESSION['user_id'], $mensagem);
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Marcação de Formações - Portal Tlantic</title>
+    <title>Formações - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/Colaborador/formacoes.css">
 </head>
 <body>
-<div class="azul-container">
     <header>
-        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_colaborador.php';">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header"
+            <?php if ($perfil === 'colaborador'): ?>
+                style="cursor:pointer;" onclick="window.location.href='pagina_inicial_colaborador.php';"
+            <?php elseif ($perfil === 'coordenador'): ?>
+                style="cursor:pointer;" onclick="window.location.href='../Coordenador/pagina_inicial_coordenador.php';"
+            <?php endif; ?>
+        >
         <nav>
-            <a href="ficha_colaborador.php">A Minha Ficha</a>
-            <a href="../Comuns/notificacoes.php">Notificações</a>
-            <div class="dropdown-perfil">
-                <a href="../Comuns/perfil.php" class="perfil-link">
-                    Perfil
-                    <span class="seta-baixo">&#9662;</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="ficha_colaborador.php">Ficha Colaborador</a>
-                    <a href="beneficios.php">Benefícios</a>
-                    <a href="ferias.php">Férias</a>
-                    <a href="formacoes.php">Formações</a>
-                    <a href="recibos.php">Recibos</a>
+            <?php if ($perfil === 'coordenador'): ?>
+                <?php
+                    require_once '../../BLL/Coordenador/BLL_dashboard_coordenador.php';
+                    $coordBLL = new CoordenadorDashboardManager();
+                    $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
+                    $equipaLink = "../Coordenador/equipa.php";
+                    if (!empty($equipas) && isset($equipas[0]['id'])) {
+                        $equipaLink = "../Coordenador/equipa.php?id=" . urlencode($equipas[0]['id']);
+                    }
+                ?>
+                <div class="dropdown-equipa">
+                    <a href="<?php echo $equipaLink; ?>" class="equipa-link">
+                        Equipa
+                        <span class="seta-baixo">&#9662;</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
+                        <a href="../Coordenador/relatorios_equipa.php">Relatórios Equipa</a>
+                    </div>
                 </div>
-            </div>
-            <a href="../Comuns/logout.php">Sair</a>
+                <a href="../Comuns/notificacoes.php">Notificações</a>
+                <div class="dropdown-perfil">
+                    <a href="../Comuns/perfil.php" class="perfil-link">
+                        Perfil
+                        <span class="seta-baixo">&#9662;</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="ficha_colaborador.php">Ficha Colaborador</a>
+                        <a href="beneficios.php">Benefícios</a>
+                        <a href="ferias.php">Férias</a>
+                        <a href="formacoes.php">Formações</a>
+                        <a href="recibos.php">Recibos</a>
+                    </div>
+                </div>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php else: ?>
+                <a href="ficha_colaborador.php">A Minha Ficha</a>
+                <a href="../Comuns/notificacoes.php">Notificações</a>
+                <div class="dropdown-perfil">
+                    <a href="../Comuns/perfil.php" class="perfil-link">
+                        Perfil
+                        <span class="seta-baixo">&#9662;</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="ficha_colaborador.php">Ficha Colaborador</a>
+                        <a href="beneficios.php">Benefícios</a>
+                        <a href="ferias.php">Férias</a>
+                        <a href="formacoes.php">Formações</a>
+                        <a href="recibos.php">Recibos</a>
+                    </div>
+                </div>
+                <a href="../Comuns/logout.php">Sair</a>
+            <?php endif; ?>
         </nav>
     </header>
     <main>
-        <h1>Marcação de Formações</h1>
-        <p class="descricao-inicial">
-            Consulte as formações disponíveis e clique numa formação para ver o calendário das sessões.
-        </p>
-        <div class="formacoes-container">
-            <?php foreach ($formacoes as $i => $f): ?>
-                <div class="formacao-card" data-index="<?= $i ?>">
-                    <div class="formacao-info">
-                        <div class="formacao-nome"><?= htmlspecialchars($f['nome']) ?></div>
-                        <div class="formacao-meta">
-                            <span><strong>Data:</strong> <?= date('d/m/Y', strtotime($f['data'])) ?></span>
-                            <span><strong>Duração:</strong> <?= $f['horas'] ?>h</span>
-                        </div>
-                        <div class="formacao-admin">
-                            <strong>Administrador:</strong> <?= htmlspecialchars($f['admin']) ?>
-                        </div>
-                        <div class="formacao-cert">
-                            <strong>Certificação:</strong> <?= htmlspecialchars($f['certificacao']) ?>
-                        </div>
-                    </div>
-                    <div class="formacao-acoes">
-                        <button class="btn-marcacao" type="button">Ver calendário</button>
-                        <button class="btn-inscrever" type="button">Inscrever-me</button>
-                    </div>
-                </div>
-            <?php endforeach; ?>
+        <div class="portal-brand">
+            <div class="color-bar">
+                <div class="color-segment"></div>
+                <div class="color-segment"></div>
+                <div class="color-segment"></div>
+            </div>
+            <span class="portal-text">Portal Do Colaborador</span>
         </div>
-        <div class="formacoes-calendario" id="calendario-modal" style="display:none;">
-            <div class="calendario-content">
-                <button class="fechar-calendario" onclick="fecharCalendario()">×</button>
-                <h2 id="calendario-titulo"></h2>
-                <div id="calendario-sessoes"></div>
+        <h1>Formações Disponíveis</h1>
+        
+        <div class="formacoes-container">
+            <div class="formacoes-cards">
+                <?php if (!empty($formacoes)): ?>
+                    <?php foreach ($formacoes as $f): ?>
+                    <div class="formacao-card">
+                        <div class="formacao-info">
+                            <div class="formacao-nome"><?= htmlspecialchars($f['nome']) ?></div>
+                            <div class="formacao-descricao"><?= htmlspecialchars($f['descricao']) ?></div>
+                        </div>
+                        <div class="formacao-acoes">
+                            <button class="btn-data" onclick="abrirModalData('<?= $f['id'] ?>', '<?= htmlspecialchars($f['nome']) ?>', '<?= htmlspecialchars($f['data_inicio']) ?>', '<?= htmlspecialchars($f['data_fim']) ?>', '<?= htmlspecialchars($f['horario_semanal'] ?? '') ?>')">
+                                Ver Datas
+                            </button>
+                            <?php if ($formacoesBLL->jaInscrito($colaborador_id, $f['id'])): ?>
+                                <span class="inscrito-label">Inscrito</span>
+                            <?php else: ?>
+                                <button class="btn-inscrever" onclick="abrirModalInscricao('<?= $f['id'] ?>', '<?= htmlspecialchars($f['nome']) ?>')">
+                                    Inscrever-me
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div style="grid-column: 1 / -1; text-align: center; color: #888; margin: 40px 0;">
+                        Não existem formações disponíveis no momento.
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
-        <div class="inscricao-modal" id="inscricao-modal" style="display:none;">
-            <div class="inscricao-content">
-                <button class="fechar-inscricao" onclick="fecharInscricao()">×</button>
-                <h2 id="inscricao-titulo"></h2>
-                <p>Deseja confirmar a inscrição nesta formação?</p>
-                <button class="btn-confirmar" onclick="confirmarInscricao()">Confirmar Inscrição</button>
+
+        <!-- Modal de Datas -->
+        <div id="modalDatas" class="formacao-modal">
+            <div class="modal-content">
+                <span class="close" onclick="fecharModalDatas()">&times;</span>
+                <h2 id="modalDatasTitle">Datas da Formação</h2>
+                <div class="datas-info">
+                    <div class="data-item">
+                        <strong>Data de Início:</strong>
+                        <span id="modalDataInicio"></span>
+                    </div>
+                    <div class="data-item">
+                        <strong>Data de Fim:</strong>
+                        <span id="modalDataFim"></span>
+                    </div>
+                    <div class="data-item horario-semanal">
+                        <strong>Horário Semanal:</strong>
+                        <div id="modalHorarioSemanal"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Inscrição -->
+        <div id="modalInscricao" class="formacao-modal">
+            <div class="modal-content">
+                <span class="close" onclick="fecharModalInscricao()">&times;</span>
+                <h2>Confirmar Inscrição</h2>
+                <p>Deseja inscrever-se na formação <strong id="modalInscricaoNome"></strong>?</p>
+                <div class="modal-actions">
+                    <form method="post" id="formInscricao">
+                        <input type="hidden" name="formacao_id" id="modalFormacaoId">
+                        <button type="submit" class="btn-confirmar">Confirmar Inscrição</button>
+                        <button type="button" class="btn-cancelar" onclick="fecharModalInscricao()">Cancelar</button>
+                    </form>
+                </div>
             </div>
         </div>
     </main>
-    <script>
-    const formacoes = <?= json_encode($formacoes) ?>;
-    const cards = document.querySelectorAll('.formacao-card');
-    const modal = document.getElementById('calendario-modal');
-    const titulo = document.getElementById('calendario-titulo');
-    const sessoesDiv = document.getElementById('calendario-sessoes');
 
-    // Ver calendário
-    document.querySelectorAll('.btn-marcacao').forEach((btn, idx) => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const formacao = formacoes[idx];
-            titulo.textContent = formacao.nome + " - Sessões";
-            sessoesDiv.innerHTML = '';
-            formacao.sessoes.forEach(sessao => {
-                const data = new Date(sessao.data);
-                const dia = data.toLocaleDateString('pt-PT');
-                const hora = `${sessao.hora_inicio} - ${sessao.hora_fim}`;
-                sessoesDiv.innerHTML += `
-                    <div class="sessao-item">
-                        <span class="sessao-dia"><b>${dia}</b></span>
-                        <span class="sessao-horas">${hora}</span>
+<script>
+// Modal de Datas
+function abrirModalData(id, nome, dataInicio, dataFim, horarioSemanal) {
+    document.getElementById('modalDatasTitle').textContent = nome;
+    document.getElementById('modalDataInicio').textContent = new Date(dataInicio).toLocaleDateString('pt-PT');
+    document.getElementById('modalDataFim').textContent = new Date(dataFim).toLocaleDateString('pt-PT');
+    
+    // Processar horário semanal
+    const horarioContainer = document.getElementById('modalHorarioSemanal');
+    if (horarioSemanal && horarioSemanal.trim() !== '') {
+        try {
+            // Assumindo que o horário vem em formato JSON ou texto estruturado
+            const horarios = JSON.parse(horarioSemanal);
+            let horarioHTML = '<div class="horario-grid">';
+            
+            // Corrigir: usar as chaves sem acentos que estão na base de dados
+            const diasSemana = [
+                { display: 'Segunda', key: 'segunda' },
+                { display: 'Terça', key: 'terca' },
+                { display: 'Quarta', key: 'quarta' },
+                { display: 'Quinta', key: 'quinta' },
+                { display: 'Sexta', key: 'sexta' },
+                { display: 'Sábado', key: 'sabado' },
+                { display: 'Domingo', key: 'domingo' }
+            ];
+            
+            diasSemana.forEach(dia => {
+                const horarioDia = horarios[dia.key] || 'Não definido';
+                horarioHTML += `
+                    <div class="horario-dia">
+                        <span class="dia-nome">${dia.display}:</span>
+                        <span class="dia-horario">${horarioDia}</span>
                     </div>
                 `;
             });
-            modal.style.display = 'flex';
-        });
-    });
-    function fecharCalendario() {
-        modal.style.display = 'none';
+            
+            horarioHTML += '</div>';
+            horarioContainer.innerHTML = horarioHTML;
+        } catch (e) {
+            // Se não for JSON, mostrar como texto simples
+            horarioContainer.innerHTML = `<div class="horario-texto">${horarioSemanal}</div>`;
+        }
+    } else {
+        horarioContainer.innerHTML = '<div class="horario-texto">Horário não definido</div>';
     }
-    </script>
+    
+    document.getElementById('modalDatas').style.display = 'flex';
+}
 
-    <script>
-    let formacaoSelecionada = null;
-    const btnsInscrever = document.querySelectorAll('.btn-inscrever');
-    const inscricaoModal = document.getElementById('inscricao-modal');
-    const inscricaoTitulo = document.getElementById('inscricao-titulo');
+function fecharModalDatas() {
+    document.getElementById('modalDatas').style.display = 'none';
+}
 
-    btnsInscrever.forEach((btn, idx) => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            formacaoSelecionada = idx;
-            inscricaoTitulo.textContent = formacoes[idx].nome;
-            inscricaoModal.style.display = 'flex';
-        });
-    });
+// Modal de Inscrição
+function abrirModalInscricao(id, nome) {
+    document.getElementById('modalInscricaoNome').textContent = nome;
+    document.getElementById('modalFormacaoId').value = id;
+    document.getElementById('modalInscricao').style.display = 'flex';
+}
 
-    function fecharInscricao() {
-        inscricaoModal.style.display = 'none';
+function fecharModalInscricao() {
+    document.getElementById('modalInscricao').style.display = 'none';
+}
+
+// Fechar modais ao clicar fora
+window.onclick = function(event) {
+    const modalDatas = document.getElementById('modalDatas');
+    const modalInscricao = document.getElementById('modalInscricao');
+    
+    if (event.target === modalDatas) {
+        fecharModalDatas();
     }
-
-    function confirmarInscricao() {
-        fetch('inscrever_formacao.php', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                formacao_nome: formacoes[formacaoSelecionada].nome
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            inscricaoModal.innerHTML = `
-                <div class="inscricao-content">
-                    <h2>Inscrição efetuada!</h2>
-                    <p>Está inscrito em: <b>${formacoes[formacaoSelecionada].nome}</b></p>
-                </div>
-            `;
-            setTimeout(() => { inscricaoModal.style.display = 'none'; location.reload(); }, 1800);
-        });
+    if (event.target === modalInscricao) {
+        fecharModalInscricao();
     }
-    </script>
-</div>
+}
+</script>
 </body>
 </html>

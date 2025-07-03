@@ -5,15 +5,6 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Eliminar notificação
-if (isset($_GET['eliminar']) && is_numeric($_GET['eliminar'])) {
-    require_once '../../BLL/Comuns/BLL_notificacoes.php';
-    $notBLL = new NotificacoesManager();
-    $notBLL->eliminarNotificacao($_GET['eliminar']);
-    header('Location: notificacoes.php');
-    exit();
-}
-
 require_once '../../BLL/Comuns/BLL_notificacoes.php';
 $notBLL = new NotificacoesManager();
 $notificacoes = $notBLL->getNotificacoesByUserId($_SESSION['user_id']);
@@ -21,6 +12,16 @@ $notificacoes = $notBLL->getNotificacoesByUserId($_SESSION['user_id']);
 require_once '../../BLL/Comuns/BLL_mensagens.php';
 $mensagemBLL = new MensagensManager();
 $mensagensRecebidas = $mensagemBLL->getMensagensParaUtilizador($_SESSION['user_id']);
+
+// Definir $naoLidas ANTES de processar o POST
+$naoLidas = array_filter($notificacoes, function($not) { return !$not['lida']; });
+
+// Eliminar notificação
+if (isset($_GET['eliminar']) && is_numeric($_GET['eliminar'])) {
+    $notBLL->eliminarNotificacao($_GET['eliminar']);
+    header('Location: notificacoes.php');
+    exit();
+}
 
 // Marcar notificação como lida
 if (isset($_GET['marcar_lida'])) {
@@ -30,14 +31,23 @@ if (isset($_GET['marcar_lida'])) {
     exit();
 }
 
-// RH: Aprovação de pedidos de alteração
+// Marcar todas as notificações como lidas
+if (isset($_POST['marcar_todas_lidas'])) {
+    foreach ($naoLidas as $not) {
+        $notBLL->marcarComoLida($not['id']);
+    }
+    header('Location: notificacoes.php');
+    exit();
+}
+
+// RH: Aprovação de pedidos de alteração e férias
 $aprovacao_msg = '';
 if ($_SESSION['profile'] === 'rh') {
     require_once '../../BLL/Colaborador/BLL_ficha_colaborador.php';
     $colabBLL = new ColaboradorFichaManager();
     $notificacoesManager = new NotificacoesManager();
 
-    // Aprovar pedido
+    // Aprovar pedido de alteração
     if (isset($_POST['aprovar_pedido'])) {
         if ($colabBLL->aprovarPedido($_POST['pedido_id'])) {
             // Buscar dados do pedido para o email
@@ -56,7 +66,7 @@ if ($_SESSION['profile'] === 'rh') {
             $aprovacao_msg = "Erro ao aprovar pedido.";
         }
     }
-    // Recusar pedido
+    // Recusar pedido de alteração
     if (isset($_POST['recusar_pedido'])) {
         if ($colabBLL->recusarPedido($_POST['pedido_id'])) {
             // Buscar dados do pedido para o email
@@ -75,8 +85,43 @@ if ($_SESSION['profile'] === 'rh') {
             $aprovacao_msg = "Erro ao recusar pedido.";
         }
     }
+    // Aprovar pedido de férias
+    if (isset($_POST['aprovar_pedido_ferias'])) {
+        if ($colabBLL->aprovarPedidoFerias($_POST['pedido_ferias_id'])) {
+            $pedido = $colabBLL->getPedidoFeriasById($_POST['pedido_ferias_id']);
+            if ($pedido) {
+                $notificacoesManager->notificarColaboradorPedidoFerias(
+                    $pedido['colaborador_id'],
+                    'aceite',
+                    $pedido['data_inicio'],
+                    $pedido['data_fim']
+                );
+            }
+            $aprovacao_msg = "Pedido de férias aprovado.";
+        } else {
+            $aprovacao_msg = "Erro ao aprovar pedido de férias.";
+        }
+    }
+    // Recusar pedido de férias
+    if (isset($_POST['recusar_pedido_ferias'])) {
+        if ($colabBLL->recusarPedidoFerias($_POST['pedido_ferias_id'])) {
+            $pedido = $colabBLL->getPedidoFeriasById($_POST['pedido_ferias_id']);
+            if ($pedido) {
+                $notificacoesManager->notificarColaboradorPedidoFerias(
+                    $pedido['colaborador_id'],
+                    'recusado',
+                    $pedido['data_inicio'],
+                    $pedido['data_fim']
+                );
+            }
+            $aprovacao_msg = "Pedido de férias recusado.";
+        } else {
+            $aprovacao_msg = "Erro ao recusar pedido de férias.";
+        }
+    }
     // Buscar pedidos pendentes
     $pedidosPendentes = $colabBLL->listarPedidosPendentes();
+    $pedidosFeriasPendentes = $colabBLL->listarPedidosFeriasPendentes();
 }
 ?>
 <!DOCTYPE html>
@@ -193,19 +238,10 @@ if ($_SESSION['profile'] === 'rh') {
                 <a href="../RH/relatorios.php">Relatórios</a>
                 <a href="../RH/exportar.php">Exportar</a>
                 <a href="../Comuns/notificacoes.php">Notificações</a>
-                <div class="dropdown-perfil">
+                
                     <a href="../Comuns/perfil.php" class="perfil-link">
                         Perfil
-                        <span class="seta-baixo">&#9662;</span>
                     </a>
-                    <div class="dropdown-menu">
-                        <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
-                        <a href="../Colaborador/beneficios.php">Benefícios</a>
-                        <a href="../Colaborador/ferias.php">Férias</a>
-                        <a href="../Colaborador/formacoes.php">Formações</a>
-                        <a href="../Colaborador/recibos.php">Recibos</a>
-                    </div>
-                </div>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
                 <a href="../Convidado/onboarding_convidado.php">Preencher Dados</a>
@@ -214,11 +250,30 @@ if ($_SESSION['profile'] === 'rh') {
         </nav>
     </header>
     <main>
+        <div class="portal-brand">
+            <div class="color-bar">
+                <div class="color-segment"></div>
+                <div class="color-segment"></div>
+                <div class="color-segment"></div>
+            </div>
+            <span class="portal-text">Portal Do Colaborador</span>
+        </div>
         <h1>Notificações</h1>
         <div class="notificacoes-container">
+        
+        <!-- Adicionar contador de não lidas no topo -->
+        <?php 
+        $totalNaoLidas = count($naoLidas);
+        ?>
+        
+        <?php if ($totalNaoLidas > 0): ?>
+            <div id="banner-nao-lidas" style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;" onclick="abrirModalNaoLidas()">
+                📢 Tem <?php echo $totalNaoLidas; ?> notificação<?php echo $totalNaoLidas > 1 ? 'ões' : ''; ?> por ler - Clique para ver
+            </div>
+        <?php endif; ?>
 
         <?php if (!empty($notificacoes)): ?>
-            <h2 style="margin-top:32px;">Notificações do Sistema</h2>
+            <h2 style="margin-top:16px;">Notificações do Sistema</h2>
             <ul class="notificacoes-lista">
                 <?php foreach ($notificacoes as $not): ?>
                     <li class="notificacao<?php if (!$not['lida']) echo ' unread'; ?>">
@@ -226,18 +281,20 @@ if ($_SESSION['profile'] === 'rh') {
                             <?php echo htmlspecialchars($not['mensagem']); ?>
                         </span>
                         <span class="data"><?php echo date('d/m/Y H:i', strtotime($not['data_envio'])); ?></span>
-                        <form method="get" style="display:inline;">
-                            <input type="hidden" name="marcar_lida" value="<?php echo $not['id']; ?>">
+                        <div class="acao">
                             <?php if (!$not['lida']): ?>
-                                <button type="submit" class="btn btn-sm">Marcar como lida</button>
+                                <form method="get" style="display:inline;">
+                                    <input type="hidden" name="marcar_lida" value="<?php echo $not['id']; ?>">
+                                    <button type="submit" class="btn">Marcar como lida</button>
+                                </form>
                             <?php endif; ?>
-                        </form>
-                        <?php if ($not['lida']): ?>
-                            <form method="get" style="display:inline;">
-                                <input type="hidden" name="eliminar" value="<?php echo $not['id']; ?>">
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Eliminar esta notificação?')">Eliminar</button>
-                            </form>
-                        <?php endif; ?>
+                            <?php if ($not['lida']): ?>
+                                <form method="get" style="display:inline;">
+                                    <input type="hidden" name="eliminar" value="<?php echo $not['id']; ?>">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Eliminar esta notificação?')">Eliminar</button>
+                                </form>
+                            <?php endif; ?>
+                        </div>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -277,6 +334,32 @@ if ($_SESSION['profile'] === 'rh') {
                     Não existem pedidos de alteração pendentes.
                 </div>
             <?php endif; ?>
+
+            <h2 style="margin-top:32px;">Pedidos de Férias Pendentes</h2>
+            <?php if (!empty($pedidosFeriasPendentes)): ?>
+                <ul class="notificacoes-lista">
+                <?php foreach ($pedidosFeriasPendentes as $pf): ?>
+                    <li class="notificacao unread">
+                        <span class="titulo">
+                            <strong><?php echo htmlspecialchars($pf['colaborador_nome']); ?></strong> pediu férias:
+                            <br>
+                            <span style="color:#888;">De:</span> <?php echo htmlspecialchars($pf['data_inicio']); ?>
+                            <span style="color:#888;">Até:</span> <strong><?php echo htmlspecialchars($pf['data_fim']); ?></strong>
+                        </span>
+                        <span class="data"><?php echo date('d/m/Y H:i', strtotime($pf['data_pedido'])); ?></span>
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="pedido_ferias_id" value="<?php echo $pf['id']; ?>">
+                            <button type="submit" name="aprovar_pedido_ferias" class="btn btn-sm">Aprovar</button>
+                            <button type="submit" name="recusar_pedido_ferias" class="btn btn-danger btn-sm">Recusar</button>
+                        </form>
+                    </li>
+                <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <div style="color:#888; text-align:center; margin:16px 0;">
+                    Não existem pedidos de férias pendentes.
+                </div>
+            <?php endif; ?>
         <?php endif; ?>
 
         <?php if (!empty($mensagensRecebidas)): ?>
@@ -302,6 +385,46 @@ if ($_SESSION['profile'] === 'rh') {
 
         </div>
     </main>
+
+    <!-- Modal de Notificações Não Lidas -->
+    <div id="modalNaoLidas" class="modal-nao-lidas">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    🔔 Notificações por Ler
+                </h3>
+                <button class="modal-close" onclick="fecharModalNaoLidas()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <?php if (!empty($naoLidas)): ?>
+                    <?php foreach ($naoLidas as $not): ?>
+                        <div class="notificacao-modal" onclick="marcarComoLidaEFechar(<?php echo $not['id']; ?>)">
+                            <div class="indicador-novo"></div>
+                            <div class="titulo-modal">
+                                <?php echo htmlspecialchars($not['mensagem']); ?>
+                            </div>
+                            <div class="data-modal">
+                                <?php echo date('d/m/Y H:i', strtotime($not['data_envio'])); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="notificacoes-vazio-modal">
+                        ✅ Não tem notificações por ler!
+                    </div>
+                <?php endif; ?>
+            </div>
+            <?php if (!empty($naoLidas)): ?>
+                <div class="modal-footer">
+                    <form method="post" style="display: inline;">
+                        <button type="submit" name="marcar_todas_lidas" class="btn-marcar-todas" onclick="return confirm('Marcar todas as notificações como lidas?')">
+                            Marcar Todas como Lidas
+                        </button>
+                    </form>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
       <button id="open-chatbot" style="
@@ -331,6 +454,39 @@ if ($_SESSION['profile'] === 'rh') {
     </div>
     <script src="../../assets/chatbot.js"></script>
     <script>
+    // Modal de notificações não lidas
+    function abrirModalNaoLidas() {
+        document.getElementById('modalNaoLidas').style.display = 'flex';
+    }
+
+    function fecharModalNaoLidas() {
+        document.getElementById('modalNaoLidas').style.display = 'none';
+    }
+
+    function marcarComoLidaEFechar(notificacaoId) {
+        // Criar form invisível para marcar como lida
+        const form = document.createElement('form');
+        form.method = 'get';
+        form.style.display = 'none';
+        
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'marcar_lida';
+        input.value = notificacaoId;
+        
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    // Fechar modal ao clicar fora
+    window.onclick = function(event) {
+        const modal = document.getElementById('modalNaoLidas');
+        if (event.target === modal) {
+            fecharModalNaoLidas();
+        }
+    }
+
     document.querySelectorAll('.notificacao').forEach(function(item) {
         item.addEventListener('click', function(e) {
             // Evita expandir ao clicar no botão

@@ -1,20 +1,35 @@
 <?php
 require_once __DIR__ . '/../Database.php';
+
 class DALInscricoes
 {
     private $conn;
 
     public function __construct()
     {
-        require_once __DIR__ . '/../connection.php';
-        $this->conn = getConnection(); // Função que retorna a ligação PDO à BD
+        $this->conn = Database::getConnection();
     }
 
-    public function inserirInscricao($colaborador_id, $formacao_nome)
+    public function inscrever($colaboradorId, $formacaoId)
+    {
+        try {
+            $stmt = $this->conn->prepare(
+                "INSERT INTO inscricoes_formacao (colaborador_id, formacao_id, data_inscricao) VALUES (?, ?, NOW())"
+            );
+            return $stmt->execute([$colaboradorId, $formacaoId]);
+        } catch (PDOException $e) {
+            // Se já estiver inscrito, retorna false
+            return false;
+        }
+    }
+
+    public function jaInscrito($colaboradorId, $formacaoId)
     {
         $stmt = $this->conn->prepare(
-            "INSERT INTO inscricoes_formacoes (colaborador_id, formacao_nome) VALUES (?, ?)"
+            "SELECT COUNT(*) FROM inscricoes_formacao WHERE colaborador_id = ? AND formacao_id = ?"
         );
-        return $stmt->execute([$colaborador_id, $formacao_nome]);
+        $stmt->execute([$colaboradorId, $formacaoId]);
+        return $stmt->fetchColumn() > 0;
     }
 }
+?>
