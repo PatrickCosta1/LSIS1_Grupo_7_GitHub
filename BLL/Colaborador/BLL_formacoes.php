@@ -27,7 +27,11 @@ class FormacoesManager
     {
         return $this->dalFormacoes->jaInscrito($colaborador_id, $formacao_id);
     }
+
+    public function getFormacoesPorColaborador($colaboradorId) {
+        return $this->dalFormacoes->getFormacoesPorColaborador($colaboradorId);
+    }
 }
 ?>
-                   
-    
+
+

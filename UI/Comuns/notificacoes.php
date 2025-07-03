@@ -47,6 +47,36 @@ if ($_SESSION['profile'] === 'rh') {
     $colabBLL = new ColaboradorFichaManager();
     $notificacoesManager = new NotificacoesManager();
 
+    // Aprovar pedido de comprovativo
+    if (isset($_POST['aprovar_comprovativo'])) {
+        if ($colabBLL->aprovarPedidoComprovativo($_POST['pedido_comprovativo_id'])) {
+            $pedido = $colabBLL->getPedidoComprovantivoById($_POST['pedido_comprovativo_id']);
+            if ($pedido) {
+                $notificacoesManager->notificarColaboradorComprovativo(
+                    $pedido['colaborador_id'],
+                    'aprovado',
+                    $pedido['tipo_comprovativo']
+                );
+            }
+            $aprovacao_msg = "Comprovativo aprovado com sucesso.";
+        }
+    }
+
+    // Recusar pedido de comprovativo
+    if (isset($_POST['recusar_comprovativo'])) {
+        if ($colabBLL->recusarPedidoComprovativo($_POST['pedido_comprovativo_id'])) {
+            $pedido = $colabBLL->getPedidoComprovantivoById($_POST['pedido_comprovativo_id']);
+            if ($pedido) {
+                $notificacoesManager->notificarColaboradorComprovativo(
+                    $pedido['colaborador_id'],
+                    'recusado',
+                    $pedido['tipo_comprovativo']
+                );
+            }
+            $aprovacao_msg = "Comprovativo recusado.";
+        }
+    }
+
     // Aprovar pedido de alteração
     if (isset($_POST['aprovar_pedido'])) {
         if ($colabBLL->aprovarPedido($_POST['pedido_id'])) {
@@ -122,6 +152,7 @@ if ($_SESSION['profile'] === 'rh') {
     // Buscar pedidos pendentes
     $pedidosPendentes = $colabBLL->listarPedidosPendentes();
     $pedidosFeriasPendentes = $colabBLL->listarPedidosFeriasPendentes();
+    $pedidosComprovantivosPendentes = $colabBLL->listarPedidosComprovantivosPendentes();
 }
 ?>
 <!DOCTYPE html>
@@ -360,6 +391,55 @@ if ($_SESSION['profile'] === 'rh') {
                     Não existem pedidos de férias pendentes.
                 </div>
             <?php endif; ?>
+
+            <h2 style="margin-top:32px;">Pedidos de Comprovativos Pendentes</h2>
+            <?php if (!empty($pedidosComprovantivosPendentes)): ?>
+                <ul class="notificacoes-lista">
+                <?php foreach ($pedidosComprovantivosPendentes as $pc): ?>
+                    <li class="notificacao unread">
+                        <span class="titulo">
+                            <strong><?php echo htmlspecialchars($pc['colaborador_nome']); ?></strong> enviou novo comprovativo:
+                            <br>
+                            <span style="color:#888;">Tipo:</span> <strong><?php echo ucfirst(str_replace('_', ' ', $pc['tipo_comprovativo'])); ?></strong>
+                        </span>
+                        <div class="comprovativo-comparacao" style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 6px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <strong style="color: #dc3545;">Anterior:</strong>
+                                    <?php if ($pc['comprovativo_antigo']): ?>
+                                        <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($pc['comprovativo_antigo']); ?>" 
+                                           target="_blank" 
+                                           style="display: block; color: #dc3545; text-decoration: none; font-size: 0.9rem;">
+                                            📄 Ver arquivo anterior
+                                        </a>
+                                    <?php else: ?>
+                                        <span style="color: #888; font-style: italic;">Sem comprovativo anterior</span>
+                                    <?php endif; ?>
+                                </div>
+                                <div>
+                                    <strong style="color: #28a745;">Novo:</strong>
+                                    <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($pc['comprovativo_novo']); ?>" 
+                                       target="_blank" 
+                                       style="display: block; color: #28a745; text-decoration: none; font-size: 0.9rem;">
+                                        📄 Ver novo arquivo
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="data"><?php echo date('d/m/Y H:i', strtotime($pc['data_pedido'])); ?></span>
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="pedido_comprovativo_id" value="<?php echo $pc['id']; ?>">
+                            <button type="submit" name="aprovar_comprovativo" class="btn btn-sm">Aprovar</button>
+                            <button type="submit" name="recusar_comprovativo" class="btn btn-danger btn-sm">Recusar</button>
+                        </form>
+                    </li>
+                <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <div style="color:#888; text-align:center; margin:16px 0;">
+                    Não existem pedidos de comprovativos pendentes.
+                </div>
+            <?php endif; ?>
         <?php endif; ?>
 
         <?php if (!empty($mensagensRecebidas)): ?>
@@ -426,33 +506,6 @@ if ($_SESSION['profile'] === 'rh') {
         </div>
     </div>
 
-    <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
-      <button id="open-chatbot" style="
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border: none;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          font-size: 28px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          ">
-        ?
-      </button>
-      <iframe
-        id="chatbot-iframe"
-        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
-        title="Ajuda Chatbot"
-        width="350"
-        height="500"
-        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-      </iframe>
-    </div>
-    <script src="../../assets/chatbot.js"></script>
     <script>
     // Modal de notificações não lidas
     function abrirModalNaoLidas() {

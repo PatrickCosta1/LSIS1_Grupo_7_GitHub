@@ -50,5 +50,37 @@ class DALFormacoes
         $stmt->execute([$colaboradorId, $formacaoId]);
         return $stmt->fetchColumn() > 0;
     }
+
+    public function getFormacoesPorColaborador($colaboradorId) {
+        try {
+            // Verificar se a tabela inscricao_formacoes existe
+            $checkTable = $this->pdo->query("SHOW TABLES LIKE 'inscricao_formacoes'");
+            if ($checkTable->rowCount() == 0) {
+                return [];
+            }
+            
+            // Query corrigida: fazer JOIN entre inscricao_formacoes e formacoes
+            $stmt = $this->pdo->prepare("
+                SELECT 
+                    f.id,
+                    f.nome,
+                    f.descricao,
+                    f.data_inicio,
+                    f.data_fim,
+                    f.horario_semanal,
+                    i.data_inscricao,
+                    i.formacao_nome
+                FROM inscricao_formacoes i
+                INNER JOIN formacoes f ON i.formacao_id = f.id
+                WHERE i.colaborador_id = ?
+                ORDER BY f.data_inicio ASC
+            ");
+            $stmt->execute([$colaboradorId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erro ao buscar formações do colaborador: " . $e->getMessage());
+            return [];
+        }
+    }
 }
 ?>

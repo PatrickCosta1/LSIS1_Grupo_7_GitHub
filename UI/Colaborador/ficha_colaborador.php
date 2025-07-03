@@ -147,15 +147,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     'comprovativo_cartao_continente' => $colab['comprovativo_cartao_continente'] ?? ''
 ];
 
+    // Array para controlar quais comprovativos foram alterados
+    $comprovantivosPedidos = [];
+
     // Upload comprovativo CC
     if (isset($_FILES['comprovativo_cc']) && $_FILES['comprovativo_cc']['error'] === UPLOAD_ERR_OK) {
         $ext = pathinfo($_FILES['comprovativo_cc']['name'], PATHINFO_EXTENSION);
         $filename = 'comprovativo_cc_' . $userId . '_' . time() . '.' . $ext;
         $dest = $upload_dir . $filename;
         if (move_uploaded_file($_FILES['comprovativo_cc']['tmp_name'], $dest)) {
-            $dados['comprovativo_cc'] = $filename;
-        } else {
-            $error_message = "Erro ao fazer upload do comprovativo do CC.";
+            $comprovantivosPedidos[] = [
+                'tipo' => 'comprovativo_cc',
+                'antigo' => $colab['comprovativo_cc'] ?? null,
+                'novo' => $filename
+            ];
         }
     }
 
@@ -165,9 +170,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $filename = 'comprovativo_iban_' . $userId . '_' . time() . '.' . $ext;
         $dest = $upload_dir . $filename;
         if (move_uploaded_file($_FILES['comprovativo_iban']['tmp_name'], $dest)) {
-            $dados['comprovativo_iban'] = $filename;
-        } else {
-            $error_message = "Erro ao fazer upload do comprovativo do IBAN.";
+            $comprovantivosPedidos[] = [
+                'tipo' => 'comprovativo_iban',
+                'antigo' => $colab['comprovativo_iban'] ?? null,
+                'novo' => $filename
+            ];
         }
     }
 
@@ -177,21 +184,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $filename = 'comprovativo_estado_civil_' . $userId . '_' . time() . '.' . $ext;
         $dest = $upload_dir . $filename;
         if (move_uploaded_file($_FILES['comprovativo_estado_civil']['tmp_name'], $dest)) {
-            $dados['comprovativo_estado_civil'] = $filename;
-        } else {
-            $error_message = "Erro ao fazer upload do comprovativo do Estado Civil.";
+            $comprovantivosPedidos[] = [
+                'tipo' => 'comprovativo_estado_civil',
+                'antigo' => $colab['comprovativo_estado_civil'] ?? null,
+                'novo' => $filename
+            ];
         }
     }
 
-    // Upload comprovativo Morada Fiscal (Mod. 99)
+    // Upload comprovativo Morada Fiscal
     if (isset($_FILES['comprovativo_morada_fiscal']) && $_FILES['comprovativo_morada_fiscal']['error'] === UPLOAD_ERR_OK) {
         $ext = pathinfo($_FILES['comprovativo_morada_fiscal']['name'], PATHINFO_EXTENSION);
         $filename = 'comprovativo_morada_fiscal_' . $userId . '_' . time() . '.' . $ext;
         $dest = $upload_dir . $filename;
         if (move_uploaded_file($_FILES['comprovativo_morada_fiscal']['tmp_name'], $dest)) {
-            $dados['comprovativo_morada_fiscal'] = $filename;
-        } else {
-            $error_message = "Erro ao fazer upload do comprovativo da Morada Fiscal.";
+            $comprovantivosPedidos[] = [
+                'tipo' => 'comprovativo_morada_fiscal',
+                'antigo' => $colab['comprovativo_morada_fiscal'] ?? null,
+                'novo' => $filename
+            ];
         }
     }
 
@@ -201,12 +212,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $filename = 'comprovativo_cartao_continente_' . $userId . '_' . time() . '.' . $ext;
         $dest = $upload_dir . $filename;
         if (move_uploaded_file($_FILES['comprovativo_cartao_continente']['tmp_name'], $dest)) {
-            $dados['comprovativo_cartao_continente'] = $filename;
-        } else {
-            $error_message = "Erro ao fazer upload do comprovativo do Cartão Continente.";
+            $comprovantivosPedidos[] = [
+                'tipo' => 'comprovativo_cartao_continente',
+                'antigo' => $colab['comprovativo_cartao_continente'] ?? null,
+                'novo' => $filename
+            ];
         }
     }
 
+    // Processar pedidos de comprovativos
+    if (!empty($comprovantivosPedidos) && !$canEditAll) {
+        foreach ($comprovantivosPedidos as $comprovativo) {
+            $colabBLL->criarPedidoComprovativo(
+                $colab['id'],
+                $comprovativo['tipo'],
+                $comprovativo['antigo'],
+                $comprovativo['novo']
+            );
+        }
+        
+        // Notificar RH sobre os comprovativos
+        require_once '../../BLL/Comuns/BLL_notificacoes.php';
+        $notBLL = new NotificacoesManager();
+        $nomeColab = $colab['nome'] ?? '';
+        $tipos = array_column($comprovantivosPedidos, 'tipo');
+        $tiposTexto = implode(', ', $tipos);
+        $notBLL->notificarRH("O colaborador $nomeColab enviou novos comprovativos ($tiposTexto) para aprovação.");
+        
+        $success_message = "Os seus comprovativos foram enviados para aprovação pelo RH.";
+    } elseif (!empty($comprovantivosPedidos) && $canEditAll) {
+        // RH/Admin pode aprovar diretamente
+        foreach ($comprovantivosPedidos as $comprovativo) {
+            $dados[$comprovativo['tipo']] = $comprovativo['novo'];
+        }
+        $success_message = "Comprovativos atualizados com sucesso!";
+    }
+
+    // Continuar com o resto da lógica de atualização...
     if ($colabBLL->updateColaboradorByUserId($targetUserId, $dados, $perfil)) {
         if ($canEditAll) {
             $success_message = "Dados atualizados com sucesso!";
@@ -455,7 +497,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="ficha-campo">
                 <label>Data de Nascimento:</label>
-                <input type="date" name="data_nascimento" value="<?php echo htmlspecialchars($colab['data_nascimento'] ?? ''); ?>" <?php echo fieldAttr('data_nascimento', $canEditAll, $colabEditable); ?>>
+                <input type="date" name="data_nascimento" value="<?php echo htmlspecialchars($colab['data_nascimento'] ?? ''); ?>" <?php echo fieldAttr('data_nascimento', $canEditAll, $colabEditable); ?> max="2024-12-31">
             </div>
             <div class="ficha-campo">
                 <label>Email Pessoal:</label>
@@ -463,7 +505,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="ficha-campo">
                 <label>Nº Telemóvel:</label>
-                <input type="text" name="telemovel" value="<?php echo htmlspecialchars($colab['telemovel'] ?? ''); ?>" <?php echo fieldAttr('telemovel', $canEditAll, $colabEditable); ?>>
+                <div style="display: flex; gap: 8px;">
+                    <select name="ddi_telemovel" style="width: 80px;" <?php echo selectAttr('telemovel', $canEditAll, $colabEditable); ?>>
+                        <option value="+351" <?php if (strpos($colab['telemovel'] ?? '', '+351') === 0) echo 'selected'; ?>>+351</option>
+                        <option value="+34" <?php if (strpos($colab['telemovel'] ?? '', '+34') === 0) echo 'selected'; ?>>+34</option>
+                        <option value="+33" <?php if (strpos($colab['telemovel'] ?? '', '+33') === 0) echo 'selected'; ?>>+33</option>
+                        <option value="+44" <?php if (strpos($colab['telemovel'] ?? '', '+44') === 0) echo 'selected'; ?>>+44</option>
+                        <option value="+49" <?php if (strpos($colab['telemovel'] ?? '', '+49') === 0) echo 'selected'; ?>>+49</option>
+                    </select>
+                    <input type="tel" name="numero_telemovel" pattern="[0-9]{9}" maxlength="9" placeholder="9 dígitos" 
+                           value="<?php echo htmlspecialchars(preg_replace('/^\+[0-9]+/', '', $colab['telemovel'] ?? '')); ?>" 
+                           <?php echo fieldAttr('telemovel', $canEditAll, $colabEditable); ?>>
+                </div>
             </div>
             <div class="ficha-campo">
                 <label>Género:</label>
@@ -490,7 +543,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="ficha-campo">
                 <label>Matrícula do Carro:</label>
-                <input type="text" name="matricula_viatura" value="<?php echo htmlspecialchars($colab['matricula_viatura'] ?? ''); ?>" <?php echo fieldAttr('matricula_viatura', $canEditAll, $colabEditable); ?>>
+                <input type="text" name="matricula_viatura" pattern="[A-Z0-9]{6}" maxlength="6" placeholder="6 caracteres" style="text-transform: uppercase;" 
+                       value="<?php echo htmlspecialchars($colab['matricula_viatura'] ?? ''); ?>" <?php echo fieldAttr('matricula_viatura', $canEditAll, $colabEditable); ?>>
             </div>
         <?php elseif ($isCoord): ?>
             <!-- Apenas campos permitidos ao coordenador quando vê ficha de outro -->
@@ -579,7 +633,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if ($canEditAll || $isColab || $isOwnFicha): ?>
             <div class="ficha-campo">
                 <label>CC (Cartão de Cidadão):</label>
-                <input type="text" name="cc" value="<?php echo htmlspecialchars($colab['cc'] ?? ''); ?>" <?php echo fieldAttr('cc', $canEditAll, []); ?>>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" name="cc_numero" pattern="[0-9]{8}" maxlength="8" placeholder="8 números" 
+                           value="<?php echo htmlspecialchars(substr($colab['cc'] ?? '', 0, 8)); ?>" 
+                           <?php echo fieldAttr('cc', $canEditAll, []); ?>>
+                    <input type="text" name="cc_verificacao" pattern="[0-9A-Z]{4}" maxlength="4" placeholder="4 caracteres" 
+                           style="text-transform: uppercase; width: 100px;" 
+                           value="<?php echo htmlspecialchars(substr($colab['cc'] ?? '', 8, 4)); ?>" 
+                           <?php echo fieldAttr('cc', $canEditAll, []); ?>>
+                </div>
                 <div class="comprovativo-section">
                     <label style="font-size:12px; margin-top:8px;">Comprovativo CC (PDF/JPG):</label>
                     <input type="file" name="comprovativo_cc" accept=".pdf,.jpg,.jpeg,.png">
@@ -590,11 +652,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="ficha-campo">
                 <label>NISS:</label>
-                <input type="text" name="niss" value="<?php echo htmlspecialchars($colab['niss'] ?? ''); ?>" <?php echo fieldAttr('niss', $canEditAll, []); ?>>
+                <input type="text" name="niss" pattern="[0-9]{11}" maxlength="11" placeholder="11 números" 
+                       value="<?php echo htmlspecialchars($colab['niss'] ?? ''); ?>" <?php echo fieldAttr('niss', $canEditAll, []); ?>>
             </div>
             <div class="ficha-campo">
                 <label>IBAN:</label>
-                <input type="text" name="iban" value="<?php echo htmlspecialchars($colab['iban'] ?? ''); ?>" <?php echo fieldAttr('iban', $canEditAll, ['iban']); ?>>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" name="iban_pais" pattern="[A-Z]{2}" maxlength="2" placeholder="PT" 
+                           style="width: 60px; text-transform: uppercase;" 
+                           value="<?php echo htmlspecialchars(substr($colab['iban'] ?? '', 0, 2)); ?>" 
+                           <?php echo fieldAttr('iban', $canEditAll, ['iban']); ?>>
+                    <input type="text" name="iban_numeros" pattern="[0-9]{21}" maxlength="21" placeholder="21 dígitos" 
+                           value="<?php echo htmlspecialchars(substr($colab['iban'] ?? '', 2, 21)); ?>" 
+                           <?php echo fieldAttr('iban', $canEditAll, ['iban']); ?>>
+                </div>
                 <div class="comprovativo-section">
                     <label style="font-size:12px; margin-top:8px;">Comprovativo IBAN (PDF/JPG):</label>
                     <input type="file" name="comprovativo_iban" accept=".pdf,.jpg,.jpeg,.png">
@@ -614,15 +685,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- Ficha Informações Fiscais -->
 <div id="ficha-fiscais" class="ficha-container">
-    <div class="ficha-section-titulo">Informações Fiscais (IRS)</div>
+    <div class="ficha-section-titulo">Informações Fiscais</div>
     <div class="ficha-grid">
         <?php if ($canEditAll || $isColab || $isOwnFicha): ?>
             <!-- Campos movidos para esta seção -->
             <div class="ficha-campo">
                 <label>Morada Fiscal:</label>
-                <input type="text" name="morada_fiscal" value="<?php echo htmlspecialchars($colab['morada_fiscal'] ?? ''); ?>" <?php echo fieldAttr('morada_fiscal', $canEditAll, $colabEditable); ?>>
+                <input type="text" name="morada_fiscal" value="<?php echo htmlspecialchars($colab['morada_fiscal'] ?? ''); ?>" 
+                       pattern="[^º]*" title="Não é permitido o símbolo º" 
+                       <?php echo fieldAttr('morada_fiscal', $canEditAll, $colabEditable); ?>>
                 <div class="comprovativo-section">
-                    <label style="font-size:12px; margin-top:8px;">Comprovativo Morada Fiscal (Mod. 99) (PDF/JPG):</label>
+                    <label style="font-size:12px; margin-top:8px;">Comprovativo (Mod. 99) (PDF):</label>
                     <?php if ($canEditAll || in_array('morada_fiscal', $colabEditable)): ?>
                         <input type="file" name="comprovativo_morada_fiscal" accept=".pdf,.jpg,.jpeg,.png">
                     <?php endif; ?>
@@ -643,7 +716,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="ficha-campo">
                 <label>NIF:</label>
-                <input type="text" name="nif" value="<?php echo htmlspecialchars($colab['nif'] ?? ''); ?>" <?php echo fieldAttr('nif', $canEditAll, []); ?>>
+                <input type="text" name="nif" pattern="[0-9]{9}" maxlength="9" placeholder="9 números" 
+                       value="<?php echo htmlspecialchars($colab['nif'] ?? ''); ?>" <?php echo fieldAttr('nif', $canEditAll, []); ?>>
             </div>
             <!-- Campos originais da seção fiscal -->
             <div class="ficha-campo">
@@ -666,7 +740,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="ficha-campo">
                 <label>Nº Dependentes:</label>
-                <input type="number" name="dependentes" value="<?php echo htmlspecialchars($colab['dependentes'] ?? ''); ?>">
+                <input type="number" name="dependentes" min="0" max="20" 
+                       value="<?php echo htmlspecialchars($colab['dependentes'] ?? ''); ?>">
             </div>
             <div class="ficha-campo">
                 <label>IRS Jovem:</label>
@@ -707,7 +782,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="ficha-campo">
                 <label>Voucher NOS (Data):</label>
-                <input type="date" name="voucher_nos" value="<?php echo htmlspecialchars($colab['voucher_nos'] ?? ''); ?>" <?php echo fieldAttr('voucher_nos', $canEditAll, []); ?>>
+                <input type="date" name="voucher_nos" value="<?php echo htmlspecialchars($colab['voucher_nos'] ?? ''); ?>" 
+                       title="Data da próxima emissão" <?php echo fieldAttr('voucher_nos', $canEditAll, []); ?>>
             </div>
         <?php elseif ($isCoord): ?>
             <!-- Coordenador NÃO vê esta secção na ficha de outro colaborador -->
@@ -731,24 +807,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label>Grau de Parentesco:</label>
                 <select name="grau_relacionamento" <?php echo ($isCoord && !$isOwnFicha && !$canEditAll) ? 'disabled' : ''; ?>>
                     <option value="">Selecione</option>
+                    <option value="Companheiro(a)" <?php if (($colab['grau_relacionamento'] ?? '') === 'Companheiro(a)') echo 'selected'; ?>>Companheiro(a)</option>
                     <option value="Pai" <?php if (($colab['grau_relacionamento'] ?? '') === 'Pai') echo 'selected'; ?>>Pai</option>
                     <option value="Mãe" <?php if (($colab['grau_relacionamento'] ?? '') === 'Mãe') echo 'selected'; ?>>Mãe</option>
-                    <option value="Filho" <?php if (($colab['grau_relacionamento'] ?? '') === 'Filho') echo 'selected'; ?>>Filho</option>
-                    <option value="Filha" <?php if (($colab['grau_relacionamento'] ?? '') === 'Filha') echo 'selected'; ?>>Filha</option>
                     <option value="Irmão" <?php if (($colab['grau_relacionamento'] ?? '') === 'Irmão') echo 'selected'; ?>>Irmão</option>
                     <option value="Irmã" <?php if (($colab['grau_relacionamento'] ?? '') === 'Irmã') echo 'selected'; ?>>Irmã</option>
-                    <option value="Avô" <?php if (($colab['grau_relacionamento'] ?? '') === 'Avô') echo 'selected'; ?>>Avô</option>
-                    <option value="Avó" <?php if (($colab['grau_relacionamento'] ?? '') === 'Avó') echo 'selected'; ?>>Avó</option>
-                    <option value="Neto" <?php if (($colab['grau_relacionamento'] ?? '') === 'Neto') echo 'selected'; ?>>Neto</option>
-                    <option value="Neta" <?php if (($colab['grau_relacionamento'] ?? '') === 'Neta') echo 'selected'; ?>>Neta</option>
-                    <option value="Tio" <?php if (($colab['grau_relacionamento'] ?? '') === 'Tio') echo 'selected'; ?>>Tio</option>
-                    <option value="Tia" <?php if (($colab['grau_relacionamento'] ?? '') === 'Tia') echo 'selected'; ?>>Tia</option>
-                    <option value="Sobrinho" <?php if (($colab['grau_relacionamento'] ?? '') === 'Sobrinho') echo 'selected'; ?>>Sobrinho</option>
-                    <option value="Sobrinha" <?php if (($colab['grau_relacionamento'] ?? '') === 'Sobrinha') echo 'selected'; ?>>Sobrinha</option>
-                    <option value="Primo" <?php if (($colab['grau_relacionamento'] ?? '') === 'Primo') echo 'selected'; ?>>Primo</option>
-                    <option value="Prima" <?php if (($colab['grau_relacionamento'] ?? '') === 'Prima') echo 'selected'; ?>>Prima</option>
-                    <option value="Cônjuge" <?php if (($colab['grau_relacionamento'] ?? '') === 'Cônjuge') echo 'selected'; ?>>Cônjuge</option>
-                    <option value="Companheiro(a)" <?php if (($colab['grau_relacionamento'] ?? '') === 'Companheiro(a)') echo 'selected'; ?>>Companheiro(a)</option>
                     <option value="Outro" <?php if (($colab['grau_relacionamento'] ?? '') === 'Outro') echo 'selected'; ?>>Outro</option>
                 </select>
             </div>
@@ -771,15 +834,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="ficha-campo">
                 <label>Data de Início do Contrato:</label>
-                <input type="date" name="data_inicio_contrato" value="<?php echo htmlspecialchars($colab['data_inicio_contrato'] ?? ''); ?>" <?php echo fieldAttr('data_inicio_contrato', $canEditAll, []); ?>>
+                <input type="date" name="data_inicio_contrato" value="<?php echo htmlspecialchars($colab['data_inicio_contrato'] ?? ''); ?>" 
+                       max="<?php echo date('Y-m-d'); ?>" <?php echo fieldAttr('data_inicio_contrato', $canEditAll, []); ?>>
             </div>
             <div class="ficha-campo">
                 <label>Data de Fim do Contrato:</label>
-                <input type="date" name="data_fim_contrato" value="<?php echo htmlspecialchars($colab['data_fim_contrato'] ?? ''); ?>" <?php echo fieldAttr('data_fim_contrato', $canEditAll, []); ?>>
+                <input type="date" name="data_fim_contrato" value="<?php echo htmlspecialchars($colab['data_fim_contrato'] ?? ''); ?>" 
+                       min="<?php echo date('Y-m-d'); ?>" <?php echo fieldAttr('data_fim_contrato', $canEditAll, []); ?>>
             </div>
             <div class="ficha-campo">
                 <label>Remuneração:</label>
-                <input type="text" name="remuneracao" value="<?php echo htmlspecialchars($colab['remuneracao'] ?? ''); ?>" <?php echo fieldAttr('remuneracao', $canEditAll, []); ?>>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: bold; color: #19365f;">€</span>
+                    <input type="number" name="remuneracao" step="0.01" min="0" placeholder="0.00" 
+                           value="<?php echo htmlspecialchars(str_replace('€', '', $colab['remuneracao'] ?? '')); ?>" 
+                           <?php echo fieldAttr('remuneracao', $canEditAll, []); ?>>
+                </div>
             </div>
             <div class="ficha-campo">
                 <label>Tipo de Contrato:</label>
@@ -821,33 +891,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
     </form>
 </main>
-    <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
-      <button id="open-chatbot" style="
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border: none;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          font-size: 28px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          ">
-        ?
-      </button>
-      <iframe
-        id="chatbot-iframe"
-        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
-        title="Ajuda Chatbot"
-        width="350"
-        height="500"
-        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-      </iframe>
-    </div>
-    <script src="../../assets/chatbot.js"></script>
+
     <script>
     window.addEventListener('scroll', function() {
         const sticky = document.getElementById('header-sticky');
@@ -906,7 +950,6 @@ window.addEventListener('scroll', function() {
     const hero = document.getElementById('header-hero');
     if (window.scrollY > 0) {
         sticky.style.display = 'flex';
-        // Muda para azul quando passa o container azul
         if (window.scrollY > (hero.offsetHeight - 1)) {
             sticky.classList.add('azul');
         } else {
@@ -1057,6 +1100,229 @@ window.addEventListener('scroll', function() {
     } else {
         sticky.style.display = 'none';
         sticky.classList.remove('azul');
+    }
+});
+</script>
+
+<script>
+// Validações personalizadas
+document.addEventListener('DOMContentLoaded', function() {
+    // Validação de morada fiscal (não permitir º)
+    const moradaFiscal = document.querySelector('input[name="morada_fiscal"]');
+    if (moradaFiscal) {
+        moradaFiscal.addEventListener('input', function(e) {
+            if (e.target.value.includes('º')) {
+                e.target.value = e.target.value.replace(/º/g, '');
+                showFieldError(e.target, 'O símbolo º não é permitido na morada fiscal');
+            }
+        });
+    }
+
+    // Validação de matrícula (forçar maiúsculas)
+    const matricula = document.querySelector('input[name="matricula_viatura"]');
+    if (matricula) {
+        matricula.addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+    }
+
+    // Validação de IBAN país (forçar maiúsculas)
+    const ibanPais = document.querySelector('input[name="iban_pais"]');
+    if (ibanPais) {
+        ibanPais.addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+    }
+
+    // Validação de CC verificação (forçar maiúsculas)
+    const ccVerificacao = document.querySelector('input[name="cc_verificacao"]');
+    if (ccVerificacao) {
+        ccVerificacao.addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+    }
+
+    // Validação dinâmica do telemóvel baseada no DDI
+    const ddiSelect = document.querySelector('select[name="ddi_telemovel"]');
+    const numeroTel = document.querySelector('input[name="numero_telemovel"]');
+    
+    function updateTelValidation() {
+        if (ddiSelect && numeroTel) {
+            const ddi = ddiSelect.value;
+            if (ddi === '+351') {
+                // Portugal: 9 dígitos
+                numeroTel.pattern = '[0-9]{9}';
+                numeroTel.maxLength = '9';
+                numeroTel.placeholder = '9 dígitos';
+            } else {
+                // Outros países: 3-9 dígitos
+                numeroTel.pattern = '[0-9]{3,9}';
+                numeroTel.maxLength = '9';
+                numeroTel.placeholder = '3-9 dígitos';
+            }
+        }
+    }
+    
+    if (ddiSelect) {
+        ddiSelect.addEventListener('change', updateTelValidation);
+        updateTelValidation(); // Aplicar na carga inicial
+    }
+
+    // Validação antes do submit
+    const form = document.querySelector('form[method="POST"]');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let hasErrors = false;
+
+            // Validar data de nascimento
+            const dataNasc = document.querySelector('input[name="data_nascimento"]');
+            if (dataNasc && dataNasc.value) {
+                const year = new Date(dataNasc.value).getFullYear();
+                if (year >= 2025) {
+                    showFieldError(dataNasc, 'O ano de nascimento deve ser anterior a 2025');
+                    hasErrors = true;
+                }
+            }
+
+            // Validar telemóvel (sempre 9 dígitos)
+            const numeroTel = document.querySelector('input[name="numero_telemovel"]');
+            if (numeroTel && numeroTel.value && numeroTel.value.length !== 9) {
+                showFieldError(numeroTel, 'O número de telemóvel deve ter exatamente 9 dígitos');
+                hasErrors = true;
+            }
+
+            // Validar CC (8 números + 4 caracteres)
+            const ccNumero = document.querySelector('input[name="cc_numero"]');
+            const ccVerif = document.querySelector('input[name="cc_verificacao"]');
+            if (ccNumero && ccNumero.value && ccNumero.value.length !== 8) {
+                showFieldError(ccNumero, 'O número do CC deve ter exatamente 8 dígitos');
+                hasErrors = true;
+            }
+            if (ccVerif && ccVerif.value && ccVerif.value.length !== 4) {
+                showFieldError(ccVerif, 'O código de verificação do CC deve ter exatamente 4 caracteres');
+                hasErrors = true;
+            }
+
+            // Validar NIF (9 números)
+            const nif = document.querySelector('input[name="nif"]');
+            if (nif && nif.value && nif.value.length !== 9) {
+                showFieldError(nif, 'O NIF deve ter exatamente 9 dígitos');
+                hasErrors = true;
+            }
+
+            // Validar NISS (11 números)
+            const niss = document.querySelector('input[name="niss"]');
+            if (niss && niss.value && niss.value.length !== 11) {
+                showFieldError(niss, 'O NISS deve ter exatamente 11 dígitos');
+                hasErrors = true;
+            }
+
+            // Validar IBAN (2 letras + 21 dígitos)
+            const ibanPais = document.querySelector('input[name="iban_pais"]');
+            const ibanNum = document.querySelector('input[name="iban_numeros"]');
+            if (ibanPais && ibanPais.value && ibanPais.value.length !== 2) {
+                showFieldError(ibanPais, 'O código do país deve ter exatamente 2 letras');
+                hasErrors = true;
+            }
+            if (ibanNum && ibanNum.value && ibanNum.value.length !== 21) {
+                showFieldError(ibanNum, 'O IBAN deve ter exatamente 21 dígitos');
+                hasErrors = true;
+            }
+
+            // Validar matrícula (6 caracteres)
+            const matriculaField = document.querySelector('input[name="matricula_viatura"]');
+            if (matriculaField && matriculaField.value && matriculaField.value.length !== 6) {
+                showFieldError(matriculaField, 'A matrícula deve ter exatamente 6 caracteres');
+                hasErrors = true;
+            }
+
+            // Validar datas de contrato
+            const dataInicio = document.querySelector('input[name="data_inicio_contrato"]');
+            const dataFim = document.querySelector('input[name="data_fim_contrato"]');
+            const hoje = new Date().toISOString().split('T')[0];
+            
+            if (dataInicio && dataInicio.value && dataInicio.value > hoje) {
+                showFieldError(dataInicio, 'A data de início do contrato deve ser no passado');
+                hasErrors = true;
+            }
+            
+            if (dataFim && dataFim.value && dataFim.value < hoje) {
+                showFieldError(dataFim, 'A data de fim do contrato deve ser no futuro');
+                hasErrors = true;
+            }
+
+            if (hasErrors) {
+                e.preventDefault();
+            }
+        });
+    }
+
+    // Combinar campos divididos antes do envio
+    form.addEventListener('submit', function(e) {
+        // Combinar telemóvel
+        const ddi = document.querySelector('select[name="ddi_telemovel"]');
+        const numero = document.querySelector('input[name="numero_telemovel"]');
+        if (ddi && numero && numero.value) {
+            const hiddenTel = document.createElement('input');
+            hiddenTel.type = 'hidden';
+            hiddenTel.name = 'telemovel';
+            hiddenTel.value = ddi.value + numero.value;
+            form.appendChild(hiddenTel);
+        }
+
+        // Combinar CC
+        const ccNum = document.querySelector('input[name="cc_numero"]');
+        const ccVer = document.querySelector('input[name="cc_verificacao"]');
+        if (ccNum && ccVer && ccNum.value && ccVer.value) {
+            const hiddenCC = document.createElement('input');
+            hiddenCC.type = 'hidden';
+            hiddenCC.name = 'cc';
+            hiddenCC.value = ccNum.value + ccVer.value;
+            form.appendChild(hiddenCC);
+        }
+
+        // Combinar IBAN
+        const ibanPais = document.querySelector('input[name="iban_pais"]');
+        const ibanNum = document.querySelector('input[name="iban_numeros"]');
+        if (ibanPais && ibanNum && ibanPais.value && ibanNum.value) {
+            const hiddenIBAN = document.createElement('input');
+            hiddenIBAN.type = 'hidden';
+            hiddenIBAN.name = 'iban';
+            hiddenIBAN.value = ibanPais.value + ibanNum.value;
+            form.appendChild(hiddenIBAN);
+        }
+
+        // Adicionar € à remuneração
+        const remuneracao = document.querySelector('input[name="remuneracao"]');
+        if (remuneracao && remuneracao.value) {
+            remuneracao.value = '€' + remuneracao.value;
+        }
+    });
+
+    function showFieldError(field, message) {
+        // Remove mensagem de erro anterior
+        const existingError = field.parentNode.querySelector('.field-error');
+        if (existingError) {
+            existingError.remove();
+        }
+
+        // Adiciona nova mensagem de erro
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'field-error';
+        errorDiv.style.cssText = 'color: #e53e3e; font-size: 0.8rem; margin-top: 4px;';
+        errorDiv.textContent = message;
+        field.parentNode.appendChild(errorDiv);
+
+        // Destaca o campo com erro
+        field.style.borderColor = '#e53e3e';
+        
+        // Remove o destaque após 3 segundos
+        setTimeout(() => {
+            field.style.borderColor = '';
+            if (errorDiv.parentNode) {
+                errorDiv.remove();
+            }
+        }, 3000);
     }
 });
 </script>

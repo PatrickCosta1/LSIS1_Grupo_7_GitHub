@@ -29,7 +29,13 @@ if ($dataInicio > $dataFim) {
 }
 
 if ($colabBLL->criarPedidoFerias($colab['id'], $dataInicio, $dataFim)) {
+    // Notificar RH sobre o novo pedido
     $notBLL->notificarRH("Novo pedido de férias de " . htmlspecialchars($colab['nome']) . " de $dataInicio até $dataFim.");
+    
+    // Notificar o colaborador sobre a submissão do pedido
+    $mensagemColaborador = "O seu pedido de férias de " . date('d/m/Y', strtotime($dataInicio)) . " até " . date('d/m/Y', strtotime($dataFim)) . " foi submetido com sucesso e será avaliado pela equipa de RH. Receberá uma resposta brevemente.";
+    $notBLL->enviarNotificacao(null, $_SESSION['user_id'], $mensagemColaborador);
+    
     echo json_encode(['success' => true]);
 } else {
     echo json_encode(['success' => false, 'error' => 'Erro ao submeter pedido de férias.']);

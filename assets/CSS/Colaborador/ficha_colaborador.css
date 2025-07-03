@@ -7,6 +7,14 @@
             width:98vw;
             max-width: 98vw;
             overflow-x: hidden !important;
+            /* Linhas de fundo mais escuras */
+            background-image: 
+                linear-gradient(45deg, rgba(100, 100, 100, 0.15) 1px, transparent 1px),
+                linear-gradient(-45deg, rgba(100, 100, 100, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(80, 80, 80, 0.08) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(80, 80, 80, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px, 40px 40px, 20px 20px, 20px 20px;
+            background-position: 0 0, 0 0, 0 0, 0 0;
         }
 
         /* Cabeçalho hero azul arredondado no topo */
@@ -346,21 +354,21 @@
             pointer-events: auto;
         }
 
-        /* Containers das fichas - Design Glassmorphism Moderno */
+        /* Containers das fichas - Glassmorphism completo para TODAS */
         .ficha-container {
-            background: rgba(255, 255, 255, 0.15) !important;
+            max-width: 950px;
+            margin: 32px auto 0 auto;
+            /* Fundo completamente transparente com apenas blur */
+            background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(25px) saturate(180%);
             -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border-radius: 0 !important;
+            border-radius: 20px;
             box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.08),
-                0 1px 0 rgba(255, 255, 255, 0.4) inset,
-                0 -1px 0 rgba(0, 0, 0, 0.03) inset !important;
-            padding: 40px 48px !important;
-            max-width: 900px !important;
-            margin: 32px auto !important;
+                0 8px 32px rgba(0, 0, 0, 0.12),
+                0 1px 1px rgba(255, 255, 255, 0.3) inset,
+                0 -1px 1px rgba(0, 0, 0, 0.05) inset;
+            padding: 40px 48px;
             border: 1px solid rgba(255, 255, 255, 0.25);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
@@ -374,9 +382,9 @@
             height: 2px;
             background: linear-gradient(90deg, 
                 transparent 0%, 
-                rgba(255, 255, 255, 0.6) 20%, 
-                rgba(255, 255, 255, 0.9) 50%, 
-                rgba(255, 255, 255, 0.6) 80%, 
+                rgba(255, 255, 255, 0.4) 20%, 
+                rgba(255, 255, 255, 0.7) 50%, 
+                rgba(255, 255, 255, 0.4) 80%, 
                 transparent 100%);
             z-index: 1;
         }
@@ -386,105 +394,192 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 3px;
-            height: 100%;
-            background: linear-gradient(180deg, #e94803 0%, rgba(233, 72, 3, 0.3) 100%);
-            z-index: 1;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.03) 0%, 
+                rgba(255, 255, 255, 0.01) 50%, 
+                rgba(0, 0, 0, 0.02) 100%);
+            pointer-events: none;
+            z-index: 0;
         }
 
         .ficha-container:hover {
-            background: rgba(255, 255, 255, 0.22) !important;
+            background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(30px) saturate(200%);
             -webkit-backdrop-filter: blur(30px) saturate(200%);
-            transform: translateY(-4px);
             box-shadow: 
-                0 16px 48px rgba(0, 0, 0, 0.12),
-                0 2px 0 rgba(255, 255, 255, 0.5) inset,
-                0 -2px 0 rgba(0, 0, 0, 0.05) inset !important;
+                0 16px 48px rgba(0, 0, 0, 0.18),
+                0 2px 2px rgba(255, 255, 255, 0.4) inset,
+                0 -2px 2px rgba(0, 0, 0, 0.08) inset;
             border-color: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
         }
 
+        /* Fichas específicas com cores personalizadas mantendo glassmorphism */
         #ficha-dados-pessoais.ficha-container-primarios {
-            position: relative;
-            left: 0;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            margin-top: 1.5cm !important;
-            max-width: 1150px !important;
-            width: 100%;
-            min-width: 320px;
-            background: rgba(255, 255, 255, 0.18) !important;
-            backdrop-filter: blur(30px) saturate(200%);
-            -webkit-backdrop-filter: blur(30px) saturate(200%);
-            border-radius: 0 !important;
-            box-shadow: 
-                0 12px 40px rgba(0, 0, 0, 0.10),
-                0 2px 0 rgba(255, 255, 255, 0.4) inset,
-                0 -2px 0 rgba(0, 0, 0, 0.04) inset !important;
-            padding: 48px 40px !important;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .ficha-container-rh {
-            background: rgba(230, 126, 34, 0.15) !important;
+            background: rgba(234, 164, 102, 0.12);
             backdrop-filter: blur(25px) saturate(180%);
             -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border-radius: 0 !important;
-            box-shadow: 
-                0 12px 40px rgba(230, 126, 34, 0.10),
-                0 1px 0 rgba(255, 255, 255, 0.3) inset,
-                0 -1px 0 rgba(230, 126, 34, 0.03) inset !important;
-            padding: 40px 48px !important;
-            max-width: 900px !important;
-            margin: 32px auto !important;
-            border: 1px solid rgba(230, 126, 34, 0.2);
+            border: 1px solid rgba(234, 164, 102, 0.3);
         }
 
-        .ficha-container-rh::before {
+        #ficha-dados-pessoais.ficha-container-primarios::before {
             background: linear-gradient(90deg, 
                 transparent 0%, 
-                rgba(230, 126, 34, 0.5) 20%, 
-                rgba(230, 126, 34, 0.8) 50%, 
-                rgba(230, 126, 34, 0.5) 80%, 
+                rgba(234, 164, 102, 0.4) 20%, 
+                rgba(234, 164, 102, 0.7) 50%, 
+                rgba(234, 164, 102, 0.4) 80%, 
                 transparent 100%);
         }
 
-        .ficha-container-rh::after {
-            background: linear-gradient(180deg, #e67e22 0%, rgba(230, 126, 34, 0.3) 100%);
+        #ficha-dados-pessoais.ficha-container-primarios:hover {
+            background: rgba(234, 164, 102, 0.18);
+            border-color: rgba(234, 164, 102, 0.45);
         }
 
-        .ficha-container-contratual {
-            background: rgba(255, 213, 0, 0.15) !important;
+        /* Ficha Morada - mesmo estilo dos dados pessoais (LARANJA) */
+        #ficha-morada.ficha-container {
+            background: rgba(234, 164, 102, 0.12);
             backdrop-filter: blur(25px) saturate(180%);
             -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border-radius: 0 !important;
-            box-shadow: 
-                0 12px 40px rgba(255, 213, 0, 0.10),
-                0 1px 0 rgba(255, 255, 255, 0.3) inset,
-                0 -1px 0 rgba(255, 213, 0, 0.03) inset !important;
-            padding: 40px 48px !important;
-            max-width: 900px !important;
-            margin: 32px auto !important;
-            border: 1px solid rgba(255, 213, 0, 0.2);
+            border: 1px solid rgba(234, 164, 102, 0.3);
+        }
+
+        #ficha-morada.ficha-container::before {
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(234, 164, 102, 0.4) 20%, 
+                rgba(234, 164, 102, 0.7) 50%, 
+                rgba(234, 164, 102, 0.4) 80%, 
+                transparent 100%);
+        }
+
+        #ficha-morada.ficha-container:hover {
+            background: rgba(234, 164, 102, 0.18);
+            border-color: rgba(234, 164, 102, 0.45);
+        }
+
+        /* Ficha Documentos - mesmo estilo dos dados pessoais (LARANJA) */
+        #ficha-documentos.ficha-container {
+            background: rgba(234, 164, 102, 0.12);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(234, 164, 102, 0.3);
+        }
+
+        #ficha-documentos.ficha-container::before {
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(234, 164, 102, 0.4) 20%, 
+                rgba(234, 164, 102, 0.7) 50%, 
+                rgba(234, 164, 102, 0.4) 80%, 
+                transparent 100%);
+        }
+
+        #ficha-documentos.ficha-container:hover {
+            background: rgba(234, 164, 102, 0.18);
+            border-color: rgba(234, 164, 102, 0.45);
+        }
+
+        /* Ficha Fiscais - estilo laranja (MUDADO DE AZUL PARA LARANJA) */
+        #ficha-fiscais.ficha-container {
+            background: rgba(234, 164, 102, 0.12);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(234, 164, 102, 0.3);
+        }
+
+        #ficha-fiscais.ficha-container::before {
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(234, 164, 102, 0.4) 20%, 
+                rgba(234, 164, 102, 0.7) 50%, 
+                rgba(234, 164, 102, 0.4) 80%, 
+                transparent 100%);
+        }
+
+        #ficha-fiscais.ficha-container:hover {
+            background: rgba(234, 164, 102, 0.18);
+            border-color: rgba(234, 164, 102, 0.45);
+        }
+
+        /* Ficha Vouchers - estilo laranja (MUDADO DE AZUL PARA LARANJA) */
+        #ficha-vouchers.ficha-container {
+            background: rgba(234, 164, 102, 0.12);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(234, 164, 102, 0.3);
+        }
+
+        #ficha-vouchers.ficha-container::before {
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(234, 164, 102, 0.4) 20%, 
+                rgba(234, 164, 102, 0.7) 50%, 
+                rgba(234, 164, 102, 0.4) 80%, 
+                transparent 100%);
+        }
+
+        #ficha-vouchers.ficha-container:hover {
+            background: rgba(234, 164, 102, 0.18);
+            border-color: rgba(234, 164, 102, 0.45);
+        }
+
+        /* Ficha Contacto Emergência - mesmo estilo dos dados pessoais (LARANJA) */
+        #ficha-emergencia.ficha-container {
+            background: rgba(234, 164, 102, 0.12);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(234, 164, 102, 0.3);
+        }
+
+        #ficha-emergencia.ficha-container::before {
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(234, 164, 102, 0.4) 20%, 
+                rgba(234, 164, 102, 0.7) 50%, 
+                rgba(234, 164, 102, 0.4) 80%, 
+                transparent 100%);
+        }
+
+        #ficha-emergencia.ficha-container:hover {
+            background: rgba(234, 164, 102, 0.18);
+            border-color: rgba(234, 164, 102, 0.45);
+        }
+
+        /* Ficha Contratual - estilo azul (ÚNICA FICHA AZUL) */
+        .ficha-container-contratual {
+            background: rgba(102, 126, 234, 0.08);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(102, 126, 234, 0.25);
         }
 
         .ficha-container-contratual::before {
             background: linear-gradient(90deg, 
                 transparent 0%, 
-                rgba(255, 213, 0, 0.5) 20%, 
-                rgba(255, 213, 0, 0.8) 50%, 
-                rgba(255, 213, 0, 0.5) 80%, 
+                rgba(102, 126, 234, 0.4) 20%, 
+                rgba(102, 126, 234, 0.7) 50%, 
+                rgba(102, 126, 234, 0.4) 80%, 
                 transparent 100%);
         }
 
         .ficha-container-contratual::after {
-            background: linear-gradient(180deg, #ffd500 0%, rgba(255, 213, 0, 0.3) 100%);
+            background: linear-gradient(135deg, 
+                rgba(102, 126, 234, 0.03) 0%, 
+                rgba(102, 126, 234, 0.01) 50%, 
+                rgba(0, 0, 0, 0.02) 100%);
+        }
+
+        .ficha-container-contratual:hover {
+            background: rgba(102, 126, 234, 0.14);
+            border-color: rgba(102, 126, 234, 0.35);
         }
 
         /* Títulos */
         .ficha-titulo {
-            color: #e94803 !important;
+            color: #1b1a74 !important;
             text-align: center;
             font-size: 2.2rem;
             font-weight: 700;
@@ -493,7 +588,7 @@
         }
 
         .ficha-subtitulo {
-            color: #e94803 !important;
+            color: #112f83 !important;
             text-align: center;
             font-size: 1.2rem;
             font-weight: 500;
@@ -501,7 +596,7 @@
         }
 
         .ficha-section-titulo {
-            color: #e94803 !important;
+            color: #112f83 !important;
             font-size: 1.4rem;
             font-weight: 700;
             margin-bottom: 28px;
@@ -518,7 +613,7 @@
             transform: translateX(-50%);
             width: 60px;
             height: 3px;
-            background: linear-gradient(90deg, #e94803 0%, #ffc1a6 100%);
+            background: linear-gradient(90deg, #8155ff 0%, #ff9b37 50%, #3ed829 100%);
             border-radius: 2px;
         }
 
@@ -556,15 +651,21 @@
 
         .ficha-campo input,
         .ficha-campo select {
-            background: rgba(255, 255, 255, 0.8) !important;
-            border: 2px solid #e2e8f0 !important;
-            color: #2d3748 !important;
-            border-radius: 12px;
-            font-size: 0.95rem !important;
+            width: 100%;
             padding: 12px 16px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            font-size: 1rem;
+            /* Campos com efeito glassmorphism completo */
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px) saturate(150%);
+            -webkit-backdrop-filter: blur(15px) saturate(150%);
+            color: #2d3748;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.06),
+                0 1px 1px rgba(255, 255, 255, 0.2) inset;
         }
 
         .ficha-campo select option {
@@ -581,11 +682,15 @@
 
         .ficha-campo input:focus,
         .ficha-campo select:focus {
-            border: 2px solid #e94803 !important;
-            background: rgba(255, 255, 255, 0.95) !important;
             outline: none;
-            color: #2d3748;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+            border-color: rgba(102, 126, 234, 0.6);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            box-shadow: 
+                0 0 0 3px rgba(102, 126, 234, 0.1),
+                0 4px 12px rgba(0, 0, 0, 0.1),
+                0 2px 2px rgba(255, 255, 255, 0.3) inset;
             transform: translateY(-1px);
         }
 
@@ -598,17 +703,35 @@
         }
 
         .ficha-campo input[type="file"] {
+            padding: 12px;
+            border: 2px dashed rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px) saturate(120%);
+            -webkit-backdrop-filter: blur(10px) saturate(120%);
             color: #4a5568;
-            border: 2px dashed #cbd5e0 !important;
-            padding: 16px;
-            background: rgba(247, 250, 252, 0.8) !important;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
         }
 
         .ficha-campo input[type="file"]:hover {
-            border-color: #e94803 !important;
-            background: rgba(102, 126, 234, 0.05) !important;
+            border-color: rgba(102, 126, 234, 0.6);
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(15px) saturate(140%);
+            -webkit-backdrop-filter: blur(15px) saturate(140%);
+            transform: translateY(-1px);
+        }
+
+        /* Campos readonly também com glassmorphism */
+        .ficha-campo input[readonly],
+        .ficha-campo select[disabled] {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px) saturate(120%);
+            -webkit-backdrop-filter: blur(10px) saturate(120%);
+            color: #6b7280;
+            border-color: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
         }
 
         .ficha-campo a {
@@ -894,12 +1017,12 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000000 0%, #000000 100%);
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #f09267 100%);
         }
 
         /* Estados de carregamento e feedback visual */
@@ -1149,7 +1272,7 @@
 
 .color-segment {
     flex: 1;
-    height: 100%;
+    height: 100%;    
 }
 
 .color-segment:first-child {

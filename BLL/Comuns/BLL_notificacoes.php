@@ -254,4 +254,17 @@ class NotificacoesManager {
         
         return true;
     }
+    public function notificarColaboradorComprovativo($colaboradorId, $status, $tipoComprovativo) {
+        // Convert colaborador_id to utilizador_id
+        $utilizadorId = $this->dal->getUtilizadorIdByColaboradorId($colaboradorId);
+        if (!$utilizadorId) {
+            return false;
+        }
+
+        $statusTxt = $status === 'aprovado' ? 'aprovado' : 'recusado';
+        $tipoTexto = ucfirst(str_replace('_', ' ', $tipoComprovativo));
+        $msg = "O seu comprovativo '$tipoTexto' foi $statusTxt pelo RH.";
+        
+        return $this->dal->enviarNotificacao(null, $utilizadorId, $msg);
+    }
 }

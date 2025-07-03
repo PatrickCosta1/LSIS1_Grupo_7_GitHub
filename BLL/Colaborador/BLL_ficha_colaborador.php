@@ -74,5 +74,35 @@ class ColaboradorFichaManager {
     public function getPedidoFeriasById($pedidoId) {
         return $this->dal->getPedidoFeriasById($pedidoId);
     }
+    public function getPedidosFeriasPorColaborador($colaboradorId) {
+        try {
+            return $this->dal->getPedidosFeriasPorColaborador($colaboradorId);
+        } catch (Exception $e) {
+            // Se der erro, retornar array vazio
+            error_log("Erro ao buscar pedidos de férias: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // --- PEDIDOS DE COMPROVATIVO ---
+    public function criarPedidoComprovativo($colaboradorId, $tipoComprovativo, $comprovantivoAntigo, $comprovantivoNovo) {
+        return $this->dal->criarPedidoComprovativo($colaboradorId, $tipoComprovativo, $comprovantivoAntigo, $comprovantivoNovo);
+    }
+
+    public function listarPedidosComprovantivosPendentes() {
+        return $this->dal->listarPedidosComprovantivosPendentes();
+    }
+
+    public function aprovarPedidoComprovativo($pedidoId) {
+        return $this->dal->aprovarPedidoComprovativo($pedidoId);
+    }
+
+    public function recusarPedidoComprovativo($pedidoId) {
+        return $this->dal->recusarPedidoComprovativo($pedidoId);
+    }
+
+    public function getPedidoComprovantivoById($pedidoId) {
+        return $this->dal->getPedidoComprovantivoById($pedidoId);
+    }
 }
 ?>

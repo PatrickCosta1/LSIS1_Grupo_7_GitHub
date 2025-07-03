@@ -21,7 +21,7 @@ body {
     overflow: hidden;
     box-shadow: none;
     display: flex;
-    gap: 150px;
+    gap: 110px; /* Reduzido de 150px para 80px - puxa conteúdo para cima */
     flex-direction: column;
     position: relative;
     justify-content: flex-start;
@@ -31,10 +31,10 @@ body {
 .azul-container header {
     display: flex;
     align-items: center;
-    padding: 10px 60px 18px 200px; /* padding igual dos dois lados */
+    padding: 10px 60px 10px 200px; /* Reduzido padding bottom de 18px para 10px */
     box-shadow: none;
     border-radius: 0;
-    min-height: 90px;
+    min-height: 80px; /* Reduzido de 90px para 80px */
     position: relative;
     z-index: 2;
 }
@@ -86,7 +86,7 @@ header nav a.active {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 0 32px 32px 32px;
+    padding: 0 32px 32px 32px; /* Removido padding top */
     width: 100%;
     box-sizing: border-box;
 }
@@ -97,7 +97,7 @@ main h1 {
     text-align: left; /* Alinha à esquerda */
     font-size: 3.5rem;
     font-weight: 700;
-    margin: 32px 0 18px 0;
+    margin: 16px 0 12px 0; /* Reduzido margin top de 32px para 16px e bottom de 18px para 12px */
     letter-spacing: 0.5px;
     text-shadow: 0 2px 12px rgba(3,96,233,0.18);
     width: 100%;         /* Ocupa toda a largura do main */
@@ -108,7 +108,7 @@ main h1 {
     color: #ffffff;
     font-size: 1.05rem;
     font-weight: 400;
-    margin: 0 0 24px 0;
+    margin: 0 0 18px 0; /* Reduzido margin bottom de 24px para 18px */
     text-align: left;
     width: 100%;
     max-width: 50ch;      /* Limita a largura a ~50 caracteres */
@@ -121,7 +121,7 @@ main h1 {
     display: flex;
     flex-direction: row;
     gap: 11px;
-    margin-bottom: 32px;
+    margin-bottom: 20px; /* Reduzido de 32px para 20px */
     margin-left: 165px;       /* Encosta à esquerda do main */
     align-self: flex-start; /* Só este elemento fica à esquerda */
 }
@@ -171,7 +171,7 @@ main h1 {
     position: relative;
     height: 70px;
     width: 100%;
-    margin-top: -15%;
+    margin-top: -10%; /* Reduzido de -15% para -20% - puxa mais para cima */
     margin-left: 25%;
     align-self: flex-start;
 }
