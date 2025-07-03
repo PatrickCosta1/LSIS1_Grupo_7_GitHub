@@ -263,17 +263,36 @@ if ($_SESSION['profile'] === 'rh') {
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php elseif ($_SESSION['profile'] === 'rh'): ?>
-                <a href="../RH/dashboard_rh.php">Dashboard</a>
-                <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-                <a href="../RH/equipas.php">Equipas</a>
-                <a href="../RH/relatorios.php">Relatórios</a>
-                <a href="../RH/exportar.php">Exportar</a>
-                <a href="../Comuns/notificacoes.php">Notificações</a>
-                
-                    <a href="../Comuns/perfil.php" class="perfil-link">
-                        Perfil
-                    </a>
-                <a href="../Comuns/logout.php">Sair</a>
+               <div class="dropdown-equipas">
+                <a href="../RH/equipas.php" class="equipas-link">
+                    Equipas
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/relatorios.php">Relatórios</a>
+                    <a href="../RH/dashboard_rh.php">Dashboard</a>
+                </div>
+            </div>
+            <div class="dropdown-colaboradores">
+                <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
+                    Colaboradores
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/exportar.php">Exportar</a>
+                </div>
+            </div>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
                 <a href="../Convidado/onboarding_convidado.php">Preencher Dados</a>
                 <a href="../Comuns/logout.php">Sair</a>
@@ -290,6 +309,29 @@ if ($_SESSION['profile'] === 'rh') {
             <span class="portal-text">Portal Do Colaborador</span>
         </div>
         <h1>Notificações</h1>
+        
+        <?php if ($_SESSION['profile'] === 'rh'): ?>
+            <!-- Menu lateral para RH -->
+            <div class="menu-lateral-notificacoes">
+                <button type="button" class="menu-notif-link active" data-scroll="#notificacoes-sistema">
+                    <span class="menu-icon">🔔</span>
+                    Notificações Sistema
+                </button>
+                <button type="button" class="menu-notif-link" data-scroll="#pedidos-alteracao">
+                    <span class="menu-icon">📝</span>
+                    Pedidos Alteração
+                </button>
+                <button type="button" class="menu-notif-link" data-scroll="#pedidos-ferias">
+                    <span class="menu-icon">🏖️</span>
+                    Pedidos Férias
+                </button>
+                <button type="button" class="menu-notif-link" data-scroll="#pedidos-comprovativos">
+                    <span class="menu-icon">📄</span>
+                    Comprovativos
+                </button>
+            </div>
+        <?php endif; ?>
+
         <div class="notificacoes-container">
         
         <!-- Adicionar contador de não lidas no topo -->
@@ -303,143 +345,151 @@ if ($_SESSION['profile'] === 'rh') {
             </div>
         <?php endif; ?>
 
-        <?php if (!empty($notificacoes)): ?>
-            <h2 style="margin-top:16px;">Notificações do Sistema</h2>
-            <ul class="notificacoes-lista">
-                <?php foreach ($notificacoes as $not): ?>
-                    <li class="notificacao<?php if (!$not['lida']) echo ' unread'; ?>">
-                        <span class="titulo">
-                            <?php echo htmlspecialchars($not['mensagem']); ?>
-                        </span>
-                        <span class="data"><?php echo date('d/m/Y H:i', strtotime($not['data_envio'])); ?></span>
-                        <div class="acao">
-                            <?php if (!$not['lida']): ?>
-                                <form method="get" style="display:inline;">
-                                    <input type="hidden" name="marcar_lida" value="<?php echo $not['id']; ?>">
-                                    <button type="submit" class="btn">Marcar como lida</button>
-                                </form>
-                            <?php endif; ?>
-                            <?php if ($not['lida']): ?>
-                                <form method="get" style="display:inline;">
-                                    <input type="hidden" name="eliminar" value="<?php echo $not['id']; ?>">
-                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Eliminar esta notificação?')">Eliminar</button>
-                                </form>
-                            <?php endif; ?>
-                        </div>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php else: ?>
-            <div style="color:#888; text-align:center; margin:32px 0;">
-                Não existem notificações.
-            </div>
-        <?php endif; ?>
+        <div id="notificacoes-sistema">
+            <?php if (!empty($notificacoes)): ?>
+                <h2 style="margin-top:16px;">Notificações do Sistema</h2>
+                <ul class="notificacoes-lista">
+                    <?php foreach ($notificacoes as $not): ?>
+                        <li class="notificacao<?php if (!$not['lida']) echo ' unread'; ?>">
+                            <span class="titulo">
+                                <?php echo htmlspecialchars($not['mensagem']); ?>
+                            </span>
+                            <span class="data"><?php echo date('d/m/Y H:i', strtotime($not['data_envio'])); ?></span>
+                            <div class="acao">
+                                <?php if (!$not['lida']): ?>
+                                    <form method="get" style="display:inline;">
+                                        <input type="hidden" name="marcar_lida" value="<?php echo $not['id']; ?>">
+                                        <button type="submit" class="btn">Marcar como lida</button>
+                                    </form>
+                                <?php endif; ?>
+                                <?php if ($not['lida']): ?>
+                                    <form method="get" style="display:inline;">
+                                        <input type="hidden" name="eliminar" value="<?php echo $not['id']; ?>">
+                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Eliminar esta notificação?')">Eliminar</button>
+                                    </form>
+                                <?php endif; ?>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <div style="color:#888; text-align:center; margin:32px 0;">
+                    Não existem notificações.
+                </div>
+            <?php endif; ?>
+        </div>
 
         <?php if ($_SESSION['profile'] === 'rh'): ?>
-            <h2 style="margin-top:32px;">Pedidos de Alteração de Ficha</h2>
-            <?php if ($aprovacao_msg): ?>
-                <div class="success-message" style="margin-bottom:16px;"><?php echo htmlspecialchars($aprovacao_msg); ?></div>
-            <?php endif; ?>
-            <?php if (!empty($pedidosPendentes)): ?>
-                <ul class="notificacoes-lista">
-                <?php foreach ($pedidosPendentes as $p): ?>
-                    <li class="notificacao unread">
-                        <span class="titulo">
-                            <strong><?php echo htmlspecialchars($p['colaborador_nome']); ?></strong> pediu alteração:
-                            <strong><?php echo htmlspecialchars($p['campo']); ?></strong>
-                            <br>
-                            <span style="color:#888;">De:</span> <?php echo htmlspecialchars($p['valor_antigo']); ?>
-                            <span style="color:#888;">Para:</span> <strong><?php echo htmlspecialchars($p['valor_novo']); ?></strong>
-                        </span>
-                        <span class="data"><?php echo date('d/m/Y H:i', strtotime($p['data_pedido'])); ?></span>
-                        <form method="post" style="display:inline;">
-                            <input type="hidden" name="pedido_id" value="<?php echo $p['id']; ?>">
-                            <button type="submit" name="aprovar_pedido" class="btn btn-sm">Aprovar</button>
-                            <button type="submit" name="recusar_pedido" class="btn btn-danger btn-sm">Recusar</button>
-                        </form>
-                    </li>
-                <?php endforeach; ?>
-                </ul>
-            <?php else: ?>
-                <div style="color:#888; text-align:center; margin:16px 0;">
-                    Não existem pedidos de alteração pendentes.
-                </div>
-            <?php endif; ?>
+            <div id="pedidos-alteracao">
+                <h2 style="margin-top:32px;">Pedidos de Alteração de Ficha</h2>
+                <?php if ($aprovacao_msg): ?>
+                    <div class="success-message" style="margin-bottom:16px;"><?php echo htmlspecialchars($aprovacao_msg); ?></div>
+                <?php endif; ?>
+                <?php if (!empty($pedidosPendentes)): ?>
+                    <ul class="notificacoes-lista">
+                    <?php foreach ($pedidosPendentes as $p): ?>
+                        <li class="notificacao unread">
+                            <span class="titulo">
+                                <strong><?php echo htmlspecialchars($p['colaborador_nome']); ?></strong> pediu alteração:
+                                <strong><?php echo htmlspecialchars($p['campo']); ?></strong>
+                                <br>
+                                <span style="color:#888;">De:</span> <?php echo htmlspecialchars($p['valor_antigo']); ?>
+                                <span style="color:#888;">Para:</span> <strong><?php echo htmlspecialchars($p['valor_novo']); ?></strong>
+                            </span>
+                            <span class="data"><?php echo date('d/m/Y H:i', strtotime($p['data_pedido'])); ?></span>
+                            <form method="post" style="display:inline;">
+                                <input type="hidden" name="pedido_id" value="<?php echo $p['id']; ?>">
+                                <button type="submit" name="aprovar_pedido" class="btn btn-sm">Aprovar</button>
+                                <button type="submit" name="recusar_pedido" class="btn btn-danger btn-sm">Recusar</button>
+                            </form>
+                        </li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <div style="color:#888; text-align:center; margin:16px 0;">
+                        Não existem pedidos de alteração pendentes.
+                    </div>
+                <?php endif; ?>
+            </div>
 
-            <h2 style="margin-top:32px;">Pedidos de Férias Pendentes</h2>
-            <?php if (!empty($pedidosFeriasPendentes)): ?>
-                <ul class="notificacoes-lista">
-                <?php foreach ($pedidosFeriasPendentes as $pf): ?>
-                    <li class="notificacao unread">
-                        <span class="titulo">
-                            <strong><?php echo htmlspecialchars($pf['colaborador_nome']); ?></strong> pediu férias:
-                            <br>
-                            <span style="color:#888;">De:</span> <?php echo htmlspecialchars($pf['data_inicio']); ?>
-                            <span style="color:#888;">Até:</span> <strong><?php echo htmlspecialchars($pf['data_fim']); ?></strong>
-                        </span>
-                        <span class="data"><?php echo date('d/m/Y H:i', strtotime($pf['data_pedido'])); ?></span>
-                        <form method="post" style="display:inline;">
-                            <input type="hidden" name="pedido_ferias_id" value="<?php echo $pf['id']; ?>">
-                            <button type="submit" name="aprovar_pedido_ferias" class="btn btn-sm">Aprovar</button>
-                            <button type="submit" name="recusar_pedido_ferias" class="btn btn-danger btn-sm">Recusar</button>
-                        </form>
-                    </li>
-                <?php endforeach; ?>
-                </ul>
-            <?php else: ?>
-                <div style="color:#888; text-align:center; margin:16px 0;">
-                    Não existem pedidos de férias pendentes.
-                </div>
-            <?php endif; ?>
+            <div id="pedidos-ferias">
+                <h2 style="margin-top:32px;">Pedidos de Férias Pendentes</h2>
+                <?php if (!empty($pedidosFeriasPendentes)): ?>
+                    <ul class="notificacoes-lista">
+                    <?php foreach ($pedidosFeriasPendentes as $pf): ?>
+                        <li class="notificacao unread">
+                            <span class="titulo">
+                                <strong><?php echo htmlspecialchars($pf['colaborador_nome']); ?></strong> pediu férias:
+                                <br>
+                                <span style="color:#888;">De:</span> <?php echo htmlspecialchars($pf['data_inicio']); ?>
+                                <span style="color:#888;">Até:</span> <strong><?php echo htmlspecialchars($pf['data_fim']); ?></strong>
+                            </span>
+                            <span class="data"><?php echo date('d/m/Y H:i', strtotime($pf['data_pedido'])); ?></span>
+                            <form method="post" style="display:inline;">
+                                <input type="hidden" name="pedido_ferias_id" value="<?php echo $pf['id']; ?>">
+                                <button type="submit" name="aprovar_pedido_ferias" class="btn btn-sm">Aprovar</button>
+                                <button type="submit" name="recusar_pedido_ferias" class="btn btn-danger btn-sm">Recusar</button>
+                            </form>
+                        </li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <div style="color:#888; text-align:center; margin:16px 0;">
+                        Não existem pedidos de férias pendentes.
+                    </div>
+                <?php endif; ?>
+            </div>
 
-            <h2 style="margin-top:32px;">Pedidos de Comprovativos Pendentes</h2>
-            <?php if (!empty($pedidosComprovantivosPendentes)): ?>
-                <ul class="notificacoes-lista">
-                <?php foreach ($pedidosComprovantivosPendentes as $pc): ?>
-                    <li class="notificacao unread">
-                        <span class="titulo">
-                            <strong><?php echo htmlspecialchars($pc['colaborador_nome']); ?></strong> enviou novo comprovativo:
-                            <br>
-                            <span style="color:#888;">Tipo:</span> <strong><?php echo ucfirst(str_replace('_', ' ', $pc['tipo_comprovativo'])); ?></strong>
-                        </span>
-                        <div class="comprovativo-comparacao" style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 6px;">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                <div>
-                                    <strong style="color: #dc3545;">Anterior:</strong>
-                                    <?php if ($pc['comprovativo_antigo']): ?>
-                                        <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($pc['comprovativo_antigo']); ?>" 
+            <div id="pedidos-comprovativos">
+                <h2 style="margin-top:32px;">Pedidos de Comprovativos Pendentes</h2>
+                <?php if (!empty($pedidosComprovantivosPendentes)): ?>
+                    <ul class="notificacoes-lista">
+                    <?php foreach ($pedidosComprovantivosPendentes as $pc): ?>
+                        <li class="notificacao unread">
+                            <span class="titulo">
+                                <strong><?php echo htmlspecialchars($pc['colaborador_nome']); ?></strong> enviou novo comprovativo:
+                                <br>
+                                <span style="color:#888;">Tipo:</span> <strong><?php echo ucfirst(str_replace('_', ' ', $pc['tipo_comprovativo'])); ?></strong>
+                            </span>
+                            <div class="comprovativo-comparacao" style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 6px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <div>
+                                        <strong style="color: #dc3545;">Anterior:</strong>
+                                        <?php if ($pc['comprovativo_antigo']): ?>
+                                            <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($pc['comprovativo_antigo']); ?>" 
+                                               target="_blank" 
+                                               style="display: block; color: #dc3545; text-decoration: none; font-size: 0.9rem;">
+                                                📄 Ver arquivo anterior
+                                            </a>
+                                        <?php else: ?>
+                                            <span style="color: #888; font-style: italic;">Sem comprovativo anterior</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div>
+                                        <strong style="color: #28a745;">Novo:</strong>
+                                        <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($pc['comprovativo_novo']); ?>" 
                                            target="_blank" 
-                                           style="display: block; color: #dc3545; text-decoration: none; font-size: 0.9rem;">
-                                            📄 Ver arquivo anterior
+                                           style="display: block; color: #28a745; text-decoration: none; font-size: 0.9rem;">
+                                            📄 Ver novo arquivo
                                         </a>
-                                    <?php else: ?>
-                                        <span style="color: #888; font-style: italic;">Sem comprovativo anterior</span>
-                                    <?php endif; ?>
-                                </div>
-                                <div>
-                                    <strong style="color: #28a745;">Novo:</strong>
-                                    <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($pc['comprovativo_novo']); ?>" 
-                                       target="_blank" 
-                                       style="display: block; color: #28a745; text-decoration: none; font-size: 0.9rem;">
-                                        📄 Ver novo arquivo
-                                    </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <span class="data"><?php echo date('d/m/Y H:i', strtotime($pc['data_pedido'])); ?></span>
-                        <form method="post" style="display:inline;">
-                            <input type="hidden" name="pedido_comprovativo_id" value="<?php echo $pc['id']; ?>">
-                            <button type="submit" name="aprovar_comprovativo" class="btn btn-sm">Aprovar</button>
-                            <button type="submit" name="recusar_comprovativo" class="btn btn-danger btn-sm">Recusar</button>
-                        </form>
-                    </li>
-                <?php endforeach; ?>
-                </ul>
-            <?php else: ?>
-                <div style="color:#888; text-align:center; margin:16px 0;">
-                    Não existem pedidos de comprovativos pendentes.
-                </div>
-            <?php endif; ?>
+                            <span class="data"><?php echo date('d/m/Y H:i', strtotime($pc['data_pedido'])); ?></span>
+                            <form method="post" style="display:inline;">
+                                <input type="hidden" name="pedido_comprovativo_id" value="<?php echo $pc['id']; ?>">
+                                <button type="submit" name="aprovar_comprovativo" class="btn btn-sm">Aprovar</button>
+                                <button type="submit" name="recusar_comprovativo" class="btn btn-danger btn-sm">Recusar</button>
+                            </form>
+                        </li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <div style="color:#888; text-align:center; margin:16px 0;">
+                        Não existem pedidos de comprovativos pendentes.
+                    </div>
+                <?php endif; ?>
+            </div>
         <?php endif; ?>
 
         <?php if (!empty($mensagensRecebidas)): ?>
@@ -507,6 +557,52 @@ if ($_SESSION['profile'] === 'rh') {
     </div>
 
     <script>
+    // Menu lateral RH - navegação
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuLinks = document.querySelectorAll('.menu-notif-link');
+        
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                // Remove active de todos
+                menuLinks.forEach(l => l.classList.remove('active'));
+                // Adiciona active ao clicado
+                this.classList.add('active');
+                
+                // Navega para a secção
+                const targetId = this.getAttribute('data-scroll');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    const headerHeight = 160; // Altura aproximada do header
+                    const targetPosition = targetElement.offsetTop - headerHeight;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Auto-highlight baseado no scroll
+        window.addEventListener('scroll', function() {
+            const sections = ['#notificacoes-sistema', '#pedidos-alteracao', '#pedidos-ferias', '#pedidos-comprovativos'];
+            const scrollPos = window.scrollY + 200; // Offset para melhor detecção
+            
+            let activeSection = 0;
+            sections.forEach((sectionId, index) => {
+                const section = document.querySelector(sectionId);
+                if (section && section.offsetTop <= scrollPos) {
+                    activeSection = index;
+                }
+            });
+            
+            menuLinks.forEach((link, index) => {
+                link.classList.toggle('active', index === activeSection);
+            });
+        });
+    });
+
     // Modal de notificações não lidas
     function abrirModalNaoLidas() {
         document.getElementById('modalNaoLidas').style.display = 'flex';

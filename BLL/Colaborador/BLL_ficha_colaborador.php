@@ -19,7 +19,14 @@ class ColaboradorFichaManager {
 
         // Se for RH/Admin, altera diretamente
         if ($perfil === 'rh' || $perfil === 'admin') {
-            return $this->dal->updateColaboradorByUserId($userId, $dados);
+            // Se o $dados tiver 'id' (colaborador), atualizar por id, senão por utilizador_id
+            if (isset($dados['id'])) {
+                $colabId = $dados['id'];
+                unset($dados['id']);
+                return $this->dal->updateColaboradorById($colabId, $dados);
+            } else {
+                return $this->dal->updateColaboradorByUserId($userId, $dados);
+            }
         }
 
         // Caso contrário, cria pedidos de alteração para cada campo alterado

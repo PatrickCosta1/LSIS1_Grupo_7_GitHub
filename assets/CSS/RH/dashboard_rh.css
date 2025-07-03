@@ -1,6 +1,6 @@
 /* Fundo geral */
 body {
-    background: linear-gradient(135deg, #e9f0fb 0%, #ffffff 100%);
+    background: linear-gradient(135deg, #e9f0fb 0%, #c3dafe 100%);
     font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     min-height: 100vh;
@@ -262,180 +262,7 @@ header nav a.active {
     color: #ff6384;
 }
 
-/* KPI Cards com efeito de vidro meio cinzento */
-.kpi-card {
-    background: rgba(128, 128, 128, 0.2);
-    backdrop-filter: blur(20px) saturate(120%);
-    -webkit-backdrop-filter: blur(20px) saturate(120%);
-    border: 1px solid rgba(160, 160, 160, 0.3);
-    border-radius: 16px;
-    padding: 24px 20px;
-    text-align: center;
-    color: #19365f;
-    box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.15),
-        0 1px 1px rgba(200, 200, 200, 0.4) inset,
-        0 -1px 1px rgba(0, 0, 0, 0.08) inset;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
 
-.kpi-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        rgba(180, 180, 180, 0.5) 20%, 
-        rgba(200, 200, 200, 0.8) 50%, 
-        rgba(180, 180, 180, 0.5) 80%, 
-        transparent 100%);
-    z-index: 1;
-}
-
-.kpi-card:hover {
-    background: rgba(128, 128, 128, 0.3);
-    backdrop-filter: blur(25px) saturate(140%);
-    -webkit-backdrop-filter: blur(25px) saturate(140%);
-    box-shadow: 
-        0 12px 40px rgba(0, 0, 0, 0.2),
-        0 2px 2px rgba(200, 200, 200, 0.5) inset,
-        0 -2px 2px rgba(0, 0, 0, 0.1) inset;
-    transform: translateY(-3px);
-    border-color: rgba(160, 160, 160, 0.4);
-}
-
-.kpi-outro {
-    color: #DAA520; /* Goldenrod - amarelo escuro vivo */
-}
-
-.kpi-card #kpiPercentOutro {
-    color: #DAA520;
-    font-weight: 700;
-    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
-}
-
-/* Correção específica para tooltips dos gráficos */
-.chart-container {
-    background: rgba(200, 200, 200, 0.3);
-    backdrop-filter: blur(20px) saturate(120%);
-    -webkit-backdrop-filter: blur(20px) saturate(120%);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 16px;
-    padding: 24px 20px;
-    box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.1),
-        0 1px 1px rgba(255, 255, 255, 0.8) inset,
-        0 -1px 1px rgba(0, 0, 0, 0.05) inset;
-    position: relative;
-    overflow: visible !important; /* Garantir que tooltips não são cortados */
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    z-index: 10; /* Z-index baixo para não interferir com tooltips */
-}
-
-/* Área dos gráficos dentro dos containers */
-.chart-equipa,
-.chart-idade,
-.chart-tempo,
-.chart-nivel,
-.chart-geografia,
-.chart-genero,
-#chartContainer,
-#chartIdadeMedia,
-#chartTempoMedio,
-#chartNivelHierarquico,
-#chartGeografia,
-#chartGenero {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 12px;
-    padding: 16px;
-    margin: 12px auto 0 auto;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    overflow: visible !important; /* Permitir que tooltips saiam da área */
-    position: relative;
-    z-index: 100; /* Z-index alto para tooltips */
-}
-
-/* Estilo personalizado para tooltips CanvasJS */
-.canvasjs-chart-tooltip {
-    position: absolute !important;
-    z-index: 9999 !important;
-    pointer-events: none !important;
-    border-radius: 4px !important;
-    padding: 8px 12px !important;
-    font-size: 12px !important;
-    font-weight: 500 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-    max-width: 200px !important;
-    word-wrap: break-word !important;
-}
-
-/* FORÇAR TOOLTIPS MAIS ACIMA - CSS ESPECÍFICO */
-.canvasjs-chart-tooltip {
-    transform: translateY(-80px) !important;
-    -webkit-transform: translateY(-80px) !important;
-    -moz-transform: translateY(-80px) !important;
-    margin-top: -80px !important;
-    top: auto !important;
-    position: absolute !important;
-    z-index: 99999 !important;
-}
-
-/* Tooltip alternativo - caso o primeiro não funcione */
-div[style*="position: absolute"][style*="background"] {
-    transform: translateY(-80px) !important;
-    margin-top: -80px !important;
-}
-
-/* Para tooltips que usam classes específicas do CanvasJS */
-.canvasjs-tooltip {
-    transform: translateY(-80px) !important;
-    margin-top: -80px !important;
-    top: auto !important;
-}
-
-/* Forçar todos os elementos tooltip dentro dos gráficos */
-#chartContainer *[style*="position: absolute"],
-#chartIdadeMedia *[style*="position: absolute"],
-#chartTempoMedio *[style*="position: absolute"],
-#chartNivelHierarquico *[style*="position: absolute"],
-#chartGeografia *[style*="position: absolute"],
-#chartGenero *[style*="position: absolute"] {
-    transform: translateY(-80px) !important;
-    margin-top: -80px !important;
-}
-
-/* Específico para elementos que começam com canvasjs */
-div[class*="canvasjs"][style*="position"] {
-    transform: translateY(-80px) !important;
-    margin-top: -80px !important;
-}
-
-/* Garantir que o grid principal não corta tooltips */
-.dashboard-main-charts {
-    display: grid;
-    grid-template-columns: 2fr 2fr;
-    gap: 18px;
-    margin-bottom: 24px;
-    overflow: visible; /* Importante para tooltips */
-}
-
-/* Garantir z-index adequado para todo o dashboard */
-main {
-    position: relative;
-    z-index: 1;
-    overflow: visible;
-}
 
 /* Responsivo */
 @media (max-width: 900px) {
@@ -458,11 +285,10 @@ main {
     }
 }
 h1 {
-    color: #19365f;
+    color: #3b5bdb;
+    font-size: 2.1rem;
+    margin-top: 32px;
     text-align: center;
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin: 4px 0 32px 0;
     letter-spacing: 1px;
 }
 
@@ -470,39 +296,5 @@ h1 {
     color: #fff;
     border-radius: 10px;
     padding: 40px 500px;
-    font-size: 1.05rem;
-}
-/* Marca colorida acima do título */
-.portal-brand {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin: 0px 0 12px 0;
-}
-
-.color-bar {
-    height: 6px;
-    width: 80px;
-    border-radius: 3px;
-    display: flex;
-}
-
-.color-segment {
-    flex: 1;
-    height: 100%;
-}
-
-.color-segment:first-child {
-    background: #8155ff;
-    border-radius: 3px 0 0 3px;
-}
-
-.color-segment:nth-child(2) {
-    background: #ff9b37;
-}
-
-.color-segment:last-child {
-    background: #3ed829;
-    border-radius: 0 3px 3px 0;
+    font-size: 1.05rem;
 }

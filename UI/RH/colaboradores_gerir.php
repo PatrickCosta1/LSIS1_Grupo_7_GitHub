@@ -28,14 +28,36 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
-                <a href="dashboard_rh.php">Dashboard</a>
-                <a href="colaboradores_gerir.php">Colaboradores</a>
-                <a href="equipas.php">Equipas</a>
-                <a href="relatorios.php">Relatórios</a>
-                <a href="exportar.php">Exportar</a>
-                <a href="../Comuns/notificacoes.php">Notificações</a>
-                <a href="../Comuns/perfil.php">Perfil</a>
-                <a href="../Comuns/logout.php">Sair</a>
+                <div class="dropdown-equipas">
+                <a href="equipas.php" class="equipas-link">
+                    Equipas
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="relatorios.php">Relatórios</a>
+                    <a href="dashboard_rh.php">Dashboard</a>
+                </div>
+            </div>
+            <div class="dropdown-colaboradores">
+                <a href="colaboradores_gerir.php" class="colaboradores-link">
+                    Colaboradores
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="exportar.php">Exportar</a>
+                </div>
+            </div>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a>
 
             <?php endif; ?>
         </nav>
@@ -50,7 +72,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                         <th>Username</th>
                         <th>Email</th>
                         <th>Tipo</th>
-                        <th>Equipa</th>
+                        <th>Equipas</th>
                         <th style="min-width:90px;">Ações</th>
                     </tr>
                 </thead>
@@ -80,7 +102,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                             }
                             ?>
                         </td>
-                        <td><?php echo htmlspecialchars($col['equipa']); ?></td>
+                        <td><?php echo htmlspecialchars($col['equipas']); ?></td>
                         <td>
                             <a href="../Colaborador/ficha_colaborador.php?id=<?php echo $col['id']; ?>" class="btn btn-sm">Ver</a>
                             <a href="#" class="btn btn-danger btn-sm">Remover</a>

@@ -147,6 +147,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     'comprovativo_cartao_continente' => $colab['comprovativo_cartao_continente'] ?? ''
 ];
 
+    // Adicionar id do colaborador ao array de dados se RH/Admin estiver a editar outro colaborador
+    if (($isRH || $isAdmin) && $editColabId) {
+        $dados['id'] = $editColabId;
+    }
+
     // Array para controlar quais comprovativos foram alterados
     $comprovantivosPedidos = [];
 
@@ -356,14 +361,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php elseif ($perfil === 'rh'): ?>
-                <a href="../RH/dashboard_rh.php">Dashboard</a>
-                <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-                <a href="../RH/equipas.php">Equipas</a>
-                <a href="../RH/relatorios.php">Relatórios</a>
-                <a href="../RH/exportar.php">Exportar</a>
+                    <div class="dropdown-equipas">
+                    <a href="../RH/equipas.php" class="equipas-link">
+                        Equipas
+                        <span class="seta-baixo">&#9662;</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="../RH/relatorios.php">Relatórios</a>
+                        <a href="../RH/dashboard_rh.php">Dashboard</a>
+                    </div>
+                </div>
+                <div class="dropdown-colaboradores">
+                    <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
+                        Colaboradores
+                        <span class="seta-baixo">&#9662;</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="../RH/exportar.php">Exportar</a>
+                    </div>
+                </div>
                 <a href="../Comuns/notificacoes.php">Notificações</a>
-                <a href="../Comuns/perfil.php">Perfil</a>
+                <div class="dropdown-perfil">
+                    <a href="../Comuns/perfil.php" class="perfil-link">
+                        Perfil
+                        <span class="seta-baixo">&#9662;</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
+                    </div>
+                </div>
                 <a href="../Comuns/logout.php">Sair</a>
+                
             <?php elseif ($perfil === 'admin'): ?>
                 <a href="../Admin/utilizadores.php">Utilizadores</a>
                 <a href="../Admin/permissoes.php">Permissões</a>
@@ -473,7 +501,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <span class="portal-text">Portal Do Colaborador</span>
 </div>
 <form method="POST" enctype="multipart/form-data">
-
+    <?php if (($isRH || $isAdmin) && $editColabId): ?>
+        <input type="hidden" name="id" value="<?php echo htmlspecialchars($editColabId); ?>">
+    <?php endif; ?>
 <div id="ficha-dados-pessoais" class="ficha-container ficha-container-primarios">
     <div class="ficha-section-titulo">Dados Pessoais</div>
     <div class="ficha-grid">
@@ -506,15 +536,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="ficha-campo">
                 <label>Nº Telemóvel:</label>
                 <div style="display: flex; gap: 8px;">
+                    <?php
+                    // Separar DDI e número para mostrar corretamente
+                    $telemovelCompleto = $colab['telemovel'] ?? '';
+                    $ddi = '+351';
+                    $numeroTel = '';
+                    if ($telemovelCompleto) {
+                        if (preg_match('/^(\+\d{2,3})(\d{9})$/', $telemovelCompleto, $m)) {
+                            $ddi = $m[1];
+                            $numeroTel = $m[2];
+                        } elseif (preg_match('/^(\+\d{2,3})(\d{3,9})$/', $telemovelCompleto, $m)) {
+                            $ddi = $m[1];
+                            $numeroTel = $m[2];
+                        } else {
+                            // fallback: se não corresponder ao padrão, tenta separar os primeiros 4 caracteres
+                            $ddi = substr($telemovelCompleto, 0, 4);
+                            $numeroTel = substr($telemovelCompleto, 4);
+                        }
+                    }
+                    ?>
                     <select name="ddi_telemovel" style="width: 80px;" <?php echo selectAttr('telemovel', $canEditAll, $colabEditable); ?>>
-                        <option value="+351" <?php if (strpos($colab['telemovel'] ?? '', '+351') === 0) echo 'selected'; ?>>+351</option>
-                        <option value="+34" <?php if (strpos($colab['telemovel'] ?? '', '+34') === 0) echo 'selected'; ?>>+34</option>
-                        <option value="+33" <?php if (strpos($colab['telemovel'] ?? '', '+33') === 0) echo 'selected'; ?>>+33</option>
-                        <option value="+44" <?php if (strpos($colab['telemovel'] ?? '', '+44') === 0) echo 'selected'; ?>>+44</option>
-                        <option value="+49" <?php if (strpos($colab['telemovel'] ?? '', '+49') === 0) echo 'selected'; ?>>+49</option>
+                        <option value="+351" <?php if ($ddi === '+351') echo 'selected'; ?>>+351</option>
+                        <option value="+34" <?php if ($ddi === '+34') echo 'selected'; ?>>+34</option>
+                        <option value="+33" <?php if ($ddi === '+33') echo 'selected'; ?>>+33</option>
+                        <option value="+44" <?php if ($ddi === '+44') echo 'selected'; ?>>+44</option>
+                        <option value="+49" <?php if ($ddi === '+49') echo 'selected'; ?>>+49</option>
                     </select>
-                    <input type="tel" name="numero_telemovel" pattern="[0-9]{9}" maxlength="9" placeholder="9 dígitos" 
-                           value="<?php echo htmlspecialchars(preg_replace('/^\+[0-9]+/', '', $colab['telemovel'] ?? '')); ?>" 
+                    <input type="tel" name="numero_telemovel" pattern="[0-9]{9}" maxlength="9" placeholder="9 dígitos"
+                           value="<?php echo htmlspecialchars($numeroTel); ?>"
                            <?php echo fieldAttr('telemovel', $canEditAll, $colabEditable); ?>>
                 </div>
             </div>
@@ -1297,6 +1346,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (remuneracao && remuneracao.value) {
             remuneracao.value = '€' + remuneracao.value;
         }
+
+        // Adicionar id do colaborador ao POST se RH/Admin estiver a editar outro colaborador
+        <?php if (($isRH || $isAdmin) && $editColabId): ?>
+        const hiddenId = document.createElement('input');
+        hiddenId.type = 'hidden';
+        hiddenId.name = 'id';
+        hiddenId.value = '<?php echo htmlspecialchars($editColabId); ?>';
+        form.appendChild(hiddenId);
+        <?php endif; ?>
     });
 
     function showFieldError(field, message) {

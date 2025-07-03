@@ -33,6 +33,20 @@ class DAL_FichaColaborador {
         return $stmt->execute($params);
     }
 
+    // Novo método para atualizar pelo id do colaborador (usado por RH/Admin)
+    public function updateColaboradorById($colabId, $dados) {
+        $set = [];
+        $params = [];
+        foreach ($dados as $campo => $valor) {
+            $set[] = "$campo = ?";
+            $params[] = $valor;
+        }
+        $params[] = $colabId;
+        $sql = "UPDATE colaboradores SET " . implode(', ', $set) . " WHERE id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute($params);
+    }
+
     public function criarPedidoAlteracao($colaboradorId, $campo, $valorNovo, $valorAntigo) {
         $stmt = $this->pdo->prepare("INSERT INTO pedidos_alteracao_ficha (colaborador_id, campo, valor_novo, valor_antigo, estado, data_pedido) VALUES (?, ?, ?, ?, 'pendente', NOW())");
         return $stmt->execute([$colaboradorId, $campo, $valorNovo, $valorAntigo]);

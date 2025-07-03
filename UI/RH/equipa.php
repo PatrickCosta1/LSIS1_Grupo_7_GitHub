@@ -173,14 +173,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <header>
     <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='equipas.php';">
     <nav>
-        <a href="dashboard_rh.php">Dashboard</a>
-        <a href="colaboradores_gerir.php">Colaboradores</a>
-        <a href="equipas.php" class="active">Equipas</a>
-        <a href="relatorios.php">Relatórios</a>
-        <a href="exportar.php">Exportar</a>
-        <a href="../Comuns/notificacoes.php">Notificações</a>
-        <a href="../Comuns/perfil.php">Perfil</a>
-        <a href="../Comuns/logout.php">Sair</a>
+        <div class="dropdown-equipas">
+                <a href="equipas.php" class="equipas-link">
+                    Equipas
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="relatorios.php">Relatórios</a>
+                    <a href="dashboard_rh.php">Dashboard</a>
+                </div>
+            </div>
+            <div class="dropdown-colaboradores">
+                <a href="colaboradores_gerir.php" class="colaboradores-link">
+                    Colaboradores
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="exportar.php">Exportar</a>
+                </div>
+            </div>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <a href="../Comuns/perfil.php">Perfil</a>
+            <a href="../Comuns/logout.php">Sair</a>
     </nav>
 </header>
 <main>
