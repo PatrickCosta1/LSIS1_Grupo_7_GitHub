@@ -683,92 +683,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['onboarding_token'])) 
                         </div>
                     <?php endforeach; ?>
                 </div>
-                <!-- Modal de Onboarding -->
-                <div id="modalOnboarding" class="modal-onboarding-bg" style="display:none;">
-                    <div class="modal-onboarding-content">
-                        <button class="close" onclick="fecharModalOnboarding()" title="Fechar">&times;</button>
-                        <div class="modal-onboarding-header">
-                            <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="modal-onboarding-logo">
-                            <h2>Ficha de Onboarding do Candidato</h2>
-                        </div>
-                        <div id="onboarding-dados" class="onboarding-dados-detalhes">
-                            <!-- Conteúdo preenchido via JS -->
-                        </div>
-                        <form method="POST" id="formAprovarOnboarding" class="modal-onboarding-actions">
-                            <input type="hidden" name="onboarding_token" id="onboarding_token">
-                            <button type="submit" name="aprovar_onboarding" class="btn btn-aprovar" title="Aceitar este onboarding">
-                                <span>✔ Aceitar</span>
-                            </button>
-                            <button type="submit" name="recusar_onboarding" class="btn btn-recusar" title="Recusar este onboarding">
-                                <span>✖ Recusar</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                <script>
-                // Abrir modal e buscar dados via AJAX
-                document.querySelectorAll('.btn-ver-onboarding').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const token = this.getAttribute('data-token');
-                        fetch('../../BLL/RH/ajax_onboarding_dados.php?token=' + encodeURIComponent(token))
-                            .then(r => r.json())
-                            .then(data => {
-                                if (data && data.dados) {
-                                    let html = '<ul class="onboarding-campos-lista">';
-                                    // Ordem amigável dos campos
-                                    const ordem = [
-                                        'nome','apelido','data_nascimento','morada','localidade','codigo_postal','telemovel','sexo','estado_civil','habilitacoes','curso','nif','niss','iban','nome_contacto_emergencia','grau_relacionamento','contacto_emergencia'
-                                    ];
-                                    const labels = {
-                                        nome: "Primeiro Nome",
-                                        apelido: "Apelido",
-                                        data_nascimento: "Data de Nascimento",
-                                        morada: "Morada",
-                                        localidade: "Localidade",
-                                        codigo_postal: "Código Postal",
-                                        telemovel: "Telemóvel",
-                                        sexo: "Sexo",
-                                        estado_civil: "Estado Civil",
-                                        habilitacoes: "Habilitações Literárias",
-                                        curso: "Curso",
-                                        nif: "NIF",
-                                        niss: "NISS",
-                                        iban: "IBAN",
-                                        nome_contacto_emergencia: "Nome Contacto Emergência",
-                                        grau_relacionamento: "Grau de Parentesco",
-                                        contacto_emergencia: "Nº Contacto Emergência"
-                                    };
-                                    ordem.forEach(k => {
-                                        if (data.dados[k] !== undefined) {
-                                            html += `<li>
-                                                <span class="campo-label">${labels[k] ?? k}:</span>
-                                                <span class="campo-valor">${data.dados[k]}</span>
-                                            </li>`;
-                                        }
-                                    });
-                                    html += '</ul>';
-                                    document.getElementById('onboarding-dados').innerHTML = html;
-                                    document.getElementById('onboarding_token').value = token;
-                                    document.getElementById('modalOnboarding').style.display = 'flex';
-                                    document.body.style.overflow = 'hidden';
-                                } else {
-                                    document.getElementById('onboarding-dados').innerHTML = '<div style="color:red;">Erro ao carregar dados.</div>';
-                                }
-                            });
-                    });
-                });
-                function fecharModalOnboarding() {
-                    document.getElementById('modalOnboarding').style.display = 'none';
-                    document.body.style.overflow = '';
-                }
-                window.addEventListener('keydown', function(e) {
-                    if (e.key === "Escape") fecharModalOnboarding();
-                });
-                window.onclick = function(event) {
-                    const modal = document.getElementById('modalOnboarding');
-                    if (event.target === modal) fecharModalOnboarding();
-                }
-                </script>
             <?php endif; ?>
         <?php endif; ?>
 
@@ -931,6 +845,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['onboarding_token'])) 
             }
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Abrir modal e buscar dados via AJAX
+        document.querySelectorAll('.btn-ver-onboarding').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const token = this.getAttribute('data-token');
+                fetch('../../BLL/RH/ajax_onboarding_dados.php?token=' + encodeURIComponent(token))
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data && data.dados) {
+                            let html = '<ul class="onboarding-campos-lista">';
+                            const ordem = [
+                                'nome','apelido','data_nascimento','morada','localidade','codigo_postal','telemovel','sexo','estado_civil','habilitacoes','curso','nif','niss','iban','nome_contacto_emergencia','grau_relacionamento','contacto_emergencia'
+                            ];
+                            const labels = {
+                                nome: "Primeiro Nome",
+                                apelido: "Apelido",
+                                data_nascimento: "Data de Nascimento",
+                                morada: "Morada",
+                                localidade: "Localidade",
+                                codigo_postal: "Código Postal",
+                                telemovel: "Telemóvel",
+                                sexo: "Sexo",
+                                estado_civil: "Estado Civil",
+                                habilitacoes: "Habilitações Literárias",
+                                curso: "Curso",
+                                nif: "NIF",
+                                niss: "NISS",
+                                iban: "IBAN",
+                                nome_contacto_emergencia: "Nome Contacto Emergência",
+                                grau_relacionamento: "Grau de Parentesco",
+                                contacto_emergencia: "Nº Contacto Emergência"
+                            };
+                            ordem.forEach(k => {
+                                if (data.dados[k] !== undefined) {
+                                    html += `<li>
+                                        <span class="campo-label">${labels[k] ?? k}:</span>
+                                        <span class="campo-valor">${data.dados[k]}</span>
+                                    </li>`;
+                                }
+                            });
+                            html += '</ul>';
+                            document.getElementById('onboarding-dados').innerHTML = html;
+                            document.getElementById('onboarding_token').value = token;
+                            document.getElementById('modalOnboarding').style.display = 'flex';
+                            document.body.style.overflow = 'hidden';
+                        } else {
+                            document.getElementById('onboarding-dados').innerHTML = '<div style="color:red;">Erro ao carregar dados.</div>';
+                        }
+                    });
+            });
+        });
+    });
+
+    function fecharModalOnboarding() {
+        document.getElementById('modalOnboarding').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    window.addEventListener('keydown', function(e) {
+        if (e.key === "Escape") fecharModalOnboarding();
+    });
     </script>
 
     <?php if (isset($_GET['onboarding_popup'])): 
@@ -947,9 +922,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['onboarding_token'])) 
                 O colaborador foi integrado.<br>
                 <b>Aceda à ficha do colaborador para completar ou atualizar os dados finais.</b>
             </p>
-            <?php if ($novoColabId): ?>
-                <a href="../Colaborador/ficha_colaborador.php?id=<?= urlencode($novoColabId) ?>" class="btn-ficha">Ir para Ficha do Colaborador</a>
-            <?php endif; ?>
         </div>
     </div>
     <script>

@@ -64,6 +64,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../../assets/CSS/RH/colaborador_novo.css">
 </head>
 <body>
+    <header>
+    <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='equipas.php';">
+    <nav>
+        <div class="dropdown-equipas">
+                <a href="equipas.php" class="equipas-link">
+                    Equipas
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="relatorios.php">Relatórios</a>
+                    <a href="dashboard_rh.php">Dashboard</a>
+                </div>
+            </div>
+            <div class="dropdown-colaboradores">
+                <a href="colaboradores_gerir.php" class="colaboradores-link">
+                    Colaboradores
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="exportar.php">Exportar</a>
+                </div>
+            </div>
+            <div class="dropdown-gestao">
+                <a href="#" class="gestao-link">
+                    Gestão
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="gerir_beneficios.php">Gerir Benefícios</a>
+                    <a href="gerir_formacoes.php">Gerir Formações</a>
+                    <a href="gerir_recibos.php">Submeter Recibos</a>
+                </div>
+            </div>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a>
+    </nav>
+</header>
 <div class="novo-colaborador-container">
     <h1>Adicionar Novo Colaborador (Onboarding)</h1>
     <?php if ($success): ?>

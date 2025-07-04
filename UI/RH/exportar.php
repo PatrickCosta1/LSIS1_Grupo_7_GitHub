@@ -84,7 +84,6 @@ if (isset($_GET['export'])) {
     <meta charset="UTF-8">
     <title>Exportar Dados - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/exportar.css">
-    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
     <script>
     // Mostra/esconde selects conforme opção
     function onTipoChange() {

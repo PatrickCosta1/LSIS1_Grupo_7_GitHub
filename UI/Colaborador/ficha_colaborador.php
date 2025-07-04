@@ -24,13 +24,14 @@ $colabBLL = new ColaboradorFichaManager();
 $editColabId = $_GET['id'] ?? null;
 $targetUserId = $userId;
 
-// Corrigir: RH/Admin pode editar qualquer colaborador via ?id= (id do colaborador, não utilizador)
 if (in_array($perfil, ['rh', 'admin']) && $editColabId) {
+    // Buscar colaborador pelo ID de colaborador
     $colab = $colabBLL->getColaboradorById($editColabId);
     if ($colab && isset($colab['utilizador_id'])) {
         $targetUserId = $colab['utilizador_id'];
     } else {
-        header('Location: ../Comuns/erro.php');
+        // Mostra erro apenas se realmente não existir colaborador com esse ID
+        echo "<div style='color:red;padding:24px;'>Colaborador não encontrado (ID: ".htmlspecialchars($editColabId).").</div>";
         exit();
     }
 } else {
