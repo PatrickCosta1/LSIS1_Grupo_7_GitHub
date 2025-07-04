@@ -77,22 +77,23 @@ $indicadores = $relatoriosBLL->getIndicadoresGlobais();
         <section class="dashboard-cards">
             <div class="card">
                 <h2>Aniversários por Equipa</h2>
-                <a href="#" class="btn">Ver Relatório</a>
+                <a href="./relatorio_aniversarios.php" class="btn" style="display:inline-block;">Ver Relatório</a>
             </div>
             <div class="card">
                 <h2>Alterações Contratuais</h2>
-                <a href="#" class="btn">Ver Relatório</a>
+                <a href="./relatorio_alteracoes.php" class="btn" style="display:inline-block;">Ver Relatório</a>
             </div>
             <div class="card">
                 <h2>Vouchers Atribuídos</h2>
-                <a href="#" class="btn">Ver Relatório</a>
+                <a href="./relatorio_vouchers.php" class="btn" style="display:inline-block;">Ver Relatório</a>
             </div>
             <div class="card">
                 <h2>Dashboards de Equipa</h2>
-                <a href="#" class="btn">Ver Dashboard</a>
+                <a href="./dashboard_rh.php" class="btn" style="display:inline-block;">Ver Dashboard</a>
             </div>
         </section>
     </main>
+jscjbsj
 
     <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
       <button id="open-chatbot" style="
