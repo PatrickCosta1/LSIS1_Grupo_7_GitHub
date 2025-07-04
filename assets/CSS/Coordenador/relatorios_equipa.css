@@ -53,12 +53,12 @@ header nav a.active {
 
 /* Título principal */
 main h1 {
-    color: #667eea;
+    color: #19365f; /* Aplicar a cor azul escuro aos títulos */
     text-align: center;
     font-size: 2.2rem;
     font-weight: 700;
-    margin: 40px 0 24px 0;
-    letter-spacing: 0.5px;
+    margin: 4px 0 32px 0;
+    letter-spacing: 1px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.08);
 }
 
@@ -238,6 +238,49 @@ header nav a:hover::before {
 
 .dropdown-perfil:hover .dropdown-menu {
     display: block;
+}
+
+/* Marca colorida acima do título */
+.portal-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0px 0 12px 0;
+}
+
+.color-bar {
+    height: 6px;
+    width: 80px;
+    border-radius: 3px;
+    display: flex;
+}
+
+.color-segment {
+    flex: 1;
+    height: 100%;
+}
+
+.color-segment:first-child {
+    background: #8155ff;
+    border-radius: 3px 0 0 3px;
+}
+
+.color-segment:nth-child(2) {
+    background: #ff9b37;
+}
+
+.color-segment:last-child {
+    background: #3ed829;
+    border-radius: 0 3px 3px 0;
+}
+
+.portal-text {
+    font-size: 0.75rem;
+    color: #19365f;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 /* Dropdown Equipa */

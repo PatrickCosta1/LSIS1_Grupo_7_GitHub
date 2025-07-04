@@ -8,9 +8,17 @@ if (!$userId || !in_array($perfil, ['colaborador', 'coordenador', 'rh', 'admin']
     exit();
 }
 
-require_once '../../BLL/Colaborador/BLL_recibos_vencimento.php';
-$recibosManager = new RecibosVencimentoManager();
-$recibos = $recibosManager->getRecibosPorColaborador($_SESSION['user_id']);
+require_once '../../BLL/Colaborador/BLL_ficha_colaborador.php';
+$colabBLL = new ColaboradorFichaManager();
+$colab = $colabBLL->getColaboradorByUserId($userId);
+$colaborador_id = $colab['id'] ?? null;
+
+require_once '../../BLL/RH/BLL_recibos_vencimento.php';
+$recibosManager = new RHRecibosManager();
+$recibos = [];
+if ($colaborador_id) {
+    $recibos = $recibosManager->getRecibosPorColaborador($colaborador_id);
+}
 
 // Nome do colaborador (opcional)
 $nome = isset($_SESSION['nome']) ? htmlspecialchars($_SESSION['nome']) : 'Colaborador';
@@ -113,10 +121,20 @@ $nome = isset($_SESSION['nome']) ? htmlspecialchars($_SESSION['nome']) : 'Colabo
                 <div class="recibo-card">
                     <div class="recibo-info">
                         <div class="recibo-nome"><?= htmlspecialchars($recibo['nome_ficheiro']) ?></div>
-                        <div class="recibo-data"><?= date('F Y', strtotime($recibo['mes_ano'])) ?></div>
+                        <div class="recibo-data">
+                            <?php
+                                $meses = [
+                                    '01'=>'Janeiro','02'=>'Fevereiro','03'=>'Março','04'=>'Abril','05'=>'Maio','06'=>'Junho',
+                                    '07'=>'Julho','08'=>'Agosto','09'=>'Setembro','10'=>'Outubro','11'=>'Novembro','12'=>'Dezembro'
+                                ];
+                                $mes = str_pad($recibo['mes'], 2, '0', STR_PAD_LEFT);
+                                $ano = $recibo['ano'];
+                                echo $meses[$mes] . ' ' . $ano;
+                            ?>
+                        </div>
                     </div>
                     <div class="recibo-acoes">
-                        <a href="../../Uploads/Recibos/<?= htmlspecialchars($recibo['caminho_ficheiro']) ?>" 
+                        <a href="../../Uploads/<?= htmlspecialchars($recibo['nome_ficheiro']) ?>"
                            target="_blank" class="btn-download">
                             <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>

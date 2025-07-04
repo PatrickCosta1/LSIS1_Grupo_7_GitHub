@@ -56,6 +56,15 @@ $equipa_id = isset($_GET['equipa_id']) ? $_GET['equipa_id'] : (isset($equipas[0]
             <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
+
+    <div class="portal-brand">
+            <div class="color-bar">
+                <div class="color-segment"></div>
+                <div class="color-segment"></div>
+                <div class="color-segment"></div>
+            </div>
+            <span class="portal-text">Portal Do Colaborador</span>
+        </div>
     <main>
     <h1>Relatórios das Equipas</h1>
     <?php if (count($equipas) > 1): ?>

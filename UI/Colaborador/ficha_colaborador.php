@@ -362,35 +362,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="../Comuns/logout.php">Sair</a>
             <?php elseif ($perfil === 'rh'): ?>
                     <div class="dropdown-equipas">
-                    <a href="../RH/equipas.php" class="equipas-link">
-                        Equipas
-                        <span class="seta-baixo">&#9662;</span>
-                    </a>
-                    <div class="dropdown-menu">
-                        <a href="../RH/relatorios.php">Relatórios</a>
-                        <a href="../RH/dashboard_rh.php">Dashboard</a>
-                    </div>
+                <a href="../RH/equipas.php" class="equipas-link">
+                    Equipas
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/relatorios.php">Relatórios</a>
+                    <a href="../RH/dashboard_rh.php">Dashboard</a>
                 </div>
-                <div class="dropdown-colaboradores">
-                    <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
-                        Colaboradores
-                        <span class="seta-baixo">&#9662;</span>
-                    </a>
-                    <div class="dropdown-menu">
-                        <a href="../RH/exportar.php">Exportar</a>
-                    </div>
+            </div>
+            <div class="dropdown-colaboradores">
+                <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
+                    Colaboradores
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/exportar.php">Exportar</a>
                 </div>
-                <a href="../Comuns/notificacoes.php">Notificações</a>
-                <div class="dropdown-perfil">
-                    <a href="../Comuns/perfil.php" class="perfil-link">
-                        Perfil
-                        <span class="seta-baixo">&#9662;</span>
-                    </a>
-                    <div class="dropdown-menu">
-                        <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
-                    </div>
+            </div>
+            <div class="dropdown-gestao">
+                <a href="#" class="gestao-link">
+                    Gestão
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/gerir_beneficios.php">Gerir Benefícios</a>
+                    <a href="../RH/gerir_formacoes.php">Gerir Formações</a>
                 </div>
-                <a href="../Comuns/logout.php">Sair</a>
+            </div>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a> 
                 
             <?php elseif ($perfil === 'admin'): ?>
                 <a href="../Admin/utilizadores.php">Utilizadores</a>
