@@ -263,46 +263,46 @@ if ($_SESSION['profile'] === 'rh') {
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
                     <?php elseif ($_SESSION['profile'] === 'rh'): ?>
-                <a href="../RH/equipas.php" class="equipas-link">
-                    Equipas
-                    <span class="seta-baixo">&#9662;</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../RH/relatorios.php">Relatórios</a>
-                    <a href="../RH/dashboard_rh.php">Dashboard</a>
-                </div>
-            </div>
-            <div class="dropdown-colaboradores">
-                <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
-                    Colaboradores
-                    <span class="seta-baixo">&#9662;</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../RH/exportar.php">Exportar</a>
-                </div>
-            </div>
-            <div class="dropdown-gestao">
-                <a href="#" class="gestao-link">
-                    Gestão
-                    <span class="seta-baixo">&#9662;</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../RH/gerir_beneficios.php">Gerir Benefícios</a>
-                    <a href="../RH/gerir_formacoes.php">Gerir Formações</a>
-                    <a href="../RH/gerir_recibos.php">Submeter Recibos</a>
-                </div>
-            </div>
-            <a href="../Comuns/notificacoes.php">Notificações</a>
-            <div class="dropdown-perfil">
-                <a href="../Comuns/perfil.php" class="perfil-link">
-                    Perfil
-                    <span class="seta-baixo">&#9662;</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
-                </div>
-            </div>
-            <a href="../Comuns/logout.php">Sair</a>
+                    <div class="dropdown-equipas">
+                        <a href="../RH/equipas.php" class="equipas-link">
+                            Equipas
+                            <span class="seta-baixo">&#9662;</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="../RH/relatorios.php">Relatórios</a>
+                            <a href="../RH/dashboard_rh.php">Dashboard</a>
+                        </div>
+                    </div>
+                    <div class="dropdown-colaboradores">
+                        <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
+                            Colaboradores
+                            <span class="seta-baixo">&#9662;</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="../RH/exportar.php">Exportar</a>
+                        </div>
+                    </div>
+                    <div class="dropdown-gestao">
+                        <a href="#" class="gestao-link">
+                            Gestão
+                            <span class="seta-baixo">&#9662;</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="../RH/gerir_beneficios.php">Gerir Benefícios</a>
+                            <a href="../RH/gerir_formacoes.php">Gerir Formações</a>
+                        </div>
+                    </div>
+                    <a href="../Comuns/notificacoes.php">Notificações</a>
+                    <div class="dropdown-perfil">
+                        <a href="../Comuns/perfil.php" class="perfil-link">
+                            Perfil
+                            <span class="seta-baixo">&#9662;</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
+                        </div>
+                    </div>
+                    <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
                 <a href="../Convidado/onboarding_convidado.php">Preencher Dados</a>
                 <a href="../Comuns/logout.php">Sair</a>
@@ -665,5 +665,34 @@ if ($_SESSION['profile'] === 'rh') {
     });
     </script>
 
+    <?php if ($_SESSION['profile'] === 'colaborador'): ?>
+ <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+      <button id="open-chatbot" style="
+          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
+          color:rgb(255, 255, 255);
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+          font-size: 28px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          ">
+        ?
+      </button>
+      <iframe
+        id="chatbot-iframe"
+        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
+        title="Ajuda Chatbot"
+        width="350"
+        height="500"
+        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+      </iframe>
+    </div>
+    <script src="../../assets/chatbot.js"></script>
+<?php endif; ?>
 </body>
 </html>

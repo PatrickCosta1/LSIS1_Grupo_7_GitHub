@@ -29,7 +29,7 @@ $equipas = $equipasBLL->getAllEquipas();
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
-               <div class="dropdown-equipas">
+            <div class="dropdown-equipas">
                 <a href="equipas.php" class="equipas-link">
                     Equipas
                     <span class="seta-baixo">&#9662;</span>
@@ -56,7 +56,6 @@ $equipas = $equipasBLL->getAllEquipas();
                 <div class="dropdown-menu">
                     <a href="gerir_beneficios.php">Gerir Benefícios</a>
                     <a href="gerir_formacoes.php">Gerir Formações</a>
-                    <a href="gerir_recibos.php">Submeter Recibos</a>
                 </div>
             </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>

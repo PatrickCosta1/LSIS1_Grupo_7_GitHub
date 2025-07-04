@@ -101,20 +101,14 @@ $coordenadores = getResponsaveisDisponiveis($tipoEquipa, $equipaId, $equipa['res
 $colaboradoresFora = getMembrosDisponiveis($tipoEquipa, $equipasBLL);
 $colaboradoresEquipa = $equipasBLL->getColaboradoresDaEquipa($equipaId);
 
-// Remover o responsável da lista de adicionar/remover caso seja equipa de coordenadores ou rh
-if (in_array($tipoEquipa, ['coordenadores', 'rh']) && !empty($equipa['responsavel_id'])) {
-    // Remover o responsável dos colaboradores da equipa
-    $colaboradoresEquipa = array_filter($colaboradoresEquipa, function($colab) use ($equipa) {
-        $id = isset($colab['colaborador_id']) ? $colab['colaborador_id'] : (isset($colab['id']) ? $colab['id'] : null);
-        return $id != $equipa['responsavel_id'];
-    });
-    $colaboradoresEquipa = array_values($colaboradoresEquipa);
-
-    // Remover o responsável dos colaboradores disponíveis para adicionar
+// Remover o responsável da lista de adicionar caso seja equipa RH
+if ($tipoEquipa === 'rh' && !empty($equipa['responsavel_id'])) {
     $colaboradoresFora = array_filter($colaboradoresFora, function($colab) use ($equipa) {
+        // O campo pode ser 'colaborador_id' ou 'id' dependendo da query
         $id = isset($colab['colaborador_id']) ? $colab['colaborador_id'] : (isset($colab['id']) ? $colab['id'] : null);
         return $id != $equipa['responsavel_id'];
     });
+    // Reindexar array para evitar problemas no foreach
     $colaboradoresFora = array_values($colaboradoresFora);
 }
 
@@ -145,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['nome']) && isset($_POST['responsavel_id'])) {
         $novoNome = trim($_POST['nome']);
         $novoResp = intval($_POST['responsavel_id']); // ID do colaborador
-        $okAtualizar = $equipasBLL->atualizarNomeCoordenador($equipaId, $novoNome, $novoResp, $tipoEquipa);
+        $okAtualizar = $equipasBLL->atualizarNomeCoordenador($equipaId, $novoNome, $novoResp);
         if ($okAtualizar) {
             $success = "Equipa atualizada com sucesso!";
         } else {
@@ -164,20 +158,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipoEquipa = $equipa['tipo'] ?? 'colaboradores';
     $colaboradoresEquipa = $equipasBLL->getColaboradoresDaEquipa($equipaId);
     $colaboradoresFora = getMembrosDisponiveis($tipoEquipa, $equipasBLL);
-    // Remover o responsável das listas após alteração, se necessário
-    if (in_array($tipoEquipa, ['coordenadores', 'rh']) && !empty($equipa['responsavel_id'])) {
-        $colaboradoresEquipa = array_filter($colaboradoresEquipa, function($colab) use ($equipa) {
-            $id = isset($colab['colaborador_id']) ? $colab['colaborador_id'] : (isset($colab['id']) ? $colab['id'] : null);
-            return $id != $equipa['responsavel_id'];
-        });
-        $colaboradoresEquipa = array_values($colaboradoresEquipa);
-
-        $colaboradoresFora = array_filter($colaboradoresFora, function($colab) use ($equipa) {
-            $id = isset($colab['colaborador_id']) ? $colab['colaborador_id'] : (isset($colab['id']) ? $colab['id'] : null);
-            return $id != $equipa['responsavel_id'];
-        });
-        $colaboradoresFora = array_values($colaboradoresFora);
-    }
+    // Recarregar responsáveis após alteração
+    $coordenadores = getResponsaveisDisponiveis($tipoEquipa, $equipaId, $equipa['responsavel_id'] ?? null);
 }
 ?>
 <!DOCTYPE html>
@@ -191,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <header>
     <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='equipas.php';">
     <nav>
-        <div class="dropdown-equipas">
+            <div class="dropdown-equipas">
                 <a href="equipas.php" class="equipas-link">
                     Equipas
                     <span class="seta-baixo">&#9662;</span>
@@ -210,15 +192,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <a href="exportar.php">Exportar</a>
                 </div>
             </div>
+            <div class="dropdown-gestao">
+                <a href="#" class="gestao-link">
+                    Gestão
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="gerir_beneficios.php">Gerir Benefícios</a>
+                    <a href="gerir_formacoes.php">Gerir Formações</a>
+                </div>
+            </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>
-            <a href="recibos_submeter.php">Recibos</a>
             <div class="dropdown-perfil">
                 <a href="../Comuns/perfil.php" class="perfil-link">
                     Perfil
                     <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
-                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
+                    <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
                 </div>
             </div>
             <a href="../Comuns/logout.php">Sair</a>

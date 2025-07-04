@@ -67,7 +67,7 @@ $formacoes = $formacoesBLL->listarFormacoes();
     <header>
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_RH.php';">
         <nav>
-               <div class="dropdown-equipas">
+            <div class="dropdown-equipas">
                 <a href="equipas.php" class="equipas-link">
                     Equipas
                     <span class="seta-baixo">&#9662;</span>
@@ -94,7 +94,6 @@ $formacoes = $formacoesBLL->listarFormacoes();
                 <div class="dropdown-menu">
                     <a href="gerir_beneficios.php">Gerir Benefícios</a>
                     <a href="gerir_formacoes.php">Gerir Formações</a>
-                    <a href="gerir_recibos.php">Submeter Recibos</a>
                 </div>
             </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>

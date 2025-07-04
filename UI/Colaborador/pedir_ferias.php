@@ -40,3 +40,4 @@ if ($colabBLL->criarPedidoFerias($colab['id'], $dataInicio, $dataFim)) {
 } else {
     echo json_encode(['success' => false, 'error' => 'Erro ao submeter pedido de férias.']);
 }
+
