@@ -12,6 +12,6 @@ class InscricoesManager
 
     public function inscrever($colaborador_id, $formacao_nome)
     {
-        $this->dal->inserirInscricao($colaborador_id, $formacao_nome);
+        $this->dal->inscrever($colaborador_id, $formacao_nome);
     }
 }

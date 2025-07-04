@@ -16,52 +16,113 @@ $nome = htmlspecialchars($rhBLL->getRHName($_SESSION['user_id']));
     <link rel="stylesheet" href="../../assets/CSS/RH/pagina_inicial.css">
 </head>
 <body>
+<div class="azul-container">
     <header>
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_RH.php';">
         <nav>
-            <?php if ($_SESSION['profile'] === 'admin'): ?>
-                <a href="../Admin/dashboard_admin.php">Dashboard</a>
-                <a href="../Admin/utilizadores.php">Utilizadores</a>
-                <a href="../Admin/permissoes.php">Permissões</a>
-                <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
-                <a href="../Admin/alertas.php">Alertas</a>
-                <a href="colaboradores_gerir.php">Colaboradores</a>
-                <a href="equipas.php">Equipas</a>
-                <a href="relatorios.php">Relatórios</a>
-                <a href="../Comuns/perfil.php">Perfil</a>
-                <a href="../Comuns/logout.php">Sair</a>
-            <?php else: ?>
-                <a href="dashboard_rh.php">Dashboard</a>
-                <a href="colaboradores_gerir.php">Colaboradores</a>
-                <a href="equipas.php">Equipas</a>
-                <a href="relatorios.php">Relatórios</a>
-                <a href="exportar.php">Exportar</a>
-                <a href="../Comuns/notificacoes.php">Notificações</a>
-                <a href="../Comuns/perfil.php">Perfil</a>
-                <a href="../Comuns/logout.php">Sair</a>
-            <?php endif; ?>
+            <div class="dropdown-equipas">
+                <a href="equipas.php" class="equipas-link">
+                    Equipas
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="relatorios.php">Relatórios</a>
+                    <a href="dashboard_rh.php">Dashboard</a>
+                </div>
+            </div>
+            <div class="dropdown-colaboradores">
+                <a href="colaboradores_gerir.php" class="colaboradores-link">
+                    Colaboradores
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="exportar.php">Exportar</a>
+                </div>
+            </div>
+            <div class="dropdown-gestao">
+                <a href="#" class="gestao-link">
+                    Gestão
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="gerir_beneficios.php">Gerir Benefícios</a>
+                    <a href="gerir_formacoes.php">Gerir Formações</a>
+                    <a href="gerir_recibos.php">Submeter Recibos</a>
+                </div>
+            </div>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a>
+           
         </nav>
     </header>
     <main>
-        <h1 style="text-align:center; margin-top:40px;">Bem-vindo, <?php echo $nome; ?>!</h1>
-        <div class="dashboard-cards" style="display:flex; flex-wrap:wrap; justify-content:center; gap:32px; margin-top:40px;">
-            <a href="colaboradores_gerir.php" class="dashboard-card">
-                <h2>Gestão de Colaboradores</h2>
-                <p>Gerir, adicionar e editar colaboradores.</p>
-            </a>
-            <a href="equipas.php" class="dashboard-card">
-                <h2>Gestão de Equipas</h2>
-                <p>Criar e gerir equipas de trabalho.</p>
-            </a>
-            <a href="relatorios.php" class="dashboard-card">
-                <h2>Relatórios</h2>
-                <p>Consultar e exportar relatórios.</p>
-            </a>
-            <a href="exportar.php" class="dashboard-card">
-                <h2>Exportação</h2>
-                <p>Exportar dados para outros formatos.</p>
-            </a>
-        </div>
+        <h1>Olá, <?php echo $nome; ?>!</h1>
+        <p class="descricao-inicial">
+            Gere os <strong>colaboradores</strong>, acompanhe <strong>relatórios</strong>, organize as <strong>equipas</strong> e exporte dados de forma <strong>eficiente e segura</strong> através do portal de Recursos Humanos.
+        </p>
+
+        <!-- Cards de funcionalidades RH -->
+        <section class="funcionalidades-lista">
+            <div class="funcionalidades-cards">
+                <div class="funcionalidade-card" onclick="window.location.href='dashboard_rh.php'">
+                    <span>Dashboard</span>
+                </div>
+                <div class="funcionalidade-card" onclick="window.location.href='colaboradores_gerir.php'">
+                    <span>Gerir Colaboradores</span>
+                </div>
+                <div class="funcionalidade-card" onclick="window.location.href='equipas.php'">
+                    <span>Gerir Equipas</span>
+                </div>
+                <div class="funcionalidade-card" onclick="window.location.href='relatorios.php'">
+                    <span>Relatórios</span>
+                </div>
+                <div class="funcionalidade-card" onclick="window.location.href='exportar.php'">
+                    <span>Exportar Dados</span>
+                </div>
+            </div>
+        </section>
+
+        
     </main>
+</div>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.rh-card');
+    let idx = 0;
+    
+    // Função para mostrar o próximo card
+    function showNextCard() {
+        cards[idx].classList.remove('active');
+        idx = (idx + 1) % cards.length;
+        cards[idx].classList.add('active');
+    }
+    
+    // Auto-rotação a cada 4 segundos
+    setInterval(showNextCard, 4000);
+    
+    // Click para navegar para a página
+    cards.forEach(card => {
+        card.addEventListener('click', function() {
+            const link = this.getAttribute('data-link');
+            if (link) {
+                window.location.href = link;
+            }
+        });
+    });
+});
+</script>
+
 </body>
 </html>

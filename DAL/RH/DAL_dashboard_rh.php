@@ -185,6 +185,34 @@ class DAL_DashboardRH {
         }
         return $result;
     }
+
+    // Novo: colaboradores por equipa e nível hierárquico
+    public function getColaboradoresNivelHierarquicoPorEquipa() {
+        $pdo = Database::getConnection();
+        $sql = "
+            SELECT e.nome as equipa_nome, c.nivel_hierarquico
+            FROM equipa_colaboradores ec
+            INNER JOIN equipas e ON ec.equipa_id = e.id
+            INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+            WHERE c.nivel_hierarquico IS NOT NULL AND c.nivel_hierarquico != ''
+        ";
+        $stmt = $pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Novo: colaboradores por equipa e localidade
+    public function getColaboradoresLocalidadePorEquipa() {
+        $pdo = Database::getConnection();
+        $sql = "
+            SELECT e.nome as equipa_nome, c.localidade
+            FROM equipa_colaboradores ec
+            INNER JOIN equipas e ON ec.equipa_id = e.id
+            INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+            WHERE c.localidade IS NOT NULL AND c.localidade != ''
+        ";
+        $stmt = $pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 // Nenhuma alteração necessária para centralização dos gráficos
 ?>

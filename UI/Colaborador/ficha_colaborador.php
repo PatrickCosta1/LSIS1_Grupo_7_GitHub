@@ -147,6 +147,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     'comprovativo_cartao_continente' => $colab['comprovativo_cartao_continente'] ?? ''
 ];
 
+    // Adicionar id do colaborador ao array de dados se RH/Admin estiver a editar outro colaborador
+    if (($isRH || $isAdmin) && $editColabId) {
+        $dados['id'] = $editColabId;
+    }
+
     // Array para controlar quais comprovativos foram alterados
     $comprovantivosPedidos = [];
 
@@ -293,11 +298,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             alt="Logo Tlantic"
             class="logo-header2"
             <?php if ($perfil === 'colaborador'): ?>
-                style="cursor:pointer;" onclick="window.location.href='pagina_inicial_colaborador.php';"
+                onclick="window.location.href='pagina_inicial_colaborador.php';"
             <?php elseif ($perfil === 'coordenador'): ?> 
-                     style="cursor:pointer;" onclick="window.location.href='../Coordenador/pagina_inicial_coordenador.php';"
+                     onclick="window.location.href='../Coordenador/pagina_inicial_coordenador.php';"
             <?php elseif ($perfil === 'rh'): ?> 
-                     style="cursor:pointer;" onclick="window.location.href='../RH/pagina_inicial_RH.php';"
+                     onclick="window.location.href='../RH/pagina_inicial_RH.php';"
             <?php endif; ?>
         >
         <nav class="nav-links">
@@ -356,14 +361,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php elseif ($perfil === 'rh'): ?>
-                <a href="../RH/dashboard_rh.php">Dashboard</a>
-                <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-                <a href="../RH/equipas.php">Equipas</a>
-                <a href="../RH/relatorios.php">Relatórios</a>
-                <a href="../RH/exportar.php">Exportar</a>
-                <a href="../Comuns/notificacoes.php">Notificações</a>
-                <a href="../Comuns/perfil.php">Perfil</a>
-                <a href="../Comuns/logout.php">Sair</a>
+                    <div class="dropdown-equipas">
+                <a href="../RH/equipas.php" class="equipas-link">
+                    Equipas
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/relatorios.php">Relatórios</a>
+                    <a href="../RH/dashboard_rh.php">Dashboard</a>
+                </div>
+            </div>
+            <div class="dropdown-colaboradores">
+                <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
+                    Colaboradores
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/exportar.php">Exportar</a>
+                </div>
+            </div>
+            <div class="dropdown-gestao">
+                <a href="#" class="gestao-link">
+                    Gestão
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/gerir_beneficios.php">Gerir Benefícios</a>
+                    <a href="../RH/gerir_formacoes.php">Gerir Formações</a>
+                </div>
+            </div>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a> 
+                
             <?php elseif ($perfil === 'admin'): ?>
                 <a href="../Admin/utilizadores.php">Utilizadores</a>
                 <a href="../Admin/permissoes.php">Permissões</a>
@@ -473,7 +511,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <span class="portal-text">Portal Do Colaborador</span>
 </div>
 <form method="POST" enctype="multipart/form-data">
-
+    <?php if (($isRH || $isAdmin) && $editColabId): ?>
+        <input type="hidden" name="id" value="<?php echo htmlspecialchars($editColabId); ?>">
+    <?php endif; ?>
 <div id="ficha-dados-pessoais" class="ficha-container ficha-container-primarios">
     <div class="ficha-section-titulo">Dados Pessoais</div>
     <div class="ficha-grid">
@@ -505,16 +545,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="ficha-campo">
                 <label>Nº Telemóvel:</label>
-                <div style="display: flex; gap: 8px;">
-                    <select name="ddi_telemovel" style="width: 80px;" <?php echo selectAttr('telemovel', $canEditAll, $colabEditable); ?>>
-                        <option value="+351" <?php if (strpos($colab['telemovel'] ?? '', '+351') === 0) echo 'selected'; ?>>+351</option>
-                        <option value="+34" <?php if (strpos($colab['telemovel'] ?? '', '+34') === 0) echo 'selected'; ?>>+34</option>
-                        <option value="+33" <?php if (strpos($colab['telemovel'] ?? '', '+33') === 0) echo 'selected'; ?>>+33</option>
-                        <option value="+44" <?php if (strpos($colab['telemovel'] ?? '', '+44') === 0) echo 'selected'; ?>>+44</option>
-                        <option value="+49" <?php if (strpos($colab['telemovel'] ?? '', '+49') === 0) echo 'selected'; ?>>+49</option>
+                <div class="telemovel-container">
+                    <?php
+                    // Separar DDI e número para mostrar corretamente
+                    $telemovelCompleto = $colab['telemovel'] ?? '';
+                    $ddi = '+351';
+                    $numeroTel = '';
+                    if ($telemovelCompleto) {
+                        if (preg_match('/^(\+\d{2,3})(\d{9})$/', $telemovelCompleto, $m)) {
+                            $ddi = $m[1];
+                            $numeroTel = $m[2];
+                        } elseif (preg_match('/^(\+\d{2,3})(\d{3,9})$/', $telemovelCompleto, $m)) {
+                            $ddi = $m[1];
+                            $numeroTel = $m[2];
+                        } else {
+                            // fallback: se não corresponder ao padrão, tenta separar os primeiros 4 caracteres
+                            $ddi = substr($telemovelCompleto, 0, 4);
+                            $numeroTel = substr($telemovelCompleto, 4);
+                        }
+                    }
+                    ?>
+                    <select name="ddi_telemovel" class="ddi-select" <?php echo selectAttr('telemovel', $canEditAll, $colabEditable); ?>>
+                        <option value="+351" <?php if ($ddi === '+351') echo 'selected'; ?>>+351</option>
+                        <option value="+34" <?php if ($ddi === '+34') echo 'selected'; ?>>+34</option>
+                        <option value="+33" <?php if ($ddi === '+33') echo 'selected'; ?>>+33</option>
+                        <option value="+44" <?php if ($ddi === '+44') echo 'selected'; ?>>+44</option>
+                        <option value="+49" <?php if ($ddi === '+49') echo 'selected'; ?>>+49</option>
                     </select>
-                    <input type="tel" name="numero_telemovel" pattern="[0-9]{9}" maxlength="9" placeholder="9 dígitos" 
-                           value="<?php echo htmlspecialchars(preg_replace('/^\+[0-9]+/', '', $colab['telemovel'] ?? '')); ?>" 
+                    <input type="tel" name="numero_telemovel" pattern="[0-9]{9}" maxlength="9" placeholder="9 dígitos"
+                           value="<?php echo htmlspecialchars($numeroTel); ?>"
                            <?php echo fieldAttr('telemovel', $canEditAll, $colabEditable); ?>>
                 </div>
             </div>
@@ -543,7 +602,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="ficha-campo">
                 <label>Matrícula do Carro:</label>
-                <input type="text" name="matricula_viatura" pattern="[A-Z0-9]{6}" maxlength="6" placeholder="6 caracteres" style="text-transform: uppercase;" 
+                <input type="text" name="matricula_viatura" pattern="[A-Z0-9]{6}" maxlength="6" placeholder="6 caracteres" class="matricula-input"
                        value="<?php echo htmlspecialchars($colab['matricula_viatura'] ?? ''); ?>" <?php echo fieldAttr('matricula_viatura', $canEditAll, $colabEditable); ?>>
             </div>
         <?php elseif ($isCoord): ?>
@@ -633,17 +692,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if ($canEditAll || $isColab || $isOwnFicha): ?>
             <div class="ficha-campo">
                 <label>CC (Cartão de Cidadão):</label>
-                <div style="display: flex; gap: 8px;">
+                <div class="cc-container">
                     <input type="text" name="cc_numero" pattern="[0-9]{8}" maxlength="8" placeholder="8 números" 
                            value="<?php echo htmlspecialchars(substr($colab['cc'] ?? '', 0, 8)); ?>" 
                            <?php echo fieldAttr('cc', $canEditAll, []); ?>>
                     <input type="text" name="cc_verificacao" pattern="[0-9A-Z]{4}" maxlength="4" placeholder="4 caracteres" 
-                           style="text-transform: uppercase; width: 100px;" 
+                           class="cc-verificacao" 
                            value="<?php echo htmlspecialchars(substr($colab['cc'] ?? '', 8, 4)); ?>" 
                            <?php echo fieldAttr('cc', $canEditAll, []); ?>>
                 </div>
                 <div class="comprovativo-section">
-                    <label style="font-size:12px; margin-top:8px;">Comprovativo CC (PDF/JPG):</label>
+                    <label class="comprovativo-label">Comprovativo CC (PDF/JPG):</label>
                     <input type="file" name="comprovativo_cc" accept=".pdf,.jpg,.jpeg,.png">
                     <?php if (!empty($colab['comprovativo_cc'])): ?>
                         <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_cc']); ?>" target="_blank" class="comprovativo-link">Ver comprovativo atual</a>
@@ -657,9 +716,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="ficha-campo">
                 <label>IBAN:</label>
-                <div style="display: flex; gap: 8px;">
+                <div class="iban-container">
                     <input type="text" name="iban_pais" pattern="[A-Z]{2}" maxlength="2" placeholder="PT" 
-                           style="width: 60px; text-transform: uppercase;" 
+                           class="iban-pais" 
                            value="<?php echo htmlspecialchars(substr($colab['iban'] ?? '', 0, 2)); ?>" 
                            <?php echo fieldAttr('iban', $canEditAll, ['iban']); ?>>
                     <input type="text" name="iban_numeros" pattern="[0-9]{21}" maxlength="21" placeholder="21 dígitos" 
@@ -667,7 +726,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                            <?php echo fieldAttr('iban', $canEditAll, ['iban']); ?>>
                 </div>
                 <div class="comprovativo-section">
-                    <label style="font-size:12px; margin-top:8px;">Comprovativo IBAN (PDF/JPG):</label>
+                    <label class="comprovativo-label">Comprovativo IBAN (PDF/JPG):</label>
                     <input type="file" name="comprovativo_iban" accept=".pdf,.jpg,.jpeg,.png">
                     <?php if (!empty($colab['comprovativo_iban'])): ?>
                         <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_iban']); ?>" target="_blank" class="comprovativo-link">Ver comprovativo atual</a>
@@ -676,7 +735,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php elseif ($isCoord): ?>
             <!-- Coordenador NÃO vê esta secção na ficha de outro colaborador -->
-            <div class="ficha-campo" style="color:#888; font-style:italic;">
+            <div class="ficha-campo" class="colaborador-vazio">
                 Apenas os Recursos Humanos e o próprio colaborador podem visualizar informações fiscais.
             </div>
         <?php endif; ?>
@@ -695,7 +754,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                        pattern="[^º]*" title="Não é permitido o símbolo º" 
                        <?php echo fieldAttr('morada_fiscal', $canEditAll, $colabEditable); ?>>
                 <div class="comprovativo-section">
-                    <label style="font-size:12px; margin-top:8px;">Comprovativo (Mod. 99) (PDF):</label>
+                    <label class="comprovativo-label">Comprovativo (Mod. 99) (PDF):</label>
                     <?php if ($canEditAll || in_array('morada_fiscal', $colabEditable)): ?>
                         <input type="file" name="comprovativo_morada_fiscal" accept=".pdf,.jpg,.jpeg,.png">
                     <?php endif; ?>
@@ -757,7 +816,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php elseif ($isCoord): ?>
             <!-- Coordenador NÃO vê esta secção na ficha de outro colaborador -->
-            <div class="ficha-campo" style="color:#888; font-style:italic;">
+            <div class="ficha-campo" class="colaborador-vazio">
                 Apenas os Recursos Humanos e o próprio colaborador podem visualizar informações fiscais.
             </div>
         <?php endif; ?>
@@ -773,7 +832,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label>Nº Cartão Continente:</label>
                 <input type="text" name="cartao_continente" value="<?php echo htmlspecialchars($colab['cartao_continente'] ?? ''); ?>">
                 <div class="comprovativo-section">
-                    <label style="font-size:12px; margin-top:8px;">Comprovativo Cartão Continente (PDF/JPG):</label>
+                    <label class="comprovativo-label">Comprovativo Cartão Continente (PDF/JPG):</label>
                     <input type="file" name="comprovativo_cartao_continente" accept=".pdf,.jpg,.jpeg,.png">
                     <?php if (!empty($colab['comprovativo_cartao_continente'])): ?>
                         <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_cartao_continente']); ?>" target="_blank" class="comprovativo-link">Ver comprovativo atual</a>
@@ -783,11 +842,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="ficha-campo">
                 <label>Voucher NOS (Data):</label>
                 <input type="date" name="voucher_nos" value="<?php echo htmlspecialchars($colab['voucher_nos'] ?? ''); ?>" 
-                       title="Data da próxima emissão" <?php echo fieldAttr('voucher_nos', $canEditAll, []); ?>>
+                       title="Data da próxima emissão" <?php echo fieldAttr('voucher_nos', $canEditAll, []); ?> max="2024-12-31">
             </div>
         <?php elseif ($isCoord): ?>
             <!-- Coordenador NÃO vê esta secção na ficha de outro colaborador -->
-            <div class="ficha-campo" style="color:#888; font-style:italic;">
+            <div class="ficha-campo" class="colaborador-vazio">
                 Apenas os Recursos Humanos e o próprio colaborador podem visualizar informações fiscais.
             </div>
         <?php endif; ?>
@@ -844,8 +903,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="ficha-campo">
                 <label>Remuneração:</label>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-weight: bold; color: #19365f;">€</span>
+                <div class="remuneracao-container">
+                    <span class="euro-symbol">€</span>
                     <input type="number" name="remuneracao" step="0.01" min="0" placeholder="0.00" 
                            value="<?php echo htmlspecialchars(str_replace('€', '', $colab['remuneracao'] ?? '')); ?>" 
                            <?php echo fieldAttr('remuneracao', $canEditAll, []); ?>>
@@ -891,6 +950,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
     </form>
 </main>
+
+ <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+      <button id="open-chatbot" style="
+          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
+          color:rgb(255, 255, 255);
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+          font-size: 28px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          ">
+        ?
+      </button>
+      <iframe
+        id="chatbot-iframe"
+        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
+        title="Ajuda Chatbot"
+        width="350"
+        height="500"
+        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+      </iframe>
+    </div>
+    <script src="../../assets/chatbot.js"></script>
 
     <script>
     window.addEventListener('scroll', function() {
@@ -963,14 +1050,14 @@ window.addEventListener('scroll', function() {
 </script>
 
 <?php if ($success_message): ?>
-<div id="popup-success" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:9999;">
-    <div style="background:#fff;padding:32px 24px;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,0.18);max-width:90vw;max-height:90vh;position:relative;">
-        <button onclick="document.getElementById('popup-success').style.display='none';" style="position:absolute;top:8px;right:12px;background:none;border:none;font-size:22px;cursor:pointer;">&times;</button>
-        <div style="font-size:18px;color:#155724;margin-bottom:8px;">
+<div id="popup-success" class="popup-overlay">
+    <div class="popup-content">
+        <button onclick="document.getElementById('popup-success').style.display='none';" class="popup-close">&times;</button>
+        <div class="popup-message">
             <?php echo htmlspecialchars($success_message); ?>
         </div>
-        <div style="text-align:right;">
-            <button onclick="document.getElementById('popup-success').style.display='none';" style="background:#667eea;color:#fff;border:none;padding:8px 18px;border-radius:4px;cursor:pointer;">Fechar</button>
+        <div class="popup-actions">
+            <button onclick="document.getElementById('popup-success').style.display='none';" class="popup-btn">Fechar</button>
         </div>
     </div>
 </div>
@@ -1297,6 +1384,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (remuneracao && remuneracao.value) {
             remuneracao.value = '€' + remuneracao.value;
         }
+
+        // Adicionar id do colaborador ao POST se RH/Admin estiver a editar outro colaborador
+        <?php if (($isRH || $isAdmin) && $editColabId): ?>
+        const hiddenId = document.createElement('input');
+        hiddenId.type = 'hidden';
+        hiddenId.name = 'id';
+        hiddenId.value = '<?php echo htmlspecialchars($editColabId); ?>';
+        form.appendChild(hiddenId);
+        <?php endif; ?>
     });
 
     function showFieldError(field, message) {

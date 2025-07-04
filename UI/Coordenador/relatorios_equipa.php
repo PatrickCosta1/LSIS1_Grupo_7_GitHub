@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'coordenador') {
 require_once '../../BLL/Coordenador/BLL_dashboard_coordenador.php';
 $coordBLL = new CoordenadorDashboardManager();
 $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
+$equipa_id = isset($_GET['equipa_id']) ? $_GET['equipa_id'] : (isset($equipas[0]['id']) ? $equipas[0]['id'] : null);
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -57,7 +58,25 @@ $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
     </header>
     <main>
     <h1>Relatórios das Equipas</h1>
+    <?php if (count($equipas) > 1): ?>
+    <form method="get" id="formEscolherEquipa" style="text-align:center; margin-bottom:24px;">
+        <label for="equipaSelect" style="font-weight:bold;">Escolher Equipa:</label>
+        <select id="equipaSelect" name="equipa_id" style="margin-left:8px; padding:4px 8px; border-radius:6px; border:1px solid #ccd; background:#f7f8fa;">
+            <?php foreach ($equipas as $e): ?>
+                <option value="<?php echo $e['id']; ?>" <?php if ($equipa_id == $e['id']) echo 'selected'; ?>>
+                    <?php echo htmlspecialchars($e['nome']); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </form>
+    <script>
+    document.getElementById('equipaSelect').addEventListener('change', function() {
+        document.getElementById('formEscolherEquipa').submit();
+    });
+    </script>
+    <?php endif; ?>
     <?php foreach ($equipas as $e): ?>
+        <?php if ($e['id'] != $equipa_id) continue; ?>
         <div class="relatorio-container">
             <h2><?php echo htmlspecialchars($e['nome']); ?></h2>
             <table class="relatorio-table">

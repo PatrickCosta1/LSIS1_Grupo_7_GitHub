@@ -1,32 +1,55 @@
+/* Fundo geral */
+body, html {
+    height: 100vh;
+    overflow: hidden; /* Impede scroll vertical */
+}
+
 body {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     min-height: 100vh;
-    /* aumenta o padding-top para compensar o header mais largo e com margem */
-    padding-top: calc(100px + 2cm); /* 100px altura header + 0.5cm top + 0.5cm bottom */
+    padding: 0;
 }
-header {
-    position: fixed;
-    top: 0.5cm;
-    left: 0.5cm;
-    right: 0.5cm;
-    width: auto;
-    margin: 0;
+
+/* Retângulo azul 16:9 que engloba tudo */
+.azul-container {
     background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
-    border-radius: 24px;
-    min-height: 100px;
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25);
+    border-radius: 50px;   /* Mantém as bordas arredondadas */
+    margin: 20px;          /* Margem igual em todos os lados */
+    height: calc(100vh - 40px); /* Garante espaço para mostrar todas as bordas */
+    overflow: hidden;
+    box-shadow: none;
+    display: flex;
+    gap: 150px;
+    flex-direction: column;
+    position: relative;
+    justify-content: flex-start;
+}
+
+/* Header dentro do retângulo azul */
+.azul-container header {
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* igual ao dashboard */
-    padding: 24px 60px;
-    z-index: 1000;
+    padding: 10px 60px 18px 200px; /* padding igual dos dois lados */
+    box-shadow: none;
+    border-radius: 0;
+    min-height: 90px;
+    position: relative;
+    z-index: 2;
 }
+
 .logo-header {
     width: 120px;
     height: auto;
+    filter: brightness(1.1);
+    transition: transform 0.3s ease;
 }
+
+.logo-header:hover {
+    transform: scale(1.05);
+}
+
 header nav {
     display: flex;
     gap: 1px;
@@ -44,6 +67,9 @@ header nav a {
     font-size: 0.95rem;
     margin: 0;
     display: inline-block;
+    letter-spacing: 0.02em;
+    position: relative;
+    backdrop-filter: blur(10px);
 }
 header nav a:hover,
 header nav a.active {
@@ -51,113 +77,572 @@ header nav a.active {
     color: #e0eaff !important;
 }
 
-
-main h1 {
-    color: #0360e9;
-    font-size: 2.1rem;
-    font-weight: 700;
-    margin-bottom: 18px;
-    text-shadow: 0 2px 8px rgba(3,96,233,0.10);
+/* Dropdown Equipas */
+.dropdown-equipas {
+    position: relative;
+    display: inline-block;
 }
 
-.dashboard-cards {
+.equipas-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+    cursor: pointer;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 32px;
-    margin-top: 40px;
-    max-width: 1100px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0 16px;
+    align-items: center;
+    gap: 4px;
 }
 
-.dashboard-card {
-    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
-    border-radius: 22px;
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
-    padding: 38px 32px 32px 32px;
+.equipas-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+/* Dropdown Colaboradores */
+.dropdown-colaboradores {
+    position: relative;
+    display: inline-block;
+}
+
+.colaboradores-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.colaboradores-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+.seta-baixo {
+    font-size: 0.8em;
+    margin-left: 3px;
+    transition: transform 0.2s;
+}
+
+.dropdown-equipas:hover .seta-baixo,
+.dropdown-colaboradores:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+
+.dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}
+
+.dropdown-equipas:hover .dropdown-menu,
+.dropdown-colaboradores:hover .dropdown-menu {
+    display: block;
+}
+
+/* Main dentro do retângulo azul */
+.azul-container main {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 240px;
-    min-height: 180px;
+    justify-content: flex-start;
+    padding: 0 32px 32px 32px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Header DENTRO do container azul */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px; /* Reduzido de 60px para 20px */
+    background: transparent;
+    position: static;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    width: auto;
+    top: auto;
+    left: auto;
+    right: auto;
+    z-index: auto;
+}
+
+.logo-header {
+    width: 120px;
+    height: auto;
+}
+
+header nav {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+header nav a {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+header nav a:hover,
+header nav a.active {
+    background: rgba(255, 255, 255, 0.25);
+    color: #e0eaff !important;
+    transform: translateY(-1px);
+}
+
+/* Main content DENTRO do container azul */
+main {
     text-align: center;
     color: #fff;
-    text-decoration: none;
-    transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+    padding: 0;
+    max-width: none;
+    margin: 0;
     position: relative;
-    overflow: hidden;
-    border: 2px solid #e3eefe;
 }
 
-.dashboard-card h2 {
-    color: #fff;
-    font-size: 1.35rem;
+main h1 {
+    font-size: 3.2rem;
     font-weight: 700;
-    margin-bottom: 12px;
-    text-shadow: 0 2px 8px rgba(3,96,233,0.10);
+    margin: 0 0 16px 0; /* Reduzido de 24px para 16px */
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    letter-spacing: 1px;
 }
 
-.dashboard-card p {
-    color: #e3eefe;
-    font-size: 1rem;
-    margin-bottom: 0;
-    text-shadow: 0 1px 4px rgba(3,96,233,0.08);
+.descricao-inicial {
+    font-size: 1.3rem;
+    margin: 0 auto 30px auto; /* Reduzido de 50px para 30px */
+    max-width: 800px;
+    opacity: 0.95;
+    line-height: 1.7;
+    font-weight: 400;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.dashboard-card::before {
-    content: '';
-    position: absolute;
-    top: -60px;
-    right: -60px;
-    width: 120px;
-    height: 120px;
-    background: rgba(255,255,255,0.07);
-    border-radius: 50%;
-    z-index: 0;
+/* Cards de funcionalidades RH - SUBSTITUINDO OS BOTÕES */
+.funcionalidades-lista {
+    max-width: 900px;
+    margin: 30px auto 0 auto; /* Reduzido de 40px para 30px */
+    background: transparent;
+    border-radius: 0; 
+    box-shadow: none;
+    padding: 0;
 }
 
-.dashboard-card:hover {
-    transform: translateY(-6px) scale(1.03);
-    box-shadow: 0 16px 48px rgba(3,96,233,0.18);
-    background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%);
-    border-color: #b3d4fc;
+.funcionalidades-cards {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0;
 }
 
-.dashboard-card h2, .dashboard-card p {
+.funcionalidade-card {
+    background: #19365f; /* Azul escuro */
+    color: #ffffff; /* Texto branco */
+    border: 2px solid #19365f;
+    border-radius: 8px;
+    padding: 16px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 12px rgba(25, 54, 95, 0.2);
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1; /* Todos os cards com tamanho igual */
+    min-width: 140px;
+    max-width: 170px;
+}
+
+.funcionalidade-card:hover {
+    background: #ffffff; /* Fundo branco no hover */
+    color: #19365f; /* Texto azul escuro no hover */
+    border-color: #19365f;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(25, 54, 95, 0.3);
+}
+
+.funcionalidade-card span {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: inherit;
+    line-height: 1.2;
+}
+
+/* Carrossel de cards RH */
+.dash-carousel-container {
     position: relative;
-    z-index: 1;
+    max-width: 900px;
+    margin: 50px auto 0 auto; /* Aumentado de 40px para 50px */
+    height: 320px;
+    overflow: hidden;
+    border-radius: 25px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
-/* Responsividade para os cards */
-@media (max-width: 900px) {
-    .dashboard-cards {
-        gap: 18px;
+/* Responsividade - IGUAL AO COLABORADOR */
+@media (max-width: 768px) {
+    .azul-container {
+        margin: 0.3cm;
+        padding: 24px;
+        border-radius: 25px;
+        min-height: calc(100vh - 0.6cm);
     }
-    .dashboard-card {
-        min-width: 180px;
-        padding: 24px 10px 20px 10px;
-    }
-}
-@media (max-width: 600px) {
+    
     header {
         flex-direction: column;
-        padding: 12px 8px;
-        gap: 12px;
+        gap: 16px;
+        margin-bottom: 20px; /* Reduzido de 40px para 20px */
     }
-    .dashboard-cards {
+    
+    header nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    header nav a {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+    }
+    
+    main h1 {
+        font-size: 2.2rem;
+        margin-bottom: 12px; /* Reduzido de 16px para 12px */
+    }
+    
+    .descricao-inicial {
+        font-size: 1rem;
+        margin-bottom: 24px; /* Reduzido de 32px para 24px */
+        padding: 0 16px;
+    }
+    
+    .botoes-atalho {
         flex-direction: column;
-        gap: 12px;
-        padding: 0 2vw;
+        align-items: center;
+        gap: 16px;
+        margin: 24px 0 32px 0; /* Reduzido de 32px 0 40px 0 para 24px 0 32px 0 */
     }
-    .dashboard-card {
-        min-width: unset;
-        width: 100%;
-        padding: 16px 4px 14px 4px;
+    
+    .botao-atalho {
+        width: 200px;
+        padding: 14px 24px;
+        font-size: 1rem;
+    }
+    
+    .dash-carousel-container {
+        height: 240px;
+        margin: 32px 0 0 0; /* Reduzido de 40px para 32px */
+        border-radius: 20px;
+    }
+    
+    .rh-card {
+        padding: 24px;
+    }
+    
+    .rh-card h3 {
+        font-size: 1.6rem;
+        margin-bottom: 12px;
+    }
+    
+    .rh-card p {
+        font-size: 1rem;
+    }
+    
+    .logo-header {
+        width: 100px;
+    }
+    
+    .funcionalidades-lista {
+        margin: 24px 16px 0 16px;
+    }
+    
+    .funcionalidades-cards {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+    }
+    
+    .funcionalidade-card {
+        flex: 0 1 calc(50% - 6px);
+        min-width: 120px;
+        max-width: 180px;
+        padding: 14px 6px;
+        min-height: 60px;
+    }
+    
+    .funcionalidade-card span {
+        font-size: 0.8rem;
+    }
+    
+    .dash-carousel-container {
+        margin: 40px 0 0 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .azul-container {
+        margin: 0.2cm;
+        padding: 16px;
+        border-radius: 20px;
+        min-height: calc(100vh - 0.4cm);
+    }
+    
+    main h1 {
+        font-size: 1.8rem;
+    }
+    
+    .descricao-inicial {
         font-size: 0.95rem;
     }
-    main h1 {
-        font-size: 1.2rem;
+    
+    .rh-card h3 {
+        font-size: 1.4rem;
     }
+    
+    .rh-card p {
+        font-size: 0.9rem;
+    }
+    
+    .dash-carousel-container {
+        height: 200px;
+    }
+    
+    .rh-card {
+        padding: 20px;
+    }
+    
+    .funcionalidades-cards {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .funcionalidade-card {
+        flex: none;
+        width: 200px;
+        max-width: 200px;
+        padding: 12px 8px;
+        min-height: 55px;
+    }
+    
+    .funcionalidade-card span {
+        font-size: 0.75rem;
+    }
+}
+
+/* Animações */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.azul-container {
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+main h1,
+.descricao-inicial,
+.botoes-atalho,
+.dash-carousel-container {
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+.descricao-inicial {
+    animation-delay: 0.2s;
+}
+
+.botoes-atalho {
+    animation-delay: 0.4s;
+}
+
+.dash-carousel-container {
+    animation-delay: 0.6s;
+}
+
+
+/* Dropdown styles for RH pages */
+.dropdown-equipas, .dropdown-colaboradores, .dropdown-perfil {
+    position: relative;
+    display: inline-block;
+}
+
+.equipas-link, .colaboradores-link, .perfil-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.equipas-link:hover, .colaboradores-link:hover, .perfil-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+.seta-baixo {
+    font-size: 0.8em;
+    margin-left: 3px;
+    transition: transform 0.2s;
+}
+
+.dropdown-equipas:hover .seta-baixo,
+.dropdown-colaboradores:hover .seta-baixo,
+.dropdown-perfil:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-equipas:hover .dropdown-menu,
+.dropdown-colaboradores:hover .dropdown-menu,
+.dropdown-perfil:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+
+.dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}
+
+/* Novas regras para o dropdown de gestão */
+.dropdown-gestao {
+    position: relative;
+    display: inline-block;
+}
+.gestao-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+.gestao-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+.dropdown-gestao:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+.dropdown-gestao .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+.dropdown-gestao .dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+.dropdown-gestao .dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}
+.dropdown-gestao:hover .dropdown-menu,
+.dropdown-gestao:focus-within .dropdown-menu {
+    display: block;
 }

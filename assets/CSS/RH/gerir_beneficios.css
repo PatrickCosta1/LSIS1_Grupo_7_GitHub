@@ -1,0 +1,958 @@
+body {
+    background: #f7faff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    padding-top: 120px;
+}
+
+header {
+    position: fixed;
+    top: 0.5cm;
+    left: 0.5cm;
+    right: 0.5cm;
+    width: auto;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 24px;
+    min-height: 100px;
+    box-shadow: 0 8px 32px rgba(3,96,233,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 60px;
+    z-index: 1000;
+}
+.logo-header {
+    width: 120px;
+    height: auto;
+}
+header nav {
+    display: flex;
+    gap: 1px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+header nav a {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+}
+header nav a.active,
+header nav a:hover {
+    background: rgba(255,255,255,0.18);
+    color: #e0eaff !important;
+}
+
+.portal-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin:75px 0 12px 0; /* aumentado o espaço acima da marca */
+}
+.color-bar {
+    height: 6px;
+    width: 80px;
+    border-radius: 3px;
+    display: flex;
+}
+.color-segment {
+    flex: 1;
+    height: 100%;
+}
+.color-segment:first-child { background: #8155ff; border-radius: 3px 0 0 3px; }
+.color-segment:nth-child(2) { background: #ff9b37; }
+.color-segment:last-child { background: #3ed829; border-radius: 0 3px 3px 0; }
+.portal-text {
+    font-size: 0.75rem;
+    color: #19365f;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+h1 {
+    color: #19365f;
+    text-align: center;
+    font-size: 2.1rem;
+    font-weight: 700;
+    margin: 24px 0 32px 0;
+    letter-spacing: 1px;
+}
+
+.success-msg, .error-msg {
+    max-width: 600px;
+    margin: 0 auto 18px auto;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+}
+.success-msg { background: #e6ffed; color: #1a7f37; border: 1px solid #b7f5c5; }
+.error-msg { background: #fff0f0; color: #c53030; border: 1px solid #f5b7b7; }
+
+.beneficio-form-section, .beneficios-list-section {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(41,156,243,0.08);
+    max-width: 900px;
+    margin: 0 auto 32px auto;
+    padding: 32px 36px;
+}
+
+.beneficio-form-section h2,
+.beneficios-list-section h2 {
+    color: #23408e;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.beneficio-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.beneficio-form input[type="text"],
+.beneficio-form textarea,
+.beneficio-form input[type="number"] {
+    border: 1px solid #ccd;
+    border-radius: 7px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    background: #fafdff;
+    transition: border 0.18s;
+}
+.beneficio-form input[type="text"]:focus,
+.beneficio-form textarea:focus,
+.beneficio-form input[type="number"]:focus {
+    border: 1.5px solid #299cf3;
+    outline: none;
+}
+.beneficio-form textarea {
+    resize: vertical;
+    min-height: 60px;
+    max-height: 180px;
+}
+.beneficio-form button.btn {
+    background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 28px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
+    box-shadow: 0 2px 8px rgba(41,156,243,0.13);
+}
+.beneficio-form button.btn:hover {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    color: #e0eaff;
+    transform: translateY(-2px) scale(1.04);
+}
+
+.beneficios-cards-admin {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+.beneficio-card-admin {
+    background: #fafdff;
+    border: 1px solid #ccd;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(41,156,243,0.07);
+    padding: 18px 16px 12px 16px;
+    min-width: 260px;
+    max-width: 320px;
+    flex: 1 1 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.beneficio-edit-form input[type="text"],
+.beneficio-edit-form textarea,
+.beneficio-edit-form input[type="number"] {
+    width: 100%;
+    border: 1px solid #ccd;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.97rem;
+    background: #fff;
+    margin-bottom: 6px;
+}
+.beneficio-edit-form textarea {
+    resize: vertical;
+    min-height: 40px;
+    max-height: 120px;
+}
+.beneficio-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+.beneficio-card-actions .btn {
+    background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 7px;
+    padding: 7px 18px;
+    font-size: 0.97rem;
+    cursor: pointer;
+    transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
+    box-shadow: 0 2px 8px rgba(41,156,243,0.13);
+}
+.beneficio-card-actions .btn:hover {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    color: #e0eaff;
+    transform: translateY(-2px) scale(1.04);
+}
+
+
+.ordenar-form {
+    margin-top: 32px;
+    background: #fafdff;
+    border-radius: 10px;
+    padding: 18px 16px;
+    box-shadow: 0 2px 8px rgba(41,156,243,0.07);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.ordenar-form h3 {
+    color: #23408e;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+.ordenar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.ordenar-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #fff;
+    border-radius: 6px;
+    padding: 8px 12px;
+    box-shadow: 0 1px 4px rgba(41,156,243,0.06);
+}
+.ordenar-item span {
+    flex: 1;
+    color: #23408e;
+    font-weight: 500;
+}
+.ordenar-item input[type="number"] {
+    width: 60px;
+    border: 1px solid #ccd;
+    border-radius: 5px;
+    padding: 4px 8px;
+    font-size: 0.97rem;
+    background: #fafdff;
+}
+.btn-ordenar {
+    background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 7px;
+    padding: 8px 22px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
+    box-shadow: 0 2px 8px rgba(41,156,243,0.13);
+}
+.btn-ordenar:hover {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    color: #e0eaff;
+    transform: translateY(-2px) scale(1.04);
+}
+
+/* Pré-visualização dos benefícios (igual ao colaborador) */
+.beneficios-preview-section {
+    margin-top: 48px;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.beneficios-preview-section h2 {
+    color: #19365f;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.beneficios-preview-section .beneficios-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    padding: 0;
+}
+
+.beneficios-preview-section .beneficio-card {
+    background: #ffffff;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    padding: 15px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    min-height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.beneficios-preview-section .beneficio-card:hover {
+    background: #19365f;
+    color: #ffffff;
+    border-color: #19365f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(25, 54, 95, 0.2);
+}
+.beneficios-preview-section .beneficio-card span {
+    font-size: 0.80rem;
+    font-weight: 600;
+    color: inherit;
+}
+
+/* Modais de benefício (igual ao colaborador) */
+.beneficios-preview-section .beneficio-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+.beneficios-preview-section .modal-content {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: modalFadeIn 0.3s ease;
+}
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+.beneficios-preview-section .close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 28px;
+    color: #19365f;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.beneficios-preview-section .close:hover {
+    color: #0f1e35;
+}
+.beneficios-preview-section .modal-content h2 {
+    color: #19365f;
+    margin-bottom: 16px;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+.beneficios-preview-section .modal-content p {
+    color: #333;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Drag & drop cards na ordenação */
+.beneficios-ordenar-preview .beneficios-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    align-items: stretch;
+    margin: 0 auto;
+    padding: 0;
+    width: 100%;
+    max-width: 640px;
+}
+
+.beneficios-ordenar-preview .beneficio-card {
+    background: #ffffff;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    padding: 15px 8px;
+    text-align: center;
+    cursor: grab;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    min-height: 65px;
+    min-width: 140px;
+    max-width: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #19365f;
+    user-select: none;
+}
+
+.beneficios-ordenar-preview .beneficio-card .drag-handle {
+    cursor: grab;
+    margin-right: 8px;
+    color: #299cf3;
+    font-size: 1.2em;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.beneficios-ordenar-preview .beneficio-card.dragging {
+    opacity: 0.5;
+    border: 2px dashed #299cf3;
+    background: #eaf6ff;
+}
+
+.beneficios-ordenar-preview .beneficio-card.drag-over {
+    border: 2px solid #ff9b37;
+    background: #fffbe7;
+}
+
+.beneficios-ordenar-preview .beneficio-card:hover {
+    background: #19365f;
+    color: #ffffff;
+    border-color: #19365f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(25, 54, 95, 0.2);
+}
+
+.beneficios-ordenar-preview .beneficio-card span:not(.drag-handle) {
+    font-size: 0.90rem;
+    font-weight: 600;
+    color: inherit;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+}
+
+/* Remove monitor visual da ordenação/preview */
+.beneficios-ordenar-preview .preview-monitor,
+.beneficios-ordenar-preview .preview-monitor-bezel,
+.beneficios-ordenar-preview .preview-monitor-screen,
+.beneficios-ordenar-preview .preview-monitor-base {
+    display: none !important;
+}
+
+.beneficios-ordenar-preview {
+    margin-top: 48px;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Modais de benefício (igual ao colaborador) */
+.beneficios-ordenar-preview .beneficio-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+.beneficios-ordenar-preview .modal-content {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: modalFadeIn 0.3s ease;
+}
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+.beneficios-ordenar-preview .close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 28px;
+    color: #19365f;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.beneficios-ordenar-preview .close:hover {
+    color: #0f1e35;
+}
+.beneficios-ordenar-preview .modal-content h2 {
+    color: #19365f;
+    margin-bottom: 16px;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+.beneficios-ordenar-preview .modal-content p {
+    color: #333;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Ordenar & Pré-visualizar: grid 2x6, cards tamanho fixo, letra pequena */
+.beneficios-ordenar-preview .beneficios-cards {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 12px;
+    justify-items: center;
+    align-items: stretch;
+    margin: 0 auto;
+    padding: 0;
+    width: 100%;
+    max-width: 900px;
+    min-height: 180px;
+}
+
+.beneficios-ordenar-preview .beneficio-card {
+    background: #ffffff;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    padding: 10px 4px;
+    text-align: center;
+    cursor: grab;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    min-height: 54px;
+    min-width: 0;
+    max-width: 140px;
+    width: 120px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #19365f;
+    user-select: none;
+}
+
+.beneficios-ordenar-preview .beneficio-card .drag-handle {
+    cursor: grab;
+    margin-right: 6px;
+    color: #299cf3;
+    font-size: 1em;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.beneficios-ordenar-preview .beneficio-card span:not(.drag-handle) {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: inherit;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.beneficios-ordenar-preview .beneficio-card.dragging {
+    opacity: 0.5;
+    border: 2px dashed #299cf3;
+    background: #eaf6ff;
+}
+
+.beneficios-ordenar-preview .beneficio-card.drag-over {
+    border: 2px solid #ff9b37;
+    background: #fffbe7;
+}
+
+.beneficios-ordenar-preview .beneficio-card:hover {
+    background: #19365f;
+    color: #ffffff;
+    border-color: #19365f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(25, 54, 95, 0.2);
+}
+
+/* Responsividade para grid 2x6 */
+@media (max-width: 900px) {
+    .beneficios-ordenar-preview .beneficios-cards {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        max-width: 480px;
+    }
+    .beneficios-ordenar-preview .beneficio-card {
+        max-width: 120px;
+        width: 100px;
+        font-size: 0.72rem;
+        height: 48px;
+        padding: 7px 2px;
+    }
+}
+@media (max-width: 600px) {
+    .beneficios-ordenar-preview .beneficios-cards {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(6, 1fr);
+        max-width: 98vw;
+        gap: 7px;
+    }
+    .beneficios-ordenar-preview .beneficio-card {
+        max-width: 98vw;
+        width: 90vw;
+        font-size: 0.68rem;
+        height: 40px;
+        padding: 5px 2px;
+    }
+}
+
+/* Responsividade para drag & drop e monitor */
+@media (max-width: 900px) {
+    .beneficios-ordenar-preview .beneficios-cards { gap: 10px; }
+    .beneficios-ordenar-preview .preview-monitor { max-width: 98vw; }
+    .beneficios-ordenar-preview .preview-monitor-bezel { max-width: 98vw; }
+}
+@media (max-width: 600px) {
+    .beneficios-ordenar-preview .beneficios-cards { gap: 6px; }
+    .beneficios-ordenar-preview .beneficio-card { min-width: 98vw; max-width: 98vw; }
+    .beneficios-ordenar-preview .modal-content { padding: 18px 6vw 18px 6vw; min-width: 0; width: 98vw; }
+    .beneficios-ordenar-preview .preview-monitor { max-width: 99vw; }
+    .beneficios-ordenar-preview .preview-monitor-bezel { max-width: 99vw; }
+}
+
+/* Edit icon no canto superior esquerdo, delete icon no canto superior direito - sem bolinha, sem fundo extra */
+.beneficios-ordenar-preview .beneficio-card {
+    position: relative;
+}
+.beneficios-ordenar-preview .edit-icon {
+    position: absolute;
+    top: 5px;
+    left: 7px;
+    font-size: 1.05em;
+    color: #299cf3;
+    background: transparent;
+    border-radius: 0;
+    padding: 0 3px 0 3px;
+    cursor: pointer;
+    z-index: 2;
+    transition: color 0.18s;
+    box-shadow: none;
+    opacity: 0.85;
+    line-height: 1;
+}
+
+.beneficios-ordenar-preview .delete-icon {
+    position: absolute;
+    top: 5px;
+    right: 7px;
+    font-size: 1.15em;
+    color: #e53e3e;
+    background: transparent;
+    border-radius: 0;
+    padding: 0 3px 0 3px;
+    cursor: pointer;
+    z-index: 2;
+    transition: color 0.18s;
+    box-shadow: none;
+    opacity: 0.85;
+    line-height: 1;
+    border: none;
+}
+
+/* Card de adicionar novo benefício */
+.beneficios-ordenar-preview .add-card-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    max-width: 140px;
+    width: 120px;
+    height: 54px;
+    background: #fafdff;
+    border: 2px dashed #299cf3;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #299cf3;
+    font-size: 2.2em;
+    font-weight: 700;
+    transition: background 0.18s, border 0.18s, color 0.18s, box-shadow 0.18s;
+    margin: 0;
+    position: relative;
+    outline: none;
+    box-shadow: 0 2px 8px rgba(41,156,243,0.07);
+    user-select: none;
+}
+.beneficios-ordenar-preview .add-card-btn:focus,
+.beneficios-ordenar-preview .add-card-btn:hover {
+    background: #eaf6ff;
+    border-color: #0360e9;
+    color: #0360e9;
+    box-shadow: 0 4px 16px rgba(41,156,243,0.13);
+}
+.beneficios-ordenar-preview .add-card-btn .plus-icon {
+    font-size: 2.1em;
+    line-height: 1;
+    margin-bottom: 2px;
+    font-weight: 900;
+    color: inherit;
+    pointer-events: none;
+}
+.beneficios-ordenar-preview .add-card-btn .add-label {
+    font-size: 0.82em;
+    font-weight: 600;
+    color: #299cf3;
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+    pointer-events: none;
+}
+
+/* Modal moderno para criar novo benefício */
+.beneficios-ordenar-preview #modalNovoBeneficio .modal-content.add-card-modal {
+    background: linear-gradient(135deg, #fafdff 0%, #eaf6ff 100%);
+    border-radius: 18px;
+    padding: 38px 32px 32px 32px;
+    max-width: 370px;
+    width: 96vw;
+    box-shadow: 0 8px 32px rgba(41,156,243,0.18);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: modalFadeIn 0.3s;
+    border: 2.5px solid #299cf3;
+    position: relative;
+}
+.beneficios-ordenar-preview #modalNovoBeneficio .modal-content.add-card-modal h2 {
+    color: #299cf3;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    letter-spacing: 0.01em;
+    text-align: center;
+}
+.beneficios-ordenar-preview #modalNovoBeneficio .modal-content.add-card-modal input[type="text"],
+.beneficios-ordenar-preview #modalNovoBeneficio .modal-content.add-card-modal textarea,
+.beneficios-ordenar-preview #modalNovoBeneficio .modal-content.add-card-modal input[type="number"] {
+    border: 1.5px solid #ccd;
+    border-radius: 7px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    background: #fff;
+    margin-bottom: 10px;
+    width: 100%;
+    transition: border 0.18s;
+}
+.beneficios-ordenar-preview #modalNovoBeneficio .modal-content.add-card-modal input[type="text"]:focus,
+.beneficios-ordenar-preview #modalNovoBeneficio .modal-content.add-card-modal textarea:focus,
+.beneficios-ordenar-preview #modalNovoBeneficio .modal-content.add-card-modal input[type="number"]:focus {
+    border: 1.5px solid #299cf3;
+    outline: none;
+}
+.beneficios-ordenar-preview #modalNovoBeneficio .modal-content.add-card-modal textarea {
+    resize: vertical;
+    min-height: 60px;
+    max-height: 180px;
+}
+.beneficios-ordenar-preview #modalNovoBeneficio .modal-content.add-card-modal .btn {
+    background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 28px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
+    box-shadow: 0 2px 8px rgba(41,156,243,0.13);
+    width: 100%;
+}
+.beneficios-ordenar-preview #modalNovoBeneficio .modal-content.add-card-modal .btn:hover {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    color: #e0eaff;
+    transform: translateY(-2px) scale(1.04);
+}
+.beneficios-ordenar-preview #modalNovoBeneficio .close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 28px;
+    color: #299cf3;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.beneficios-ordenar-preview #modalNovoBeneficio .close:hover {
+    color: #0360e9;
+}
+@media (max-width: 600px) {
+    .beneficios-ordenar-preview #modalNovoBeneficio .modal-content.add-card-modal {
+        padding: 18px 6vw 18px 6vw;
+        min-width: 0;
+        width: 98vw;
+    }
+}
+
+/* Novas regras para o dropdown de gestão */
+.dropdown-gestao {
+    position: relative;
+    display: inline-block;
+}
+.gestao-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+.gestao-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+.dropdown-gestao:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+.dropdown-gestao .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+.dropdown-gestao .dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+.dropdown-gestao .dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}
+.dropdown-gestao:hover .dropdown-menu,
+.dropdown-gestao:focus-within .dropdown-menu {
+    display: block;
+}
+
+/* Dropdown styles for RH pages */
+.dropdown-equipas, .dropdown-colaboradores, .dropdown-perfil {
+    position: relative;
+    display: inline-block;
+}
+
+.equipas-link, .colaboradores-link, .perfil-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.equipas-link:hover, .colaboradores-link:hover, .perfil-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+.seta-baixo {
+    font-size: 0.8em;
+    margin-left: 3px;
+    transition: transform 0.2s;
+}
+
+.dropdown-equipas:hover .seta-baixo,
+.dropdown-colaboradores:hover .seta-baixo,
+.dropdown-perfil:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-equipas:hover .dropdown-menu,
+.dropdown-colaboradores:hover .dropdown-menu,
+.dropdown-perfil:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+
+.dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}

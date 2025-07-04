@@ -67,13 +67,18 @@ class DALEquipa {
         return $stmt->execute([$equipaId, $colabId]);
     }
 
-    public function atualizarNomeCoordenador($equipaId, $nome, $responsavelId) {
+    public function atualizarNomeCoordenador($equipaId, $nome, $responsavelId, $tipoEquipa = 'colaboradores') {
         $pdo = Database::getConnection();
-        // Verifica se o NOVO responsável existe, é RH e está ativo
+        // Determinar perfil_id esperado
+        $perfilEsperado = 3; // Coordenador
+        if ($tipoEquipa === 'rh') {
+            $perfilEsperado = 4; // RH
+        }
+        // Verifica se o NOVO responsável existe, tem o perfil correto e está ativo
         $stmtCheck = $pdo->prepare("SELECT c.id FROM colaboradores c
             INNER JOIN utilizadores u ON c.utilizador_id = u.id
-            WHERE c.id = ? AND u.perfil_id = 4 AND u.ativo = 1");
-        $stmtCheck->execute([$responsavelId]);
+            WHERE c.id = ? AND u.perfil_id = ? AND u.ativo = 1");
+        $stmtCheck->execute([$responsavelId, $perfilEsperado]);
         $responsavelExiste = $stmtCheck->fetchColumn();
 
         if (!$responsavelExiste) {

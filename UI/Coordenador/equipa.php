@@ -80,6 +80,23 @@ $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
             </div>
             <span class="portal-text">Portal Do Colaborador</span>
         </div>
+        <?php if (count($equipas) > 1): ?>
+        <form method="get" id="formEscolherEquipa" style="text-align:center; margin-bottom:24px;">
+            <label for="equipaSelect" style="font-weight:bold;">Escolher Equipa:</label>
+            <select id="equipaSelect" name="id" style="margin-left:8px; padding:4px 8px; border-radius:6px; border:1px solid #ccd; background:#f7f8fa;">
+                <?php foreach ($equipas as $e): ?>
+                    <option value="<?php echo $e['id']; ?>" <?php if ($equipaId == $e['id']) echo 'selected'; ?>>
+                        <?php echo htmlspecialchars($e['nome']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </form>
+        <script>
+        document.getElementById('equipaSelect').addEventListener('change', function() {
+            document.getElementById('formEscolherEquipa').submit();
+        });
+        </script>
+        <?php endif; ?>
         <h1>Membros da Equipa</h1>
         <?php if (!empty($colaboradores)): ?>
         <div class="tabela-colaboradores-wrapper">

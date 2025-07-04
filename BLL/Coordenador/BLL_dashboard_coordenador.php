@@ -31,5 +31,14 @@ class CoordenadorDashboardManager {
     public function getColaboradoresByEquipa($equipaId) {
         return $this->dal->getColaboradoresByEquipa($equipaId);
     }
+    public function getRemuneracaoMediaPorEquipa($userId) {
+        return $this->dal->getRemuneracaoMediaPorEquipa($userId);
+    }
+    public function getDistribuicaoGeneroPorEquipa($userId) {
+        return $this->dal->getDistribuicaoGeneroPorEquipa($userId);
+    }
+    public function getColaboradoresLocalidadePorEquipa($userId) {
+        return $this->dal->getColaboradoresLocalidadePorEquipa($userId);
+    }
 }
-?>
+?>  

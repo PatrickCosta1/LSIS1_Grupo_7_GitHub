@@ -154,13 +154,45 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
     <header>
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_RH.php';">
         <nav>
-            <a href="dashboard_rh.php">Dashboard</a>
-            <a href="colaboradores_gerir.php">Colaboradores</a>
-            <a href="equipas.php">Equipas</a>
-            <a href="relatorios.php">Relatórios</a>
-            <a href="exportar.php">Exportar</a>
+            <div class="dropdown-equipas">
+                <a href="equipas.php" class="equipas-link">
+                    Equipas
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="relatorios.php">Relatórios</a>
+                    <a href="dashboard_rh.php">Dashboard</a>
+                </div>
+            </div>
+            <div class="dropdown-colaboradores">
+                <a href="colaboradores_gerir.php" class="colaboradores-link">
+                    Colaboradores
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="exportar.php">Exportar</a>
+                </div>
+            </div>
+            <div class="dropdown-gestao">
+                <a href="#" class="gestao-link">
+                    Gestão
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="gerir_beneficios.php">Gerir Benefícios</a>
+                    <a href="gerir_formacoes.php">Gerir Formações</a>
+                </div>
+            </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
+                </div>
+            </div>
             <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
@@ -235,17 +267,18 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
             <div class="kpi-card" style="background:rgba(255, 163, 243, 0.2);">
                 <div style="font-size:15px;color:#666;">% Feminino</div>
                 <div id="kpiPercentFem" style="font-size:2.1em;color:#ff6384;font-weight:bold;">
-                    <?php echo $total_colab > 0 ? $fem_percent . '%' : '-'; ?>
+                    <?php echo $total_colab > 0 ? round($fem_percent, 1) . '%' : '-'; ?>
                 </div>
             </div>
             <div class="kpi-card" style="background:rgba(255, 238, 138, 0.2);">
                 <div style="font-size:15px;color:#666;">% Outro</div>
                 <div id="kpiPercentOutro" style="font-size:2.1em;color:#DAA520;font-weight:bold;">
-                    <?php echo $total_colab > 0 ? $outro_percent . '%' : '-'; ?>
+                    <?php echo $total_colab > 0 ? round($outro_percent, 1) . '%' : '-'; ?>
                 </div>
             </div>
         </div>
         <div class="dashboard-main-charts">
+            <!-- Primeira linha -->
             <div class="chart-card">
                 <div class="chart-card-title">Colaboradores por Equipa</div>
                 <div id="chartContainer" class="chart-area"></div>
@@ -261,10 +294,14 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
                 <div id="chartTempoMedio" class="chart-area"></div>
                 <div id="statsTempoMedio" class="stats-idade"></div>
             </div>
+            <!-- Segunda linha -->
             <div class="chart-card">
                 <div class="chart-card-title">Nível Hierárquico/Cargo</div>
                 <div id="chartNivelHierarquico" class="chart-area"></div>
                 <div id="statsNivelHierarquico" class="stats-nivel"></div>
+                 <span style="display:block;font-size:0.95em;font-weight:400;color:#888;margin-top:4px;">
+                    <em>Legenda: 1 = Colaborador, 2 = Coordenador, 3 = RH</em>
+                </span>
             </div>
             <div class="chart-card">
                 <div class="chart-card-title">Distribuição Geográfica</div>
@@ -275,6 +312,7 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
                 <div class="chart-card-title">Distribuição de Género</div>
                 <div id="chartGenero" class="chart-area"></div>
                 <div id="statsGenero" class="stats-nivel"></div>
+                
             </div>
         </div>
     </main>
@@ -299,211 +337,69 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
         window.equipasColaboradores = equipasColaboradores;
 
         document.addEventListener("DOMContentLoaded", function () {
-            // Pessoas por equipa
-            if (!temDados) {
-                document.getElementById('chartContainer').innerHTML = "<div style='color:#888;padding:24px;text-align:center;'>Sem dados para mostrar o gráfico.</div>";
-                document.getElementById('statsContainer').innerHTML = "<span style='color:#888;'>Sem dados para estatísticas.</span>";
-            } else if (typeof CanvasJS !== "undefined" && document.getElementById("chartContainer")) {
-                var dataPoints = [];
-                for (let i = 0; i < equipasLabels.length; i++) {
-                    dataPoints.push({
-                        label: equipasLabels[i],
-                        y: equipasMembros[i],
-                        color: "#667eea",
-                        indexLabel: String(equipasMembros[i])
-                    });
-                }
-                var chart = new CanvasJS.Chart("chartContainer", {
-                    animationEnabled: true,
-                    backgroundColor: "transparent",
-                    theme: "light2",
-                    title: { text: "" },
-                    axisX: { labelFontSize: 14, labelAngle: -20, interval: 1, labelFontColor: "#3a366b" },
-                    axisY: { title: "", interval: null, minimum: 0, labelFontColor: "#3a366b", gridColor: "#ecebfa", labelFormatter: function() { return ""; } },
-                    data: [{ type: "column", dataPoints: dataPoints }]
-                });
-                chart.render();
-                if (typeof ss !== "undefined" && equipasMembros.length > 0) {
-                    const min = ss.min(equipasMembros);
-                    const max = ss.max(equipasMembros);
-                    const avg = ss.mean(equipasMembros);
-                    const med = ss.median(equipasMembros);
-                    document.getElementById('statsContainer').innerHTML = <strong>Estatísticas:</strong><br><span style="color:#667eea;">Mínimo:</span> ${min} | <span style="color:#667eea;">Máximo:</span> ${max} | <span style="color:#667eea;">Média:</span> ${avg.toFixed(2)} | <span style="color:#667eea;">Mediana:</span> ${med};
-                }
-            }
-
-            // Idade média por equipa
-            if (typeof CanvasJS !== "undefined" && document.getElementById("chartIdadeMedia")) {
-                var dataPointsIdade = [];
-                for (let i = 0; i < equipasLabels.length; i++) {
-                    dataPointsIdade.push({
-                        label: equipasLabels[i],
-                        y: Number(equipasIdadeMediaPico[i]),
-                        color: "#764ba2",
-                        indexLabel: String(equipasIdadeMediaPico[i])
-                    });
-                }
-                var axisYLabels = equipasIdadeMedia.filter(val => val > 0).sort((a, b) => a - b);
-                var maxY = Math.max(...axisYLabels, 0);
-                var yPadding = Math.ceil(maxY * 0.30);
-                var yMaxFinal = maxY + (yPadding > 0 ? yPadding : 1);
-                var chartIdade = new CanvasJS.Chart("chartIdadeMedia", {
-                    animationEnabled: true,
-                    backgroundColor: "transparent",
-                    theme: "light2",
-                    title: { text: "" },
-                    axisX: { labelFontSize: 14, labelAngle: -20, interval: 1, labelFontColor: "#3a366b" },
-                    axisY: { title: "Idade média", minimum: 0, maximum: yMaxFinal, interval: null, labelFontColor: "#3a366b", gridColor: "#ecebfa", labelFormatter: function(e) { return axisYLabels.includes(e.value) ? e.value : ""; } },
-                    data: [{ type: "column", dataPoints: dataPointsIdade }]
-                });
-                chartIdade.render();
-                if (typeof ss !== "undefined" && equipasIdadeMediaPico.some(x => x > 0)) {
-                    const min = ss.min(equipasIdadeMediaPico.filter(x => x > 0));
-                    const max = ss.max(equipasIdadeMediaPico.filter(x => x > 0));
-                    const avg = ss.mean(equipasIdadeMediaPico.filter(x => x > 0));
-                    const med = ss.median(equipasIdadeMediaPico.filter(x => x > 0));
-                    document.getElementById('statsIdadeMedia').innerHTML = <strong>Estatísticas:</strong><br><span style="color:#764ba2;">Mínimo:</span> ${min} | <span style="color:#764ba2;">Máximo:</span> ${max} | <span style="color:#764ba2;">Média:</span> ${avg.toFixed(2)} | <span style="color:#764ba2;">Mediana:</span> ${med};
-                }
-            }
-
-            // Tempo médio na empresa
-            if (typeof CanvasJS !== "undefined" && document.getElementById("chartTempoMedio")) {
-                var dataPointsTempo = [];
-                for (let i = 0; i < equipasLabels.length; i++) {
-                    dataPointsTempo.push({
-                        label: equipasLabels[i],
-                        y: tempoMedioEmpresa[i],
-                        color: "#ff9f40",
-                        indexLabel: String(tempoMedioEmpresa[i])
-                    });
-                }
-                var chartTempo = new CanvasJS.Chart("chartTempoMedio", {
-                    animationEnabled: true,
-                    backgroundColor: "transparent",
-                    theme: "light2",
-                    axisX: { labelFontSize: 14, labelAngle: -20, interval: 1, labelFontColor: "#3a366b" },
-                    axisY: { title: "Anos", minimum: 0, labelFontColor: "#3a366b", gridColor: "#ecebfa" },
-                    data: [{ type: "column", dataPoints: dataPointsTempo }]
-                });
-                chartTempo.render();
-                if (typeof ss !== "undefined" && tempoMedioEmpresa.some(x => x > 0)) {
-                    const min = ss.min(tempoMedioEmpresa.filter(x => x > 0));
-                    const max = ss.max(tempoMedioEmpresa.filter(x => x > 0));
-                    const avg = ss.mean(tempoMedioEmpresa.filter(x => x > 0));
-                    const med = ss.median(tempoMedioEmpresa.filter(x => x > 0));
-                    document.getElementById('statsTempoMedio').innerHTML = <strong>Estatísticas:</strong><br><span style="color:#ff9f40;">Mínimo:</span> ${min} | <span style="color:#ff9f40;">Máximo:</span> ${max} | <span style="color:#ff9f40;">Média:</span> ${avg.toFixed(2)} | <span style="color:#ff9f40;">Mediana:</span> ${med};
-                }
-            }
-
-            // Nível hierárquico
-            if (typeof CanvasJS !== "undefined" && document.getElementById("chartNivelHierarquico")) {
-                var dataPointsNivel = [];
-                for (let i = 0; i < nivelLabels.length; i++) {
-                    dataPointsNivel.push({
-                        label: nivelLabels[i],
-                        y: nivelData[i],
-                        color: pieColors[i % pieColors.length]
-                    });
-                }
-                var chartNivel = new CanvasJS.Chart("chartNivelHierarquico", {
-                    animationEnabled: true,
-                    backgroundColor: "transparent",
-                    theme: "light2",
-                    title: { text: "" },
-                    legend: { verticalAlign: "bottom", fontSize: 14, fontColor: "#3a366b" },
-                    data: [{ type: "pie", indexLabel: "{label}: {y}", showInLegend: true, legendText: "{label}", dataPoints: dataPointsNivel, indexLabelLineThickness: 0 }]
-                });
-                chartNivel.render();
-                if (typeof ss !== "undefined" && nivelData.some(x => x > 0)) {
-                    const min = ss.min(nivelData.filter(x => x > 0));
-                    const max = ss.max(nivelData.filter(x => x > 0));
-                    const avg = ss.mean(nivelData.filter(x => x > 0));
-                    const med = ss.median(nivelData.filter(x => x > 0));
-                    document.getElementById('statsNivelHierarquico').innerHTML = <strong>Estatísticas:</strong><br><span style="color:#36a2eb;">Mínimo:</span> ${min} | <span style="color:#36a2eb;">Máximo:</span> ${max} | <span style="color:#36a2eb;">Média:</span> ${avg.toFixed(2)} | <span style="color:#36a2eb;">Mediana:</span> ${med};
-                }
-            }
-
-            // Distribuição geográfica
-            if (typeof CanvasJS !== "undefined" && document.getElementById("chartGeografia")) {
-                let geoLabels = <?php echo json_encode($geo_labels); ?>;
-                let geoData = <?php echo json_encode($geo_data); ?>;
-                let dataPointsGeo = [];
-                let totalGeo = geoData.reduce((a, b) => a + b, 0);
-                for (let i = 0; i < geoLabels.length; i++) {
-                    let percent = totalGeo > 0 ? Math.round((geoData[i] / totalGeo) * 1000) / 10 : 0;
-                    dataPointsGeo.push({
-                        y: percent,
-                        label: geoLabels[i],
-                        toolTipContent: geoLabels[i] + ": " + geoData[i] + " (" + percent + "%)",
-                        color: pieColors[i % pieColors.length]
-                    });
-                }
-                var chartGeo = new CanvasJS.Chart("chartGeografia", {
-                    animationEnabled: true,
-                    backgroundColor: "transparent",
-                    theme: "light2",
-                    title: { text: "" },
-                    legend: { verticalAlign: "bottom", fontSize: 14, fontColor: "#3a366b" },
-                    data: [{ type: "pie", indexLabel: "{label}: {y}%", showInLegend: true, legendText: "{label}", dataPoints: dataPointsGeo, indexLabelLineThickness: 0, toolTipContent: "{toolTipContent}" }]
-                });
-                chartGeo.render();
-                if (typeof ss !== "undefined" && geoData.some(x => x > 0)) {
-                    const min = ss.min(geoData.filter(x => x > 0));
-                    const max = ss.max(geoData.filter(x => x > 0));
-                    const avg = ss.mean(geoData.filter(x => x > 0));
-                    const med = ss.median(geoData.filter(x => x > 0));
-                    document.getElementById('statsGeografia').innerHTML = <strong>Estatísticas:</strong><br><span style="color:#36a2eb;">Mínimo:</span> ${min} | <span style="color:#36a2eb;">Máximo:</span> ${max} | <span style="color:#36a2eb;">Média:</span> ${avg.toFixed(2)} | <span style="color:#36a2eb;">Mediana:</span> ${med};
-                }
-            }
-
-            // Distribuição de género
-            if (typeof CanvasJS !== "undefined" && document.getElementById("chartGenero")) {
-                let totalMasc = 0, totalFem = 0, totalOutro = 0;
-                for (let i = 0; i < equipasLabels.length; i++) {
-                    totalMasc += isNaN(percentMasc[i]) ? 0 : percentMasc[i] / 100 * equipasMembros[i];
-                    totalFem += isNaN(percentFem[i]) ? 0 : percentFem[i] / 100 * equipasMembros[i];
-                    totalOutro += isNaN(percentOutro[i]) ? 0 : percentOutro[i] / 100 * equipasMembros[i];
-                }
-                let totalGeral = totalMasc + totalFem + totalOutro;
-                let mascPercent = totalGeral > 0 ? (totalMasc / totalGeral * 100) : 0;
-                let femPercent = totalGeral > 0 ? (totalFem / totalGeral * 100) : 0;
-                let outroPercent = totalGeral > 0 ? (totalOutro / totalGeral * 100) : 0;
-                let arr = [{ val: mascPercent, idx: 0 }, { val: femPercent, idx: 1 }, { val: outroPercent, idx: 2 }];
-                arr.forEach(a => a.rounded = Math.round(a.val * 10) / 10);
-                let soma = arr[0].rounded + arr[1].rounded + arr[2].rounded;
-                let diff = Math.round((100 - soma) * 10) / 10;
-                if (Math.abs(diff) > 0) {
-                    arr.sort((a, b) => Math.abs(b.val) - Math.abs(a.val));
-                    arr[0].rounded = Math.round((arr[0].rounded + diff) * 10) / 10;
-                }
-                arr.sort((a, b) => a.idx - b.idx);
-                mascPercent = arr[0].rounded;
-                femPercent = arr[1].rounded;
-                outroPercent = arr[2].rounded;
-                let dataPointsGenero = [
-                    { y: mascPercent, label: "Masculino", color: "#36a2eb", toolTipContent: "Masculino: " + Math.round(totalMasc) + " (" + mascPercent + "%)" },
-                    { y: femPercent, label: "Feminino", color: "#ff6384", toolTipContent: "Feminino: " + Math.round(totalFem) + " (" + femPercent + "%)" },
-                    { y: outroPercent, label: "Outro", color: "#b2dfdb", toolTipContent: "Outro: " + Math.round(totalOutro) + " (" + outroPercent + "%)" }
-                ];
-                var chartGenero = new CanvasJS.Chart("chartGenero", {
-                    animationEnabled: true,
-                    backgroundColor: "transparent",
-                    theme: "light2",
-                    title: { text: "" },
-                    legend: { verticalAlign: "bottom", fontSize: 14, fontColor: "#3a366b" },
-                    data: [{ type: "pie", indexLabel: "{label}: {y}%", showInLegend: true, legendText: "{label}", dataPoints: dataPointsGenero, indexLabelLineThickness: 0, toolTipContent: "{toolTipContent}" }]
-                });
-                chartGenero.render();
-                if (typeof ss !== "undefined" && [totalMasc, totalFem, totalOutro].some(x => x > 0)) {
-                    const data = [totalMasc, totalFem, totalOutro].filter(x => x > 0);
-                    const min = ss.min(data);
-                    const max = ss.max(data);
-                    const avg = ss.mean(data);
-                    const med = ss.median(data);
-                    document.getElementById('statsGenero').innerHTML = <strong>Estatísticas:</strong><br><span style="color:#36a2eb;">Mínimo:</span> ${min} | <span style="color:#36a2eb;">Máximo:</span> ${max} | <span style="color:#36a2eb;">Média:</span> ${avg.toFixed(2)} | <span style="color:#36a2eb;">Mediana:</span> ${med};
-                }
-            }
+            filtrarPorEquipa("all");
         });
+
+        // Função para forçar redimensionamento dos gráficos
+        function forceChartResize() {
+            setTimeout(() => {
+                const chartContainers = ['chartContainer', 'chartIdadeMedia', 'chartTempoMedio', 'chartNivelHierarquico', 'chartGeografia', 'chartGenero'];
+                chartContainers.forEach(containerId => {
+                    const container = document.getElementById(containerId);
+                    if (container) {
+                        // Forçar o container a ter o tamanho correto
+                        container.style.width = '100%';
+                        container.style.height = '300px';
+                        container.style.display = 'block';
+                        
+                        // Encontrar o canvas dentro do container e redimensionar
+                        const canvas = container.querySelector('canvas');
+                        if (canvas) {
+                            canvas.style.width = '100%';
+                            canvas.style.height = '100%';
+                            canvas.style.maxWidth = '100%';
+                            canvas.style.maxHeight = '100%';
+                        }
+                        
+                        // Forçar repaint
+                        container.style.display = 'none';
+                        container.offsetHeight; // trigger reflow
+                        container.style.display = 'block';
+                    }
+                });
+            }, 50);
+        }
+
+        function setChartContainerStyle(containerId) {
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.style.width = '100%';
+                container.style.height = '320px';
+                container.style.minHeight = '220px';
+                container.style.display = 'flex';
+                container.style.alignItems = 'center';
+                container.style.justifyContent = 'center';
+                container.style.position = 'relative';
+                container.style.background = 'none';
+                container.style.boxSizing = 'border-box';
+            }
+        }
+        function setChartCanvasStyle(containerId) {
+            const container = document.getElementById(containerId);
+            if (container) {
+                const canvas = container.querySelector('canvas');
+                if (canvas) {
+                    canvas.style.width = '100%';
+                    canvas.style.height = '100%';
+                    canvas.style.minHeight = '200px';
+                    canvas.style.maxWidth = '100%';
+                    canvas.style.maxHeight = '100%';
+                    canvas.style.margin = '0 auto';
+                    canvas.style.display = 'block';
+                    canvas.style.background = 'none';
+                }
+            }
+        }
 
         function atualizarKPIs(idx) {
             if (idx === "all") {
@@ -539,150 +435,390 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
             }
         }
 
+        // Função para filtrar e desenhar gráficos
         function filtrarPorEquipa(idx) {
             atualizarKPIs(idx);
-            // Pessoas por equipa
+
+            // Colaboradores por Equipa - Column moderno
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartContainer")) {
-                let dataPoints = idx === "all" ? equipasLabels.map((l, i) => ({ label: l, y: equipasMembros[i], color: "#667eea", indexLabel: String(equipasMembros[i]) })) : [{ label: equipasLabels[idx], y: equipasMembros[idx], color: "#667eea", indexLabel: String(equipasMembros[idx]) }];
+                setChartContainerStyle("chartContainer");
+                let dataPoints = idx === "all" ? equipasLabels.map((l, i) => ({ label: l, y: equipasMembros[i], color: "#36a2eb", indexLabel: String(equipasMembros[i]) })) : [{ label: equipasLabels[idx], y: equipasMembros[idx], color: "#36a2eb", indexLabel: String(equipasMembros[idx]) }];
                 var chart = new CanvasJS.Chart("chartContainer", {
                     animationEnabled: true,
                     backgroundColor: "transparent",
-                    theme: "light2",
+                    theme: "light1",
                     title: { text: "" },
-                    axisX: { labelFontSize: 14, labelAngle: -20, interval: 1, labelFontColor: "#3a366b" },
-                    axisY: { title: "", interval: null, minimum: 0, labelFontColor: "#3a366b", gridColor: "#ecebfa", labelFormatter: function() { return ""; } },
-                    data: [{ type: "column", dataPoints: dataPoints }]
+                    axisX: {
+                        labelFontSize: 13,
+                        labelAngle: -30,
+                        interval: 1,
+                        labelFontColor: "#19365f",
+                        labelWrap: true,
+                        labelMaxWidth: 120
+                    },
+                    axisY: { title: "Colaboradores", minimum: 0, labelFontColor: "#19365f", gridColor: "#ecebfa" },
+                    toolTip: { enabled: false },
+                    data: [{
+                        type: "column",
+                        color: "#36a2eb",
+                        indexLabelFontColor: "#19365f",
+                        indexLabelFontWeight: "bold",
+                        indexLabelPlacement: "outside",
+                        dataPoints: dataPoints
+                    }]
                 });
                 chart.render();
-                if (typeof ss !== "undefined" && (idx === "all" ? equipasMembros : [equipasMembros[idx]]).some(x => x > 0)) {
-                    const data = idx === "all" ? equipasMembros : [equipasMembros[idx]];
-                    const min = ss.min(data.filter(x => x > 0));
-                    const max = ss.max(data.filter(x => x > 0));
-                    const avg = ss.mean(data.filter(x => x > 0));
-                    const med = ss.median(data.filter(x => x > 0));
-                    document.getElementById('statsContainer').innerHTML = <strong>Estatísticas:</strong><br><span style="color:#667eea;">Mínimo:</span> ${min} | <span style="color:#667eea;">Máximo:</span> ${max} | <span style="color:#667eea;">Média:</span> ${avg.toFixed(2)} | <span style="color:#667eea;">Mediana:</span> ${med};
-                }
+                setChartCanvasStyle("chartContainer");
             }
-
-            // Idades dos colaboradores
+            // Idades dos Colaboradores - SplineArea moderno
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartIdadeMedia")) {
-                let dataPointsIdade = [], axisXLabels = [], todasIdades = [];
+                setChartContainerStyle("chartIdadeMedia");
+                let dataPointsIdade = [], axisXLabels = [], allAges = [];
                 if (idx === "all") {
                     equipasLabels.forEach((l, i) => {
-                        let idades = equipasIdades[l] || [];
-                        idades.forEach((idade, j) => {
-                            let nomeColab = equipasColaboradores[l] && equipasColaboradores[l][j] ? equipasColaboradores[l][j] : "Colab " + (j + 1);
-                            dataPointsIdade.push({ x: dataPointsIdade.length + 1, y: Number(idade), markerColor: "#764ba2", indexLabel: nomeColab + " (" + idade + ")" });
-                            axisXLabels.push(nomeColab);
-                            todasIdades.push(Number(idade));
+                        let ages = equipasIdades[l] || [];
+                        ages.forEach((age, j) => {
+                            let name = equipasColaboradores[l] && equipasColaboradores[l][j] ? equipasColaboradores[l][j] : `Colab ${j + 1}`;
+                            dataPointsIdade.push({ x: dataPointsIdade.length + 1, y: Number(age), markerColor: "#764ba2", indexLabel: `${name} (${age})` });
+                            axisXLabels.push(name);
+                            allAges.push(Number(age));
                         });
                     });
                 } else {
-                    let idades = equipasIdades[equipasLabels[idx]] || [];
-                    idades.forEach((idade, j) => {
-                        let nomeColab = equipasColaboradores[equipasLabels[idx]] && equipasColaboradores[equipasLabels[idx]][j] ? equipasColaboradores[equipasLabels[idx]][j] : "Colab " + (j + 1);
-                        dataPointsIdade.push({ x: dataPointsIdade.length + 1, y: Number(idade), markerColor: "#764ba2", indexLabel: nomeColab + " (" + idade + ")" });
-                        axisXLabels.push(nomeColab);
-                        todasIdades.push(Number(idade));
+                    let ages = equipasIdades[equipasLabels[idx]] || [];
+                    ages.forEach((age, j) => {
+                        let name = equipasColaboradores[equipasLabels[idx]] && equipasColaboradores[equipasLabels[idx]][j] ? equipasColaboradores[equipasLabels[idx]][j] : `Colab ${j + 1}`;
+                        dataPointsIdade.push({ x: dataPointsIdade.length + 1, y: Number(age), markerColor: "#764ba2", indexLabel: `${name} (${age})` });
+                        axisXLabels.push(name);
+                        allAges.push(Number(age));
                     });
                 }
                 var chartIdade = new CanvasJS.Chart("chartIdadeMedia", {
                     animationEnabled: true,
                     backgroundColor: "transparent",
-                    theme: "light2",
+                    theme: "light1",
                     title: { text: "" },
-                    axisX: { labelFontSize: 11, labelAngle: -45, interval: 1, labelFontColor: "#3a366b", valueFormatString: "#", labelFormatter: function(e) { return axisXLabels[e.value - 1] || ""; } },
-                    axisY: { title: "Idade", minimum: 0, labelFontColor: "#3a366b", gridColor: "#ecebfa" },
-                    data: [{ type: "scatter", markerSize: 12, toolTipContent: "{indexLabel}", dataPoints: dataPointsIdade }]
+                    axisX: { labelFontSize: 11, labelAngle: -30, interval: 1, labelFontColor: "#19365f", valueFormatString: "#", labelFormatter: function(e) { return axisXLabels[e.value - 1] || ""; } },
+                    axisY: { title: "Idade", minimum: 0, labelFontColor: "#19365f", gridColor: "#ecebfa" },
+                    toolTip: { enabled: false },
+                    data: [{ type: "splineArea", markerSize: 8, color: "#764ba2", fillOpacity: 0.3, toolTipContent: "{indexLabel}", dataPoints: dataPointsIdade }]
                 });
                 chartIdade.render();
-                if (typeof ss !== "undefined" && todasIdades.length > 0) {
-                    const min = ss.min(todasIdades);
-                    const max = ss.max(todasIdades);
-                    const avg = ss.mean(todasIdades);
-                    const med = ss.median(todasIdades);
-                    document.getElementById('statsIdadeMedia').innerHTML = <strong>Estatísticas:</strong><br><span style="color:#764ba2;">Mínimo:</span> ${min} | <span style="color:#764ba2;">Máximo:</span> ${max} | <span style="color:#764ba2;">Média:</span> ${avg.toFixed(2)} | <span style="color:#764ba2;">Mediana:</span> ${med};
-                }
+                setChartCanvasStyle("chartIdadeMedia");
             }
-
-            // Tempo médio na empresa
+            // Tempo médio na empresa - Bar moderno
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartTempoMedio")) {
+                setChartContainerStyle("chartTempoMedio");
                 let dataPointsTempo = idx === "all" ? equipasLabels.map((l, i) => ({ label: l, y: tempoMedioEmpresa[i], color: "#ff9f40", indexLabel: String(tempoMedioEmpresa[i]) })) : [{ label: equipasLabels[idx], y: tempoMedioEmpresa[idx], color: "#ff9f40", indexLabel: String(tempoMedioEmpresa[idx]) }];
                 var chartTempo = new CanvasJS.Chart("chartTempoMedio", {
                     animationEnabled: true,
                     backgroundColor: "transparent",
-                    theme: "light2",
-                    axisX: { labelFontSize: 14, labelAngle: -20, interval: 1, labelFontColor: "#3a366b" },
-                    axisY: { title: "Anos", minimum: 0, labelFontColor: "#3a366b", gridColor: "#ecebfa" },
-                    data: [{ type: "column", dataPoints: dataPointsTempo }]
+                    theme: "light1",
+                    title: { text: "" },
+                    axisX: {
+                        labelFontSize: 13,
+                        labelAngle: -30,
+                        interval: 1,
+                        labelFontColor: "#19365f",
+                        labelWrap: true,
+                        labelMaxWidth: 120
+                    },
+                    axisY: { title: "Anos", minimum: 0, labelFontColor: "#19365f", gridColor: "#ecebfa" },
+                    toolTip: { enabled: false },
+                    data: [{
+                        type: "bar",
+                        color: "#ff9f40",
+                        indexLabelFontColor: "#ff9f40",
+                        indexLabelFontWeight: "bold",
+                        indexLabelPlacement: "outside",
+                        dataPoints: dataPointsTempo
+                    }]
                 });
                 chartTempo.render();
-                let tempos = idx === "all" ? tempoMedioEmpresa.filter(x => x > 0) : [tempoMedioEmpresa[idx]].filter(x => x > 0);
-                if (typeof ss !== "undefined" && tempos.length > 0) {
-                    const min = ss.min(tempos);
-                    const max = ss.max(tempos);
-                    const avg = ss.mean(tempos);
-                    const med = ss.median(tempos);
-                    document.getElementById('statsTempoMedio').innerHTML = <strong>Estatísticas:</strong><br><span style="color:#ff9f40;">Mínimo:</span> ${min} | <span style="color:#ff9f40;">Máximo:</span> ${max} | <span style="color:#ff9f40;">Média:</span> ${avg.toFixed(2)} | <span style="color:#ff9f40;">Mediana:</span> ${med};
-                }
+                setChartCanvasStyle("chartTempoMedio");
             }
-
-            // Nível hierárquico
+            // Nível Hierárquico/Cargo - Doughnut moderno
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartNivelHierarquico")) {
-                var dataPointsNivel = nivelLabels.map((l, i) => ({ label: l, y: nivelData[i], color: pieColors[i % pieColors.length] }));
+                setChartContainerStyle("chartNivelHierarquico");
+                let dataPointsNivel;
+                if (idx === "all") {
+                    dataPointsNivel = nivelLabels.map((l, i) => ({ label: l, y: nivelData[i], color: pieColors[i % pieColors.length] }));
+                } else {
+                    // Filtrar por equipa selecionada
+                    const equipaNome = equipasLabels[idx];
+                    // Obter dados de colaboradores por equipa e nível hierárquico
+                    const colabsNivel = <?php echo json_encode($rhBLL->getColaboradoresNivelHierarquicoPorEquipa()); ?>;
+                    const nivelCount = {};
+                    colabsNivel.forEach(row => {
+                        if (row.equipa_nome === equipaNome) {
+                            nivelCount[row.nivel_hierarquico] = (nivelCount[row.nivel_hierarquico] || 0) + 1;
+                        }
+                    });
+                    dataPointsNivel = Object.keys(nivelCount).map((nivel, i) => ({
+                        label: nivel,
+                        y: nivelCount[nivel],
+                        color: pieColors[i % pieColors.length]
+                    }));
+                }
                 var chartNivel = new CanvasJS.Chart("chartNivelHierarquico", {
                     animationEnabled: true,
                     backgroundColor: "transparent",
-                    theme: "light2",
+                    theme: "light1",
                     title: { text: "" },
-                    legend: { verticalAlign: "bottom", fontSize: 14, fontColor: "#3a366b" },
-                    data: [{ type: "pie", indexLabel: "{label}: {y}", showInLegend: true, legendText: "{label}", dataPoints: dataPointsNivel, indexLabelLineThickness: 0 }]
+                    legend: { verticalAlign: "bottom", fontSize: 13, fontColor: "#19365f" },
+                    toolTip: { enabled: false },
+                    data: [{ type: "doughnut", indexLabel: "{label}: {y}", showInLegend: true, legendText: "{label}", dataPoints: dataPointsNivel, indexLabelLineThickness: 0 }]
                 });
                 chartNivel.render();
-                if (typeof ss !== "undefined" && nivelData.some(x => x > 0)) {
-                    const min = ss.min(nivelData.filter(x => x > 0));
-                    const max = ss.max(nivelData.filter(x => x > 0));
-                    const avg = ss.mean(nivelData.filter(x => x > 0));
-                    const med = ss.median(nivelData.filter(x => x > 0));
-                    document.getElementById('statsNivelHierarquico').innerHTML = <strong>Estatísticas:</strong><br><span style="color:#36a2eb;">Mínimo:</span> ${min} | <span style="color:#36a2eb;">Máximo:</span> ${max} | <span style="color:#36a2eb;">Média:</span> ${avg.toFixed(2)} | <span style="color:#36a2eb;">Mediana:</span> ${med};
-                }
+                setChartCanvasStyle("chartNivelHierarquico");
             }
 
-            // Distribuição geográfica
+            // Distribuição Geográfica - Pie moderno
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartGeografia")) {
-                let geoLabels = <?php echo json_encode($geo_labels); ?>;
-                let geoData = <?php echo json_encode($geo_data); ?>;
-                let dataPointsGeo = [];
-                let totalGeo = geoData.reduce((a, b) => a + b, 0);
-                for (let i = 0; i < geoLabels.length; i++) {
-                    let percent = totalGeo > 0 ? Math.round((geoData[i] / totalGeo) * 1000) / 10 : 0;
-                    dataPointsGeo.push({
-                        y: percent,
-                        label: geoLabels[i],
-                        toolTipContent: geoLabels[i] + ": " + geoData[i] + " (" + percent + "%)",
+                setChartContainerStyle("chartGeografia");
+                let dataPointsGeo;
+                if (idx === "all") {
+                    let geoLabels = <?php echo json_encode($geo_labels); ?>;
+                    let geoData = <?php echo json_encode($geo_data); ?>;
+                    let totalGeo = geoData.reduce((a, b) => a + b, 0);
+                    dataPointsGeo = geoLabels.map((label, i) => ({
+                        y: totalGeo > 0 ? Math.round((geoData[i] / totalGeo) * 1000) / 10 : 0,
+                        label: label,
                         color: pieColors[i % pieColors.length]
+                    }));
+                } else {
+                    // Filtrar por equipa selecionada
+                    const equipaNome = equipasLabels[idx];
+                    const colabsLocalidade = <?php echo json_encode($rhBLL->getColaboradoresLocalidadePorEquipa()); ?>;
+                    const locCount = {};
+                    let total = 0;
+                    colabsLocalidade.forEach(row => {
+                        if (row.equipa_nome === equipaNome) {
+                            locCount[row.localidade] = (locCount[row.localidade] || 0) + 1;
+                            total++;
+                        }
                     });
+                    dataPointsGeo = Object.keys(locCount).map((loc, i) => ({
+                        y: total > 0 ? Math.round((locCount[loc] / total) * 1000) / 10 : 0,
+                        label: loc,
+                        color: pieColors[i % pieColors.length]
+                    }));
                 }
                 var chartGeo = new CanvasJS.Chart("chartGeografia", {
                     animationEnabled: true,
                     backgroundColor: "transparent",
-                    theme: "light2",
+                    theme: "light1",
                     title: { text: "" },
-                    legend: { verticalAlign: "bottom", fontSize: 14, fontColor: "#3a366b" },
-                    data: [{ type: "pie", indexLabel: "{label}: {y}%", showInLegend: true, legendText: "{label}", dataPoints: dataPointsGeo, indexLabelLineThickness: 0, toolTipContent: "{toolTipContent}" }]
+                    legend: { verticalAlign: "bottom", fontSize: 13, fontColor: "#19365f" },
+                    toolTip: { enabled: false },
+                    data: [{ type: "pie", indexLabel: "{label}: {y}%", showInLegend: true, legendText: "{label}", dataPoints: dataPointsGeo, indexLabelLineThickness: 0 }]
                 });
                 chartGeo.render();
-                if (typeof ss !== "undefined" && geoData.some(x => x > 0)) {
-                    const min = ss.min(geoData.filter(x => x > 0));
-                    const max = ss.max(geoData.filter(x => x > 0));
-                    const avg = ss.mean(geoData.filter(x => x > 0));
-                    const med = ss.median(geoData.filter(x => x > 0));
-                    document.getElementById('statsGeografia').innerHTML = <strong>Estatísticas:</strong><br><span style="color:#36a2eb;">Mínimo:</span> ${min} | <span style="color:#36a2eb;">Máximo:</span> ${max} | <span style="color:#36a2eb;">Média:</span> ${avg.toFixed(2)} | <span style="color:#36a2eb;">Mediana:</span> ${med};
-                }
+                setChartCanvasStyle("chartGeografia");
             }
 
-            // Distribuição de género
+            // Distribuição de género - Pie moderno
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartGenero")) {
+                setChartContainerStyle("chartGenero");
+                let masc = 0, fem = 0, outro = 0, total = 0;
+                if (idx === "all") {
+                    for (let i = 0; i < equipasLabels.length; i++) {
+                        masc += isNaN(percentMasc[i]) ? 0 : percentMasc[i] / 100 * equipasMembros[i];
+                        fem += isNaN(percentFem[i]) ? 0 : percentFem[i] / 100 * equipasMembros[i];
+                        outro += isNaN(percentOutro[i]) ? 0 : percentOutro[i] / 100 * equipasMembros[i];
+                    }
+                    total = masc + fem + outro;
+                } else {
+                    // Filtrar por equipa selecionada
+                    const equipaNome = equipasLabels[idx];
+                    const generoEquipa = <?php echo json_encode($rhBLL->getDistribuicaoGeneroPorEquipa()); ?>;
+                    if (generoEquipa[equipaNome]) {
+                        Object.entries(generoEquipa[equipaNome]).forEach(([genero, count]) => {
+                            const g = genero.trim().toLowerCase();
+                            if (g === 'm' || g === 'masculino') masc += count;
+                            else if (g === 'f' || g === 'feminino') fem += count;
+                            else outro += count;
+                            total += count;
+                        });
+                    }
+                }
+                let mascPercent = total > 0 ? (masc / total * 100) : 0;
+                let femPercent = total > 0 ? (fem / total * 100) : 0;
+                let outroPercent = total > 0 ? (outro / total * 100) : 0;
+                let arr = [{ val: mascPercent, idx: 0 }, { val: femPercent, idx: 1 }, { val: outroPercent, idx: 2 }];
+                arr.forEach(a => a.rounded = Math.round(a.val * 10) / 10);
+                let soma = arr[0].rounded + arr[1].rounded + arr[2].rounded;
+                let diff = Math.round((100 - soma) * 10) / 10;
+                if (Math.abs(diff) > 0) {
+                    arr.sort((a, b) => Math.abs(b.val) - Math.abs(a.val));
+                    arr[0].rounded = Math.round((arr[0].rounded + diff) * 10) / 10;
+                }
+                arr.sort((a, b) => a.idx - b.idx);
+                mascPercent = arr[0].rounded;
+                femPercent = arr[1].rounded;
+                outroPercent = arr[2].rounded;
+                var chartGenero = new CanvasJS.Chart("chartGenero", {
+                    animationEnabled: true,
+                    backgroundColor: "transparent",
+                    theme: "light1",
+                    title: { text: "" },
+                    legend: { verticalAlign: "bottom", fontSize: 13, fontColor: "#19365f" },
+                    toolTip: { enabled: false },
+                    data: [{
+                        type: "pie",
+                        indexLabel: "{label}: {y}%",
+                        showInLegend: true,
+                        legendText: "{label}",
+                        dataPoints: [
+                            { y: mascPercent, label: "Masculino", color: "#36a2eb" },
+                            { y: femPercent, label: "Feminino", color: "#ff6384" },
+                            { y: outroPercent, label: "Outro", color: "#b2dfdb" }
+                        ],
+                        indexLabelLineThickness: 0
+                    }]
+                });
+                chartGenero.render();
+                setChartCanvasStyle("chartGenero");
+            }
+        }
+
+        // Função para desenhar todos os gráficos modernos fora dos cards
+        function renderModernCharts(idx = "all") {
+            // Colaboradores por Equipa
+            if (typeof CanvasJS !== "undefined" && document.getElementById("modernChartColab")) {
+                let dataPoints = idx === "all" ? equipasLabels.map((l, i) => ({ label: l, y: equipasMembros[i], color: "#36a2eb", indexLabel: String(equipasMembros[i]) })) : [{ label: equipasLabels[idx], y: equipasMembros[idx], color: "#36a2eb", indexLabel: String(equipasMembros[idx]) }];
+                let chart = new CanvasJS.Chart("modernChartColab", {
+                    animationEnabled: true,
+                    backgroundColor: "#fff",
+                    theme: "light2",
+                    axisX: {
+                        labelFontSize: 13,
+                        labelAngle: -30,
+                        interval: 1,
+                        labelFontColor: "#19365f",
+                        labelWrap: true,
+                        labelMaxWidth: 120
+                    },
+                    axisY: { title: "Colaboradores", minimum: 0, labelFontColor: "#19365f", gridColor: "#ecebfa" },
+                    data: [{
+                        type: "column",
+                        color: "#36a2eb",
+                        indexLabelFontColor: "#19365f",
+                        indexLabelFontWeight: "bold",
+                        indexLabelPlacement: "outside",
+                        dataPoints: dataPoints
+                    }]
+                });
+                chart.render();
+            }
+            // Idades dos Colaboradores
+            if (typeof CanvasJS !== "undefined" && document.getElementById("modernChartIdade")) {
+                let dataPointsIdade = [], axisXLabels = [];
+                if (idx === "all") {
+                    equipasLabels.forEach((l, i) => {
+                        let ages = equipasIdades[l] || [];
+                        ages.forEach((age, j) => {
+                            let name = equipasColaboradores[l] && equipasColaboradores[l][j] ? equipasColaboradores[l][j] : `Colab ${j + 1}`;
+                            dataPointsIdade.push({ x: dataPointsIdade.length + 1, y: Number(age), markerColor: "#764ba2", indexLabel: `${name} (${age})` });
+                            axisXLabels.push(name);
+                        });
+                    });
+                } else {
+                    let ages = equipasIdades[equipasLabels[idx]] || [];
+                    ages.forEach((age, j) => {
+                        let name = equipasColaboradores[equipasLabels[idx]] && equipasColaboradores[equipasLabels[idx]][j] ? equipasColaboradores[equipasLabels[idx]][j] : `Colab ${j + 1}`;
+                        dataPointsIdade.push({ x: dataPointsIdade.length + 1, y: Number(age), markerColor: "#764ba2", indexLabel: `${name} (${age})` });
+                        axisXLabels.push(name);
+                    });
+                }
+                let chartIdade = new CanvasJS.Chart("modernChartIdade", {
+                    animationEnabled: true,
+                    backgroundColor: "#fff",
+                    theme: "light2",
+                    axisX: { labelFontSize: 11, labelAngle: -30, interval: 1, labelFontColor: "#19365f", valueFormatString: "#", labelFormatter: function(e) { return axisXLabels[e.value - 1] || ""; } },
+                    axisY: { title: "Idade", minimum: 0, labelFontColor: "#19365f", gridColor: "#ecebfa" },
+                    data: [{ type: "splineArea", markerSize: 8, color: "#764ba2", fillOpacity: 0.3, toolTipContent: "{indexLabel}", dataPoints: dataPointsIdade }]
+                });
+                chartIdade.render();
+            }
+            // Tempo médio na empresa
+            if (typeof CanvasJS !== "undefined" && document.getElementById("modernChartTempo")) {
+                let dataPointsTempo = idx === "all" ? equipasLabels.map((l, i) => ({ label: l, y: tempoMedioEmpresa[i], color: "#ff9f40", indexLabel: String(tempoMedioEmpresa[i]) })) : [{ label: equipasLabels[idx], y: tempoMedioEmpresa[idx], color: "#ff9f40", indexLabel: String(tempoMedioEmpresa[idx]) }];
+                let chartTempo = new CanvasJS.Chart("modernChartTempo", {
+                    animationEnabled: true,
+                    backgroundColor: "#fff",
+                    theme: "light2",
+                    axisX: {
+                        labelFontSize: 13,
+                        labelAngle: -30,
+                        interval: 1,
+                        labelFontColor: "#19365f",
+                        labelWrap: true,
+                        labelMaxWidth: 120
+                    },
+                    axisY: { title: "Anos", minimum: 0, labelFontColor: "#19365f", gridColor: "#ecebfa" },
+                    data: [{
+                        type: "bar",
+                        color: "#ff9f40",
+                        indexLabelFontColor: "#ff9f40",
+                        indexLabelFontWeight: "bold",
+                        indexLabelPlacement: "outside",
+                        dataPoints: dataPointsTempo
+                    }]
+                });
+                chartTempo.render();
+            }
+            // Nível Hierárquico/Cargo
+            if (typeof CanvasJS !== "undefined" && document.getElementById("modernChartNivel")) {
+                let dataPointsNivel = nivelLabels.map((l, i) => ({ label: l, y: nivelData[i], color: pieColors[i % pieColors.length] }));
+                let chartNivel = new CanvasJS.Chart("modernChartNivel", {
+                    animationEnabled: true,
+                    backgroundColor: "#fff",
+                    theme: "light2",
+                    legend: { 
+                        verticalAlign: "bottom", 
+                        fontSize: 13, 
+                        fontColor: "#19365f",
+                        // Adiciona legenda extra
+                        itemclick: null,
+                        dockInsidePlotArea: false,
+                        fontFamily: "inherit"
+                    },
+                    subtitles: [{
+                        text: "Legenda: 1 = Colaborador, 2 = Coordenador, 3 = RH",
+                        fontSize: 13,
+                        fontColor: "#888",
+                        fontStyle: "italic",
+                        margin: 8,
+                        verticalAlign: "bottom",
+                        dockInsidePlotArea: false
+                    }],
+                    data: [{ type: "doughnut", indexLabel: "{label}: {y}", showInLegend: true, legendText: "{label}", dataPoints: dataPointsNivel, indexLabelLineThickness: 0 }]
+                });
+                chartNivel.render();
+            }
+            // Distribuição Geográfica
+            if (typeof CanvasJS !== "undefined" && document.getElementById("modernChartGeo")) {
+                let geoLabels = <?php echo json_encode($geo_labels); ?>;
+                let geoData = <?php echo json_encode($geo_data); ?>;
+                let totalGeo = geoData.reduce((a, b) => a + b, 0);
+                let dataPointsGeo = geoLabels.map((label, i) => ({
+                    y: totalGeo > 0 ? Math.round((geoData[i] / totalGeo) * 1000) / 10 : 0,
+                    label: label,
+                    toolTipContent: `${label}: ${geoData[i]} (${Math.round((geoData[i] / totalGeo) * 1000) / 10}%)`,
+                    color: pieColors[i % pieColors.length]
+                }));
+                let chartGeo = new CanvasJS.Chart("modernChartGeo", {
+                    animationEnabled: true,
+                    backgroundColor: "#fff",
+                    theme: "light2",
+                    legend: { verticalAlign: "bottom", fontSize: 13, fontColor: "#19365f" },
+                    data: [{ type: "pie", indexLabel: "{label}: {y}%", showInLegend: true, legendText: "{label}", dataPoints: dataPointsGeo, indexLabelLineThickness: 0 }]
+                });
+                chartGeo.render();
+            }
+            // Distribuição de género
+            if (typeof CanvasJS !== "undefined" && document.getElementById("modernChartGenero")) {
                 let totalMasc = 0, totalFem = 0, totalOutro = 0;
                 for (let i = 0; i < equipasLabels.length; i++) {
                     totalMasc += isNaN(percentMasc[i]) ? 0 : percentMasc[i] / 100 * equipasMembros[i];
@@ -705,37 +841,40 @@ $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
                 mascPercent = arr[0].rounded;
                 femPercent = arr[1].rounded;
                 outroPercent = arr[2].rounded;
-                let dataPointsGenero = [
-                    { y: mascPercent, label: "Masculino", color: "#36a2eb", toolTipContent: "Masculino: " + Math.round(totalMasc) + " (" + mascPercent + "%)" },
-                    { y: femPercent, label: "Feminino", color: "#ff6384", toolTipContent: "Feminino: " + Math.round(totalFem) + " (" + femPercent + "%)" },
-                    { y: outroPercent, label: "Outro", color: "#b2dfdb", toolTipContent: "Outro: " + Math.round(totalOutro) + " (" + outroPercent + "%)" }
-                ];
-                var chartGenero = new CanvasJS.Chart("chartGenero", {
+                let chartGenero = new CanvasJS.Chart("modernChartGenero", {
                     animationEnabled: true,
-                    backgroundColor: "transparent",
+                    backgroundColor: "#fff",
                     theme: "light2",
-                    title: { text: "" },
-                    legend: { verticalAlign: "bottom", fontSize: 14, fontColor: "#3a366b" },
-                    data: [{ type: "pie", indexLabel: "{label}: {y}%", showInLegend: true, legendText: "{label}", dataPoints: dataPointsGenero, indexLabelLineThickness: 0, toolTipContent: "{toolTipContent}" }]
+                    legend: { verticalAlign: "bottom", fontSize: 13, fontColor: "#19365f" },
+                    data: [{
+                        type: "pie",
+                        indexLabel: "{label}: {y}%",
+                        showInLegend: true,
+                        legendText: "{label}",
+                        dataPoints: [
+                            { y: mascPercent, label: "Masculino", color: "#36a2eb", toolTipContent: `Masculino: ${Math.round(totalMasc)} (${mascPercent}%)` },
+                            { y: femPercent, label: "Feminino", color: "#ff6384", toolTipContent: `Feminino: ${Math.round(totalFem)} (${femPercent}%)` },
+                            { y: outroPercent, label: "Outro", color: "#b2dfdb", toolTipContent: `Outro: ${Math.round(totalOutro)} (${outroPercent}%)` }
+                        ],
+                        indexLabelLineThickness: 0,
+                        toolTipContent: "{toolTipContent}"
+                    }]
                 });
                 chartGenero.render();
-                if (typeof ss !== "undefined" && [totalMasc, totalFem, totalOutro].some(x => x > 0)) {
-                    const data = [totalMasc, totalFem, totalOutro].filter(x => x > 0);
-                    const min = ss.min(data);
-                    const max = ss.max(data);
-                    const avg = ss.mean(data);
-                    const med = ss.median(data);
-                    document.getElementById('statsGenero').innerHTML = <strong>Estatísticas:</strong><br><span style="color:#36a2eb;">Mínimo:</span> ${min} | <span style="color:#36a2eb;">Máximo:</span> ${max} | <span style="color:#36a2eb;">Média:</span> ${avg.toFixed(2)} | <span style="color:#36a2eb;">Mediana:</span> ${med};
-                }
             }
         }
 
+        // Renderiza todos os gráficos ao carregar a página
         document.addEventListener("DOMContentLoaded", function () {
             filtrarPorEquipa("all");
+            renderModernCharts("all");
         });
 
+        // Atualiza gráficos ao mudar equipa
         document.getElementById("equipaSelect").addEventListener("change", function() {
-            filtrarPorEquipa(this.value === "all" ? "all" : parseInt(this.value));
+            let idx = this.value === "all" ? "all" : parseInt(this.value);
+            filtrarPorEquipa(idx);
+            renderModernCharts(idx);
         });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>

@@ -49,16 +49,15 @@ class DAL_DashboardCoordenador {
 
     public function getIdadesColaboradoresPorEquipa($userId) {
         $pdo = Database::getConnection();
-        // Corrigido: usar a ligação correta utilizador_id -> colaborador_id
         $stmt = $pdo->prepare("
-            SELECT e.nome as equipa_nome, col.data_nascimento
+            SELECT e.nome as equipa_nome, col.data_nascimento, col.nome as colaborador_nome
             FROM equipa_colaboradores ec
             INNER JOIN colaboradores col ON ec.colaborador_id = col.id
             INNER JOIN equipas e ON ec.equipa_id = e.id
             INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
             WHERE coord.utilizador_id = ? AND col.data_nascimento IS NOT NULL AND col.data_nascimento != '' AND col.data_nascimento != '0000-00-00'
             UNION
-            SELECT e.nome as equipa_nome, coord.data_nascimento
+            SELECT e.nome as equipa_nome, coord.data_nascimento, coord.nome as colaborador_nome
             FROM equipas e
             INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
             WHERE coord.utilizador_id = ?
@@ -75,7 +74,11 @@ class DAL_DashboardCoordenador {
                 $idade = date_diff(date_create($data_nasc), date_create('now'))->y;
             }
             if ($idade !== null) {
-                $result[] = ['equipa_nome' => $row['equipa_nome'], 'idade' => $idade];
+                $result[] = [
+                    'equipa_nome' => $row['equipa_nome'],
+                    'idade' => $idade,
+                    'colaborador_nome' => $row['colaborador_nome']
+                ];
             }
         }
         return $result;
@@ -197,6 +200,99 @@ class DAL_DashboardCoordenador {
         ");
         $stmt->execute([$equipaId, $equipaId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Remuneração média por equipa do coordenador
+    public function getRemuneracaoMediaPorEquipa($userId) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT e.nome as equipa_nome, AVG(CAST(c.remuneracao AS DECIMAL(10,2))) as remuneracao_media
+            FROM equipa_colaboradores ec
+            INNER JOIN equipas e ON ec.equipa_id = e.id
+            INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+            INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+            WHERE coord.utilizador_id = ? AND c.remuneracao IS NOT NULL AND c.remuneracao != ''
+            GROUP BY e.nome
+            UNION
+            SELECT e.nome as equipa_nome, AVG(CAST(coord.remuneracao AS DECIMAL(10,2))) as remuneracao_media
+            FROM equipas e
+            INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+            WHERE coord.utilizador_id = ?
+              AND e.responsavel_id IS NOT NULL
+              AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
+              AND coord.remuneracao IS NOT NULL AND coord.remuneracao != ''
+            GROUP BY e.nome
+        ");
+        $stmt->execute([$userId, $userId]);
+        $result = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $result[$row['equipa_nome']] = (float)$row['remuneracao_media'];
+        }
+        return $result;
+    }
+
+    // Distribuição de género por equipa do coordenador
+    public function getDistribuicaoGeneroPorEquipa($userId) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT e.nome as equipa_nome, c.sexo, COUNT(*) as total
+            FROM equipa_colaboradores ec
+            INNER JOIN equipas e ON ec.equipa_id = e.id
+            INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+            INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+            WHERE coord.utilizador_id = ? AND c.sexo IS NOT NULL AND c.sexo != ''
+            GROUP BY e.nome, c.sexo
+            UNION ALL
+            SELECT e.nome as equipa_nome, coord.sexo, COUNT(*) as total
+            FROM equipas e
+            INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+            WHERE coord.utilizador_id = ?
+              AND e.responsavel_id IS NOT NULL
+              AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
+              AND coord.sexo IS NOT NULL AND coord.sexo != ''
+            GROUP BY e.nome, coord.sexo
+        ");
+        $stmt->execute([$userId, $userId]);
+        $result = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $eq = $row['equipa_nome'];
+            $sexo = $row['sexo'];
+            $total = (int)$row['total'];
+            if (!isset($result[$eq])) $result[$eq] = [];
+            if (!isset($result[$eq][$sexo])) $result[$eq][$sexo] = 0;
+            $result[$eq][$sexo] += $total;
+        }
+        return $result;
+    }
+
+    // Localidades dos colaboradores por equipa do coordenador
+    public function getColaboradoresLocalidadePorEquipa($userId) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT e.nome as equipa_nome, c.localidade
+            FROM equipa_colaboradores ec
+            INNER JOIN equipas e ON ec.equipa_id = e.id
+            INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+            INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+            WHERE coord.utilizador_id = ? AND c.localidade IS NOT NULL AND c.localidade != ''
+            UNION ALL
+            SELECT e.nome as equipa_nome, coord.localidade
+            FROM equipas e
+            INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+            WHERE coord.utilizador_id = ?
+              AND e.responsavel_id IS NOT NULL
+              AND (e.responsavel_id NOT IN (SELECT colaborador_id FROM equipa_colaboradores WHERE equipa_id = e.id))
+              AND coord.localidade IS NOT NULL AND coord.localidade != ''
+        ");
+        $stmt->execute([$userId, $userId]);
+        $result = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $result[] = [
+                'equipa_nome' => $row['equipa_nome'],
+                'localidade' => $row['localidade']
+            ];
+        }
+        return $result;
     }
 }
 ?>

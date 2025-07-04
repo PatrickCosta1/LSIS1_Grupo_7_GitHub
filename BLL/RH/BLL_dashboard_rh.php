@@ -58,6 +58,12 @@ class RHDashboardManager {
     public function getLocalidadesPorEquipa() {
         return $this->dal->getLocalidadesPorEquipa();
     }
+    public function getColaboradoresNivelHierarquicoPorEquipa() {
+        return $this->dal->getColaboradoresNivelHierarquicoPorEquipa();
+    }
+    public function getColaboradoresLocalidadePorEquipa() {
+        return $this->dal->getColaboradoresLocalidadePorEquipa();
+    }
 }
 
 // Nenhuma alteração necessária para centralização dos gráficos

@@ -86,6 +86,64 @@ header nav a.active {
     border-radius: 0 3px 3px 0;
 }
 
+/* Novas regras para o dropdown de gestão */
+.dropdown-gestao {
+    position: relative;
+    display: inline-block;
+}
+.gestao-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+.gestao-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+.dropdown-gestao:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+.dropdown-gestao .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+.dropdown-gestao .dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+.dropdown-gestao .dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}
+.dropdown-gestao:hover .dropdown-menu,
+.dropdown-gestao:focus-within .dropdown-menu {
+    display: block;
+}
+
 .portal-text {
     font-size: 0.75rem;
     color: #19365f;
@@ -240,16 +298,25 @@ main {
     }
 }
 
-.dropdown-perfil {
+/* Dropdown styles for all profiles */
+.dropdown-perfil, .dropdown-equipa, .dropdown-equipas, .dropdown-colaboradores {
     position: relative;
     display: inline-block;
 }
 
-.perfil-link {
+.perfil-link, .equipa-link, .equipas-link, .colaboradores-link {
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 4px;
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
 }
 
 .seta-baixo {
@@ -258,7 +325,10 @@ main {
     transition: transform 0.2s;
 }
 
-.dropdown-perfil:hover .seta-baixo {
+.dropdown-perfil:hover .seta-baixo,
+.dropdown-equipa:hover .seta-baixo,
+.dropdown-equipas:hover .seta-baixo,
+.dropdown-colaboradores:hover .seta-baixo {
     transform: rotate(180deg);
 }
 
@@ -275,114 +345,33 @@ main {
     padding: 8px 0;
 }
 
+.dropdown-perfil:hover .dropdown-menu,
+.dropdown-equipa:hover .dropdown-menu,
+.dropdown-equipas:hover .dropdown-menu,
+.dropdown-colaboradores:hover .dropdown-menu {
+    display: block;
+}
+
 .dropdown-menu a {
     display: block;
-    padding: 5px 24px 5px 25px;  /* aumenta o padding à esquerda */
+    padding: 5px 24px 5px 25px;
     color: #111 !important;
     text-decoration: none;
     font-weight: 500;
     font-size: 0.80rem;
     transition: background 0.18s, color 0.18s;
     border-radius: 6px;
-    text-align: left;            /* garante alinhamento à esquerda */
+    text-align: left;
 }
 
 .dropdown-menu a:hover {
-    background: #a3bfff;
-    color: #000000 !important;          /* texto branco ao passar o rato */
+    background: #e3eafc;
+    color: #0360e9 !important;
 }
 
-.dropdown-perfil:hover .dropdown-menu {
-    display: block;
-}
-
-/* Dropdown Equipa */
-.dropdown-equipa {
-    position: relative;
-    display: inline-block;
-}
-.equipa-link {
-    color: #fff;
-    text-decoration: none;
-    padding: 10px 18px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background 0.2s;
-}
-.equipa-link:hover,
-.equipa-link:focus {
-    background: rgba(255,255,255,0.15);
-}
-.seta-baixo {
-    margin-left: 6px;
-    font-size: 0.9em;
-}
-.dropdown-equipa .dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 110%;
-    left: 0;
-    background: #a5c9ff;
-    min-width: 180px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
-    border-radius: 10px;
-    z-index: 10;
-    padding: 8px 0;
-}
-.dropdown-equipa .dropdown-menu a {
-    display: block;
-    padding: 5px 24px 5px 25px;  /* aumenta o padding à esquerda */
-    color: #111 !important;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.80rem;
-    transition: background 0.18s, color 0.18s;
-    border-radius: 6px;
-    text-align: left;     
-}
-.dropdown-equipa .dropdown-menu a:hover {
-    background: #f0f4ff;
-}
-.dropdown-equipa:hover .dropdown-menu,
-.dropdown-equipa:focus-within .dropdown-menu {
-    display: block;
-}
-
-.modal-pw-bg {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(44,98,255,0.10);
-    z-index: 3000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.modal-pw {
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 8px 32px rgba(44,98,255,0.13);
-    padding: 36px 32px 28px 32px;
-    min-width: 320px;
-    max-width: 95vw;
-    position: relative;
-    text-align: center;
-    animation: fadeInUp 0.4s;
-}
-.fechar-modal-pw {
-    position: absolute;
-    top: 12px;
-    right: 18px;
-    background: none;
-    border: none;
-    font-size: 2rem;
-    color: #299cf3;
-    cursor: pointer;
-    font-weight: bold;
-    transition: color 0.2s;
-}
-.fechar-modal-pw:hover {
-    color: #0360e9;
+.perfil-link:hover, .equipa-link:hover, .equipas-link:hover, .colaboradores-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
 }
 
 /* Novos blocos de informação */
