@@ -32,9 +32,9 @@ class RHEquipaEditarManager {
         return $this->dal->adicionarColaboradorAEquipa($equipaId, $colabId);
     }
 
-    public function atualizarNomeCoordenador($equipaId, $nome, $coordenadorId) {
+    public function atualizarNomeCoordenador($equipaId, $nome, $coordenadorId, $tipoEquipa = 'colaboradores') {
         // $coordenadorId deve ser o ID do colaborador
-        return $this->dal->atualizarNomeCoordenador($equipaId, $nome, $coordenadorId);
+        return $this->dal->atualizarNomeCoordenador($equipaId, $nome, $coordenadorId, $tipoEquipa);
     }
 
     public function removerEquipa($equipaId) {

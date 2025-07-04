@@ -23,14 +23,15 @@ class ForgotPasswordManager {
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
+            $mail->CharSet = 'UTF-8';
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = '@gmail.com';
-            $mail->Password   = ''; // senha de app do Gmail
+            $mail->Username   = 'suportetlantic@gmail.com';
+            $mail->Password   = 'xznvhgxwnicdcrpx';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = 587;
+            $mail->Port= 587;
 
-            $mail->setFrom('patrickcosta1605@gmail.com', 'Portal Tlantic');
+            $mail->setFrom('suportetlantic@gmail.com', 'Portal Tlantic');
             $mail->addAddress($email);
             $mail->isHTML(true);
             $mail->Subject = 'Recuperação de Palavra-passe - Portal Tlantic';

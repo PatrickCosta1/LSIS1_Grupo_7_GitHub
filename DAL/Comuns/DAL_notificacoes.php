@@ -58,5 +58,11 @@ class DAL_Notificacoes {
         $stmt = $this->db->query("SELECT id, username, email FROM utilizadores WHERE perfil_id = 4");
         return $stmt->fetchAll();
     }
+
+    public function getColaboradorByUtilizadorId($utilizadorId) {
+        $stmt = $this->db->prepare("SELECT * FROM colaboradores WHERE utilizador_id = ?");
+        $stmt->execute([$utilizadorId]);
+        return $stmt->fetch();
+    }
 }
 ?>

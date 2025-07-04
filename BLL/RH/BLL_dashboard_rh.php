@@ -44,5 +44,33 @@ class RHDashboardManager {
     public function getDistribuicaoGeneroPorEquipa() {
         return $this->dal->getDistribuicaoGeneroPorEquipa();
     }
+
+    public function getNomesColaboradoresPorEquipa() {
+        return $this->dal->getNomesColaboradoresPorEquipa();
+    }
+
+    // Novo: distribuição geográfica
+    public function getDistribuicaoGeografica() {
+        return $this->dal->getDistribuicaoGeografica();
+    }
+
+    // Novo: localidades dos colaboradores por equipa
+    public function getLocalidadesPorEquipa() {
+        return $this->dal->getLocalidadesPorEquipa();
+    }
+    public function getColaboradoresNivelHierarquicoPorEquipa() {
+        return $this->dal->getColaboradoresNivelHierarquicoPorEquipa();
+    }
+    public function getColaboradoresLocalidadePorEquipa() {
+        return $this->dal->getColaboradoresLocalidadePorEquipa();
+    }
+    public function getTaxaRetencaoPorEquipa($anos = 1) {
+        return $this->dal->getTaxaRetencaoPorEquipa($anos);
+    }
+    public function getTaxaRetencaoGlobal($anos = 1) {
+        return $this->dal->getTaxaRetencaoGlobal($anos);
+    }
 }
+
+// Nenhuma alteração necessária para centralização dos gráficos
 ?>

@@ -101,14 +101,20 @@ $coordenadores = getResponsaveisDisponiveis($tipoEquipa, $equipaId, $equipa['res
 $colaboradoresFora = getMembrosDisponiveis($tipoEquipa, $equipasBLL);
 $colaboradoresEquipa = $equipasBLL->getColaboradoresDaEquipa($equipaId);
 
-// Remover o responsável da lista de adicionar caso seja equipa RH
-if ($tipoEquipa === 'rh' && !empty($equipa['responsavel_id'])) {
-    $colaboradoresFora = array_filter($colaboradoresFora, function($colab) use ($equipa) {
-        // O campo pode ser 'colaborador_id' ou 'id' dependendo da query
+// Remover o responsável da lista de adicionar/remover caso seja equipa de coordenadores ou rh
+if (in_array($tipoEquipa, ['coordenadores', 'rh']) && !empty($equipa['responsavel_id'])) {
+    // Remover o responsável dos colaboradores da equipa
+    $colaboradoresEquipa = array_filter($colaboradoresEquipa, function($colab) use ($equipa) {
         $id = isset($colab['colaborador_id']) ? $colab['colaborador_id'] : (isset($colab['id']) ? $colab['id'] : null);
         return $id != $equipa['responsavel_id'];
     });
-    // Reindexar array para evitar problemas no foreach
+    $colaboradoresEquipa = array_values($colaboradoresEquipa);
+
+    // Remover o responsável dos colaboradores disponíveis para adicionar
+    $colaboradoresFora = array_filter($colaboradoresFora, function($colab) use ($equipa) {
+        $id = isset($colab['colaborador_id']) ? $colab['colaborador_id'] : (isset($colab['id']) ? $colab['id'] : null);
+        return $id != $equipa['responsavel_id'];
+    });
     $colaboradoresFora = array_values($colaboradoresFora);
 }
 
@@ -139,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['nome']) && isset($_POST['responsavel_id'])) {
         $novoNome = trim($_POST['nome']);
         $novoResp = intval($_POST['responsavel_id']); // ID do colaborador
-        $okAtualizar = $equipasBLL->atualizarNomeCoordenador($equipaId, $novoNome, $novoResp);
+        $okAtualizar = $equipasBLL->atualizarNomeCoordenador($equipaId, $novoNome, $novoResp, $tipoEquipa);
         if ($okAtualizar) {
             $success = "Equipa atualizada com sucesso!";
         } else {
@@ -158,8 +164,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipoEquipa = $equipa['tipo'] ?? 'colaboradores';
     $colaboradoresEquipa = $equipasBLL->getColaboradoresDaEquipa($equipaId);
     $colaboradoresFora = getMembrosDisponiveis($tipoEquipa, $equipasBLL);
-    // Recarregar responsáveis após alteração
-    $coordenadores = getResponsaveisDisponiveis($tipoEquipa, $equipaId, $equipa['responsavel_id'] ?? null);
+    // Remover o responsável das listas após alteração, se necessário
+    if (in_array($tipoEquipa, ['coordenadores', 'rh']) && !empty($equipa['responsavel_id'])) {
+        $colaboradoresEquipa = array_filter($colaboradoresEquipa, function($colab) use ($equipa) {
+            $id = isset($colab['colaborador_id']) ? $colab['colaborador_id'] : (isset($colab['id']) ? $colab['id'] : null);
+            return $id != $equipa['responsavel_id'];
+        });
+        $colaboradoresEquipa = array_values($colaboradoresEquipa);
+
+        $colaboradoresFora = array_filter($colaboradoresFora, function($colab) use ($equipa) {
+            $id = isset($colab['colaborador_id']) ? $colab['colaborador_id'] : (isset($colab['id']) ? $colab['id'] : null);
+            return $id != $equipa['responsavel_id'];
+        });
+        $colaboradoresFora = array_values($colaboradoresFora);
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -173,16 +191,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <header>
     <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='equipas.php';">
     <nav>
-        <a href="dashboard_rh.php">Dashboard</a>
-        <a href="colaboradores_gerir.php">Colaboradores</a>
-        <a href="equipas.php" class="active">Equipas</a>
-        <a href="relatorios.php">Relatórios</a>
-        <a href="exportar.php">Exportar</a>
-        <a href="../Comuns/notificacoes.php">Notificações</a>
-        <a href="../Comuns/perfil.php">Perfil</a>
-        <a href="../Comuns/logout.php">Sair</a>
+        <div class="dropdown-equipas">
+                <a href="equipas.php" class="equipas-link">
+                    Equipas
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="relatorios.php">Relatórios</a>
+                    <a href="dashboard_rh.php">Dashboard</a>
+                </div>
+            </div>
+            <div class="dropdown-colaboradores">
+                <a href="colaboradores_gerir.php" class="colaboradores-link">
+                    Colaboradores
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="exportar.php">Exportar</a>
+                </div>
+            </div>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <a href="recibos_submeter.php">Recibos</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a>
     </nav>
 </header>
+<div class="portal-brand">
+    <div class="color-bar">
+        <div class="color-segment"></div>
+        <div class="color-segment"></div>
+        <div class="color-segment"></div>
+    </div>
+    <span class="portal-text">Portal Do Colaborador</span>
+</div>
 <main>
     <h1>Editar Equipa</h1>
     <?php if ($success): ?><div class="success-message"><?= $success ?></div><?php endif; ?>

@@ -1,11 +1,11 @@
 body {
-    background: #ffffff; /* Fundo branco puro */
+    background: #ffffff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     min-height: 100vh;
-    /* Reduz ainda mais o espaço após o header */
-    padding-top: calc(100px + 1.2cm); /* Reduzido de 2cm para 1.2cm */
+    padding-top: calc(100px + 1.2cm);
 }
+
 header {
     position: fixed;
     top: 0.5cm;
@@ -19,14 +19,16 @@ header {
     box-shadow: 0 8px 32px rgba(3,96,233,0.18);
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* igual ao dashboard */
+    justify-content: flex-start;
     padding: 24px 60px;
     z-index: 1000;
 }
+
 .logo-header {
     width: 120px;
     height: auto;
 }
+
 header nav {
     display: flex;
     gap: 1px;
@@ -34,6 +36,7 @@ header nav {
     justify-content: center;
     width: 100%;
 }
+
 header nav a {
     color: #fff !important;
     font-weight: 500;
@@ -45,19 +48,19 @@ header nav a {
     margin: 0;
     display: inline-block;
 }
+
 header nav a:hover,
 header nav a.active {
     background: rgba(255, 255, 255, 0.2);
     color: #e0eaff !important;
 }
 
-/* Marca colorida acima do título */
 .portal-brand {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
-    margin: 0px 0 12px 0; /* Reduzido de 4px para 0px na margem superior */
+    margin: 0px 0 12px 0;
 }
 
 .color-bar {
@@ -86,6 +89,70 @@ header nav a.active {
     border-radius: 0 3px 3px 0;
 }
 
+.dropdown-gestao {
+    position: relative;
+    display: inline-block;
+}
+
+.gestao-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.gestao-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+.dropdown-gestao:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-gestao .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-gestao .dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+
+.dropdown-gestao .dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}
+
+.dropdown-gestao:hover .dropdown-menu,
+.dropdown-gestao:focus-within .dropdown-menu {
+    display: block;
+}
+
 .portal-text {
     font-size: 0.75rem;
     color: #19365f;
@@ -94,17 +161,15 @@ header nav a.active {
     text-transform: uppercase;
 }
 
-/* Título principal */
 main h1 {
     color: #19365f;
     text-align: center;
     font-size: 2.2rem;
     font-weight: 700;
-    margin: 4px 0 32px 0; /* Reduzido de 8px 0 32px 0 para 4px 0 32px 0 */
+    margin: 4px 0 32px 0;
     letter-spacing: 1px;
 }
 
-/* Container simples branco */
 main {
     margin: 0 auto;
     max-width: 600px;
@@ -240,16 +305,24 @@ main {
     }
 }
 
-.dropdown-perfil {
+.dropdown-perfil, .dropdown-equipa, .dropdown-equipas, .dropdown-colaboradores {
     position: relative;
     display: inline-block;
 }
 
-.perfil-link {
+.perfil-link, .equipa-link, .equipas-link, .colaboradores-link {
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 4px;
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
 }
 
 .seta-baixo {
@@ -258,7 +331,10 @@ main {
     transition: transform 0.2s;
 }
 
-.dropdown-perfil:hover .seta-baixo {
+.dropdown-perfil:hover .seta-baixo,
+.dropdown-equipa:hover .seta-baixo,
+.dropdown-equipas:hover .seta-baixo,
+.dropdown-colaboradores:hover .seta-baixo {
     transform: rotate(180deg);
 }
 
@@ -275,117 +351,35 @@ main {
     padding: 8px 0;
 }
 
+.dropdown-perfil:hover .dropdown-menu,
+.dropdown-equipa:hover .dropdown-menu,
+.dropdown-equipas:hover .dropdown-menu,
+.dropdown-colaboradores:hover .dropdown-menu {
+    display: block;
+}
+
 .dropdown-menu a {
     display: block;
-    padding: 5px 24px 5px 25px;  /* aumenta o padding à esquerda */
+    padding: 5px 24px 5px 25px;
     color: #111 !important;
     text-decoration: none;
     font-weight: 500;
     font-size: 0.80rem;
     transition: background 0.18s, color 0.18s;
     border-radius: 6px;
-    text-align: left;            /* garante alinhamento à esquerda */
+    text-align: left;
 }
 
 .dropdown-menu a:hover {
-    background: #a3bfff;
-    color: #000000 !important;          /* texto branco ao passar o rato */
+    background: #e3eafc;
+    color: #0360e9 !important;
 }
 
-.dropdown-perfil:hover .dropdown-menu {
-    display: block;
+.perfil-link:hover, .equipa-link:hover, .equipas-link:hover, .colaboradores-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
 }
 
-/* Dropdown Equipa */
-.dropdown-equipa {
-    position: relative;
-    display: inline-block;
-}
-.equipa-link {
-    color: #fff;
-    text-decoration: none;
-    padding: 10px 18px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background 0.2s;
-}
-.equipa-link:hover,
-.equipa-link:focus {
-    background: rgba(255,255,255,0.15);
-}
-.seta-baixo {
-    margin-left: 6px;
-    font-size: 0.9em;
-}
-.dropdown-equipa .dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 110%;
-    left: 0;
-    background: #a5c9ff;
-    min-width: 180px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
-    border-radius: 10px;
-    z-index: 10;
-    padding: 8px 0;
-}
-.dropdown-equipa .dropdown-menu a {
-    display: block;
-    padding: 5px 24px 5px 25px;  /* aumenta o padding à esquerda */
-    color: #111 !important;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.80rem;
-    transition: background 0.18s, color 0.18s;
-    border-radius: 6px;
-    text-align: left;     
-}
-.dropdown-equipa .dropdown-menu a:hover {
-    background: #f0f4ff;
-}
-.dropdown-equipa:hover .dropdown-menu,
-.dropdown-equipa:focus-within .dropdown-menu {
-    display: block;
-}
-
-.modal-pw-bg {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(44,98,255,0.10);
-    z-index: 3000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.modal-pw {
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 8px 32px rgba(44,98,255,0.13);
-    padding: 36px 32px 28px 32px;
-    min-width: 320px;
-    max-width: 95vw;
-    position: relative;
-    text-align: center;
-    animation: fadeInUp 0.4s;
-}
-.fechar-modal-pw {
-    position: absolute;
-    top: 12px;
-    right: 18px;
-    background: none;
-    border: none;
-    font-size: 2rem;
-    color: #299cf3;
-    cursor: pointer;
-    font-weight: bold;
-    transition: color 0.2s;
-}
-.fechar-modal-pw:hover {
-    color: #0360e9;
-}
-
-/* Novos blocos de informação */
 .perfil-info-blocks {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -450,7 +444,7 @@ main {
 }
 
 .info-block-content p {
-    margin: 0 0 20px 0; /* Aumentado de 16px para 20px */
+    margin: 0 0 20px 0;
     font-size: 1rem;
     opacity: 0.9;
     line-height: 1.5;
@@ -467,7 +461,7 @@ main {
     cursor: pointer;
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
-    margin-top: 8px; /* Adicionado margem superior para separar do texto */
+    margin-top: 8px;
 }
 
 .btn-ver-calendario:hover {
@@ -476,7 +470,6 @@ main {
     transform: translateY(-1px);
 }
 
-/* Modais de calendário */
 .modal-calendario-bg {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -531,7 +524,6 @@ main {
     gap: 16px;
 }
 
-/* Eventos de formação - efeito vidro cinza */
 .evento-formacao {
     background: linear-gradient(135deg, 
         rgba(128, 128, 128, 0.15) 0%, 
@@ -587,7 +579,6 @@ main {
     border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Eventos de férias - agora com efeito vidro cinza igual às formações */
 .evento-ferias {
     background: linear-gradient(135deg, 
         rgba(128, 128, 128, 0.15) 0%, 
@@ -643,7 +634,6 @@ main {
     border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Cores especiais para o status dentro dos cards vidraçados */
 .evento-ferias.pendente .evento-status .status-pendente {
     color: #f7b731;
     font-weight: 700;
@@ -662,7 +652,6 @@ main {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Indicadores visuais para cada status */
 .evento-ferias.pendente::after {
     content: '⏳';
     position: absolute;
@@ -702,7 +691,6 @@ main {
     font-size: 1.1rem;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
     .perfil-info-blocks {
         grid-template-columns: 1fr;
@@ -729,4 +717,94 @@ main {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Enhanced Modal Styles for Password Change Popup */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 4000; /* Higher than other elements */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    padding: 32px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    animation: fadeInUp 0.4s ease-out;
+    margin: 20px auto;
+}
+
+.modal-content h2 {
+    color: #19365f;
+    margin: 0 0 24px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.modal-content label {
+    color: #19365f;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.modal-content input {
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: #ffffff;
+    color: #2d3748;
+    width: 100%;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.modal-content input:focus {
+    border-color: #19365f;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(25, 54, 95, 0.1);
+}
+
+.modal-content .btn {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #19365f;
+    cursor: pointer;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+
+.close:hover {
+    color: #299cf3;
+}
+
+#pw-msg {
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
 }

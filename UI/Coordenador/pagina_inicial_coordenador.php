@@ -61,9 +61,38 @@ $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
         <p class="descricao-inicial">
             Gere a tua Equipa através da consulta de relatórios e dashboards, acede à tua Ficha de Colaborador, recebe notificações importantes e muito mais!
         </p>
+        
+        <script>
+        document.getElementById('equipaSelect').addEventListener('change', function() {
+            document.getElementById('formEscolherEquipa').submit();
+        });
+        </script>
+        <?php
+            // Determinar equipa selecionada de forma segura
+            $equipaSelecionada = null;
+            if (!empty($equipas)) {
+                $equipaSelecionada = $equipas[0];
+                if (isset($_GET['equipa_id'])) {
+                    foreach ($equipas as $e) {
+                        if ($e['id'] == $_GET['equipa_id']) {
+                            $equipaSelecionada = $e;
+                            break;
+                        }
+                    }
+                }
+                $equipaLink = "equipa.php?id=" . urlencode($equipaSelecionada['id']);
+            } else {
+                $equipaLink = "equipa.php";
+            }
+        ?>
         <div class="botoes-atalho">
-            <a href="<?php echo $equipaLink; ?>" class="botao-atalho roxo">A Minha Equipa</a>
-            <a href="relatorios_equipa.php" class="botao-atalho laranja">Relatórios</a>
+            <?php if ($equipaSelecionada): ?>
+                <a href="<?php echo $equipaLink; ?>" class="botao-atalho roxo">A Minha Equipa</a>
+                <a href="relatorios_equipa.php?equipa_id=<?php echo urlencode($equipaSelecionada['id']); ?>" class="botao-atalho laranja">Relatórios</a>
+            <?php else: ?>
+                <a href="equipa.php" class="botao-atalho roxo">A Minha Equipa</a>
+                <a href="relatorios_equipa.php" class="botao-atalho laranja">Relatórios</a>
+            <?php endif; ?>
             <a href="../Colaborador/ficha_colaborador.php" class="botao-atalho verde">A Minha Ficha</a>
         </div>
         <div class="dash-carousel-container">
@@ -75,33 +104,7 @@ $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
         </div>
     </main>
 </div>
-<div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
-  <button id="open-chatbot" style="
-        background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        font-size: 28px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        ">
-    ?
-  </button>
-  <iframe
-    id="chatbot-iframe"
-    src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
-    title="Ajuda Chatbot"
-    width="350"
-    height="500"
-    style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-  </iframe>
-</div>
-<script src="../../assets/chatbot.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const topics = document.querySelectorAll('.dash-topic');

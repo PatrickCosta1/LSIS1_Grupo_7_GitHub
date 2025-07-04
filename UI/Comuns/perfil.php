@@ -8,14 +8,12 @@ require_once '../../BLL/Comuns/BLL_perfil.php';
 $userBLL = new PerfilManager();
 $user = $userBLL->getUserById($_SESSION['user_id']);
 
-// Buscar dados do colaborador para formações e férias usando o BLL do perfil
 $colab = $userBLL->getColaboradorByUserId($_SESSION['user_id']);
 $colaborador_id = $colab['id'] ?? null;
 
 $formacoesInscritas = [];
 $pedidosFerias = [];
 
-// Debug melhorado
 error_log("=== DEBUG PERFIL INICIAL ===");
 error_log("User ID (sessão): " . $_SESSION['user_id']);
 error_log("Colaborador encontrado: " . ($colab ? 'SIM' : 'NÃO'));
@@ -26,11 +24,9 @@ if ($colab) {
 
 if ($colaborador_id) {
     try {
-        // Buscar formações e férias usando os métodos do perfil BLL
         $formacoesInscritas = $userBLL->getFormacoesPorColaborador($colaborador_id);
         $pedidosFerias = $userBLL->getPedidosFeriasPorColaborador($colaborador_id);
         
-        // Debug FINAL detalhado
         error_log("=== DEBUG PERFIL FINAL ===");
         error_log("User ID (sessão): " . $_SESSION['user_id']);
         error_log("Colaborador dados completos: " . print_r($colab, true));
@@ -46,7 +42,6 @@ if ($colaborador_id) {
         } else {
             error_log("PROBLEMA: Nenhum pedido de férias encontrado para colaborador_id = " . $colaborador_id);
         }
-        
     } catch (Exception $e) {
         error_log("EXCEÇÃO no perfil: " . $e->getMessage());
         $formacoesInscritas = [];
@@ -83,27 +78,36 @@ if ($colaborador_id) {
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;">
     </a>
     <nav>
-        <!-- Mantém o teu menu conforme o perfil -->
-        <?php if ($_SESSION['profile'] === 'colaborador'): ?>
-            <a href="../Colaborador/ficha_colaborador.php">A Minha Ficha</a>
-            <a href="../Comuns/notificacoes.php">Notificações</a>
-            <div class="dropdown-perfil">
-                <a href="../Comuns/perfil.php" class="perfil-link">
-                    Perfil
-                    <span class="seta-baixo">&#9662;</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
-                    <a href="../Colaborador/beneficios.php">Benefícios</a>
-                    <a href="../Colaborador/ferias.php">Férias</a>
-                    <a href="../Colaborador/formacoes.php">Formações</a>
-                    <a href="../Colaborador/recibos.php">Recibos</a>
-                </div>
-            </div>
-            <a href="../Comuns/logout.php">Sair</a>
-        <?php elseif ($_SESSION['profile'] === 'coordenador'): ?>
+        <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+      <button id="open-chatbot" style="
+          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
+          color:rgb(255, 255, 255);
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+          font-size: 28px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          ">
+        ?
+      </button>
+      <iframe
+        id="chatbot-iframe"
+        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
+        title="Ajuda Chatbot"
+        width="350"
+        height="500"
+        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+      </iframe>
+    </div>
+    <script src="../../assets/chatbot.js"></script>
+
+        <?php if ($_SESSION['profile'] === 'coordenador'): ?>
             <?php
-                // Get coordinator's team link
                 require_once '../../BLL/Coordenador/BLL_dashboard_coordenador.php';
                 $coordBLL = new CoordenadorDashboardManager();
                 $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
@@ -115,7 +119,7 @@ if ($colaborador_id) {
             <div class="dropdown-equipa">
                 <a href="<?php echo $equipaLink; ?>" class="equipa-link">
                     Equipa
-                    <span class="seta-baixo">&#9662;</span>
+                    <span class="seta-baixo">▾</span>
                 </a>
                 <div class="dropdown-menu">
                     <a href="../Coordenador/dashboard_coordenador.php">Dashboard</a>
@@ -126,7 +130,7 @@ if ($colaborador_id) {
             <div class="dropdown-perfil">
                 <a href="../Comuns/perfil.php" class="perfil-link">
                     Perfil
-                    <span class="seta-baixo">&#9662;</span>
+                    <span class="seta-baixo">▾</span>
                 </a>
                 <div class="dropdown-menu">
                     <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
@@ -134,21 +138,16 @@ if ($colaborador_id) {
                     <a href="../Colaborador/ferias.php">Férias</a>
                     <a href="../Colaborador/formacoes.php">Formações</a>
                     <a href="../Colaborador/recibos.php">Recibos</a>
-                    <!-- Adiciona mais opções se quiseres -->
                 </div>
             </div>
             <a href="../Comuns/logout.php">Sair</a>
-        <?php elseif ($_SESSION['profile'] === 'rh'): ?>
-            <a href="../RH/dashboard_rh.php">Dashboard</a>
-            <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-            <a href="../RH/equipas.php">Equipas</a>
-            <a href="../RH/relatorios.php">Relatórios</a>
-            <a href="../RH/exportar.php">Exportar</a>
+        <?php elseif ($_SESSION['profile'] === 'colaborador'): ?>
+            <a href="../Colaborador/ficha_colaborador.php">A Minha Ficha</a>
             <a href="../Comuns/notificacoes.php">Notificações</a>
             <div class="dropdown-perfil">
                 <a href="../Comuns/perfil.php" class="perfil-link">
                     Perfil
-                    <span class="seta-baixo">&#9662;</span>
+                    <span class="seta-baixo">▾</span>
                 </a>
                 <div class="dropdown-menu">
                     <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
@@ -159,14 +158,82 @@ if ($colaborador_id) {
                 </div>
             </div>
             <a href="../Comuns/logout.php">Sair</a>
-        <?php /* ...outros perfis... */ endif; ?>
+        <?php elseif ($_SESSION['profile'] === 'admin'): ?>
+            <a href="../Admin/dashboard_admin.php">Dashboard</a>
+            <a href="../Admin/utilizadores.php">Utilizadores</a>
+            <a href="../Admin/permissoes.php">Permissões</a>
+            <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
+            <a href="../Admin/alertas.php">Alertas</a>
+            <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
+            <a href="../RH/equipas.php">Equipas</a>
+            <a href="../RH/relatorios.php">Relatórios</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">▾</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
+                    <a href="../Colaborador/beneficios.php">Benefícios</a>
+                    <a href="../Colaborador/ferias.php">Férias</a>
+                    <a href="../Colaborador/formacoes.php">Formações</a>
+                    <a href="../Colaborador/recibos.php">Recibos</a>
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a>
+        <?php elseif ($_SESSION['profile'] === 'rh'): ?>
+            <div class="dropdown-equipas">
+                <a href="../RH/equipas.php" class="equipas-link">
+                    Equipas
+                    <span class="seta-baixo">▾</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/relatorios.php">Relatórios</a>
+                    <a href="../RH/dashboard_rh.php">Dashboard</a>
+                </div>
+            </div>
+            <div class="dropdown-colaboradores">
+                <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
+                    Colaboradores
+                    <span class="seta-baixo">▾</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/exportar.php">Exportar</a>
+                </div>
+            </div>
+            <div class="dropdown-gestao">
+                <a href="#" class="gestao-link">
+                    Gestão
+                    <span class="seta-baixo">▾</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/gerir_beneficios.php">Gerir Benefícios</a>
+                    <a href="../RH/gerir_formacoes.php">Gerir Formações</a>
+                    <a href="../RH/gerir_recibos.php">Submeter Recibos</a>
+                </div>
+            </div>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">▾</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a>
+        <?php else: ?>
+            <a href="../Convidado/onboarding_convidado.php">Preencher Dados</a>
+            <a href="../Comuns/logout.php">Sair</a>
+        <?php endif; ?>
     </nav>
 </header>
 <main>
     <div class="portal-brand">
         <div class="color-bar">
             <div class="color-segment"></div>
-            <div class="color-segment"></div>
+            <div class="color-bar"></div>
             <div class="color-segment"></div>
         </div>
         <span class="portal-text">Portal Do Colaborador</span>
@@ -185,15 +252,31 @@ if ($colaborador_id) {
                     <input type="email" name="email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" readonly>
                 </div>
             </div>
-            <div class="perfil-edit-actions">
-                <button type="button" class="btn" id="abrir-modal-pw">Alterar palavra-passe</button>
-            </div>
+            <button id="btnAlterarPassword" class="btn" type="button">Alterar Palavra-passe</button>
         </form>
     </div>
 
-    <!-- Novos blocos de formações e férias -->
+    <!-- Modal de alteração de palavra-passe -->
+    <div id="modalAlterarPassword" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" id="fecharModalAlterarPassword">×</span>
+            <h2>Alterar Palavra-passe</h2>
+            <form method="post" action="alterar_password.php" autocomplete="off" id="formAlterarPassword">
+                <label for="password_atual">Palavra-passe atual:</label>
+                <input type="password" name="password_atual" id="password_atual" required minlength="6">
+                <label for="nova_password">Nova palavra-passe:</label>
+                <input type="password" name="nova_password" id="nova_password" required minlength="6">
+                <label for="confirmar_password">Confirmar nova palavra-passe:</label>
+                <input type="password" name="confirmar_password" id="confirmar_password" required minlength="6">
+                <div id="pw-msg" style="margin-top: 10px;"></div>
+                <button type="submit" class="btn">Alterar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Blocos de formações e férias -->
+    <?php if ($_SESSION['profile'] !== 'rh'): ?>
     <div class="perfil-info-blocks">
-        <!-- Bloco Formações -->
         <div class="info-block formacoes-block">
             <div class="info-block-header">
                 <h3>📚 Formações Inscritas</h3>
@@ -208,8 +291,6 @@ if ($colaborador_id) {
                 <?php endif; ?>
             </div>
         </div>
-
-        <!-- Bloco Pedidos de Férias -->
         <div class="info-block ferias-block">
             <div class="info-block-header">
                 <h3>🏖️ Pedidos de Férias</h3>
@@ -221,43 +302,12 @@ if ($colaborador_id) {
                     <button class="btn-ver-calendario" onclick="abrirModalFerias()">Ver Calendário</button>
                 <?php else: ?>
                     <p>Não tens pedidos de férias registados.</p>
-                    <!-- Debug info temporário -->
-                    <p style="font-size: 0.8rem; color: #666; margin-top: 8px;">
-                        Debug: User ID = <?php echo $_SESSION['user_id']; ?><br>
-                        Colaborador ID = <?php echo $colaborador_id ?: 'null'; ?><br>
-                        Colaborador encontrado = <?php echo $colab ? 'SIM' : 'NÃO'; ?>
-                    </p>
                 <?php endif; ?>
             </div>
         </div>
     </div>
+    <?php endif; ?>
 </main>
-
-<!-- Modal de alteração de palavra-passe -->
-<div class="modal-pw-bg" id="modal-pw-bg" style="display:none;">
-    <div class="modal-pw">
-        <button class="fechar-modal-pw" onclick="fecharModalPw()">×</button>
-        <h2>Alterar Palavra-passe</h2>
-        <form id="form-alterar-pw" autocomplete="off">
-            <div class="ficha-campo">
-                <label>Palavra-passe atual:</label>
-                <input type="password" name="pw_atual" required>
-            </div>
-            <div class="ficha-campo">
-                <label>Nova palavra-passe:</label>
-                <input type="password" name="pw_nova" required>
-            </div>
-            <div class="ficha-campo">
-                <label>Confirmar nova palavra-passe:</label>
-                <input type="password" name="pw_nova_confirma" required>
-            </div>
-            <div class="perfil-edit-actions">
-                <button type="submit" class="btn">Confirmar Alterações</button>
-            </div>
-            <div id="pw-msg" style="margin-top:12px;font-size:0.98rem;"></div>
-        </form>
-    </div>
-</div>
 
 <!-- Modal Calendário Férias -->
 <div class="modal-calendario-bg" id="modal-ferias-bg" style="display:none;">
@@ -361,25 +411,33 @@ if ($colaborador_id) {
 </div>
 
 <script>
-document.getElementById('abrir-modal-pw').onclick = function() {
-    document.getElementById('modal-pw-bg').style.display = 'flex';
+document.getElementById('btnAlterarPassword').onclick = function() {
+    document.getElementById('modalAlterarPassword').style.display = 'flex';
 };
-function fecharModalPw() {
-    document.getElementById('modal-pw-bg').style.display = 'none';
+
+function fecharModalAlterarPassword() {
+    document.getElementById('modalAlterarPassword').style.display = 'none';
+    document.getElementById('formAlterarPassword').reset();
     document.getElementById('pw-msg').textContent = '';
-    document.getElementById('form-alterar-pw').reset();
 }
-document.getElementById('form-alterar-pw').onsubmit = function(e) {
+
+document.getElementById('fecharModalAlterarPassword').onclick = function() {
+    fecharModalAlterarPassword();
+};
+
+document.getElementById('formAlterarPassword').onsubmit = function(e) {
     e.preventDefault();
-    const atual = this.pw_atual.value;
-    const nova = this.pw_nova.value;
-    const nova2 = this.pw_nova_confirma.value;
+    const atual = this.password_atual.value;
+    const nova = this.nova_password.value;
+    const nova2 = this.confirmar_password.value;
     const msg = document.getElementById('pw-msg');
-    msg.style.color = "#b00";
+    
+    msg.style.color = '#b00';
     if (nova !== nova2) {
-        msg.textContent = "A nova palavra-passe e a confirmação não coincidem.";
+        msg.textContent = 'A nova palavra-passe e a confirmação não coincidem.';
         return;
     }
+
     fetch('alterar_password.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -388,16 +446,19 @@ document.getElementById('form-alterar-pw').onsubmit = function(e) {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            msg.style.color = "#23408e";
-            msg.textContent = "Palavra-passe alterada com sucesso!";
-            setTimeout(fecharModalPw, 1500);
+            msg.style.color = '#23408e';
+            msg.textContent = 'Palavra-passe alterada com sucesso!';
+            setTimeout(fecharModalAlterarPassword, 1500);
         } else {
-            msg.textContent = data.error || "Erro ao alterar palavra-passe.";
+            msg.textContent = data.error || 'Erro ao alterar palavra-passe.';
         }
+    })
+    .catch(err => {
+        msg.textContent = 'Erro ao comunicar com o servidor.';
+        console.error('Erro:', err);
     });
 };
 
-// Funções para modais de calendário
 function abrirModalFormacoes() {
     document.getElementById('modal-formacoes-bg').style.display = 'flex';
 }
@@ -414,16 +475,19 @@ function fecharModalFerias() {
     document.getElementById('modal-ferias-bg').style.display = 'none';
 }
 
-// Fechar modais ao clicar fora
 window.onclick = function(event) {
     const modalFormacoes = document.getElementById('modal-formacoes-bg');
     const modalFerias = document.getElementById('modal-ferias-bg');
+    const modalPassword = document.getElementById('modalAlterarPassword');
     
     if (event.target === modalFormacoes) {
         fecharModalFormacoes();
     }
     if (event.target === modalFerias) {
         fecharModalFerias();
+    }
+    if (event.target === modalPassword) {
+        fecharModalAlterarPassword();
     }
 };
 </script>
