@@ -154,6 +154,37 @@ if ($_SESSION['profile'] === 'rh') {
     $pedidosFeriasPendentes = $colabBLL->listarPedidosFeriasPendentes();
     $pedidosComprovantivosPendentes = $colabBLL->listarPedidosComprovantivosPendentes();
 }
+
+// --- NOVO: Onboarding pendente para RH ---
+$onboardingsPendentes = [];
+if ($_SESSION['profile'] === 'rh') {
+    require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
+    $colabBLL = new RHColaboradoresManager();
+    $onboardingsPendentes = $colabBLL->listarOnboardingsPendentes();
+}
+
+// Aprovação/rejeição de onboarding
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['onboarding_token'])) {
+    require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
+    $colabBLL = new RHColaboradoresManager();
+    $token = $_POST['onboarding_token'];
+    if (isset($_POST['aprovar_onboarding'])) {
+        $novoColabId = $colabBLL->aprovarOnboarding($token);
+        if ($novoColabId) {
+            // GUARDA O ID NA SESSÃO E NO GET PARA O REDIRECT
+            $_SESSION['onboarding_novo_colab_id'] = $novoColabId;
+            header('Location: notificacoes.php?onboarding_popup=1&colab_id=' . urlencode($novoColabId));
+            exit();
+        }
+        header('Location: notificacoes.php?onboarding_popup=1');
+        exit();
+    }
+    if (isset($_POST['recusar_onboarding'])) {
+        $colabBLL->recusarOnboarding($token);
+        header('Location: notificacoes.php?onboarding_recusado=1');
+        exit();
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -161,6 +192,92 @@ if ($_SESSION['profile'] === 'rh') {
     <meta charset="UTF-8">
     <title>Notificações - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/Comuns/notificacoes.css">
+    <style>
+    /* Popup de sucesso onboarding aprovado */
+    .popup-sucesso-bg {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(20,40,80,0.18);
+        z-index: 4000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeInBg 0.3s;
+    }
+    .popup-sucesso-content {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(3,96,233,0.13), 0 1.5px 8px rgba(0,0,0,0.08);
+        padding: 34px 32px 28px 32px;
+        min-width: 320px;
+        max-width: 90vw;
+        text-align: center;
+        border: 2px solid #e6eaf7;
+        animation: fadeInUp 0.4s;
+        position: relative;
+    }
+    .popup-sucesso-content .close {
+        position: absolute;
+        top: 12px;
+        right: 18px;
+        background: none;
+        border: none;
+        font-size: 1.7rem;
+        color: #19365f;
+        cursor: pointer;
+        font-weight: bold;
+        transition: color 0.2s;
+        z-index: 10;
+        line-height: 1;
+    }
+    .popup-sucesso-content .close:hover {
+        color: #299cf3;
+    }
+    .popup-sucesso-content .icon {
+        font-size: 2.8rem;
+        color: #3ed829;
+        margin-bottom: 10px;
+        display: block;
+    }
+    .popup-sucesso-content h3 {
+        color: #0360e9;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        margin-top: 0;
+    }
+    .popup-sucesso-content p {
+        color: #23408e;
+        font-size: 1.05rem;
+        margin-bottom: 0;
+    }
+    .popup-sucesso-content .btn-ficha {
+        margin-top: 18px;
+        background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        padding: 10px 28px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        box-shadow: 0 2px 8px rgba(3,96,233,0.08);
+        text-decoration: none;
+        display: inline-block;
+    }
+    .popup-sucesso-content .btn-ficha:hover {
+        background: linear-gradient(135deg, #1c3c69 0%, #0360e9 100%);
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(24px);}
+        to { opacity: 1; transform: translateY(0);}
+    }
+    @keyframes fadeInBg {
+        from { opacity: 0;}
+        to { opacity: 1;}
+    }
+    </style>
 </head>
 <body>
     <header>
@@ -183,6 +300,34 @@ if ($_SESSION['profile'] === 'rh') {
             <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;">
         </a>
         <nav>
+            <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+      <button id="open-chatbot" style="
+          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
+          color:rgb(255, 255, 255);
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+          font-size: 28px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          ">
+        ?
+      </button>
+      <iframe
+        id="chatbot-iframe"
+        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
+        title="Ajuda Chatbot"
+        width="350"
+        height="500"
+        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+      </iframe>
+    </div>
+    <script src="../../assets/chatbot.js"></script>
+
             <?php if ($_SESSION['profile'] === 'coordenador'): ?>
                 
                 <?php
@@ -263,52 +408,74 @@ if ($_SESSION['profile'] === 'rh') {
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
                     <?php elseif ($_SESSION['profile'] === 'rh'): ?>
-                    <div class="dropdown-equipas">
-                        <a href="../RH/equipas.php" class="equipas-link">
-                            Equipas
-                            <span class="seta-baixo">&#9662;</span>
-                        </a>
-                        <div class="dropdown-menu">
-                            <a href="../RH/relatorios.php">Relatórios</a>
-                            <a href="../RH/dashboard_rh.php">Dashboard</a>
-                        </div>
-                    </div>
-                    <div class="dropdown-colaboradores">
-                        <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
-                            Colaboradores
-                            <span class="seta-baixo">&#9662;</span>
-                        </a>
-                        <div class="dropdown-menu">
-                            <a href="../RH/exportar.php">Exportar</a>
-                        </div>
-                    </div>
-                    <div class="dropdown-gestao">
-                        <a href="#" class="gestao-link">
-                            Gestão
-                            <span class="seta-baixo">&#9662;</span>
-                        </a>
-                        <div class="dropdown-menu">
-                            <a href="../RH/gerir_beneficios.php">Gerir Benefícios</a>
-                            <a href="../RH/gerir_formacoes.php">Gerir Formações</a>
-                        </div>
-                    </div>
-                    <a href="../Comuns/notificacoes.php">Notificações</a>
-                    <div class="dropdown-perfil">
-                        <a href="../Comuns/perfil.php" class="perfil-link">
-                            Perfil
-                            <span class="seta-baixo">&#9662;</span>
-                        </a>
-                        <div class="dropdown-menu">
-                            <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
-                        </div>
-                    </div>
-                    <a href="../Comuns/logout.php">Sair</a>
+                <a href="../RH/equipas.php" class="equipas-link">
+                    Equipas
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/relatorios.php">Relatórios</a>
+                    <a href="../RH/dashboard_rh.php">Dashboard</a>
+                </div>
+            </div>
+            <div class="dropdown-colaboradores">
+                <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
+                    Colaboradores
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/exportar.php">Exportar</a>
+                </div>
+            </div>
+            <div class="dropdown-gestao">
+                <a href="#" class="gestao-link">
+                    Gestão
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../RH/gerir_beneficios.php">Gerir Benefícios</a>
+                    <a href="../RH/gerir_formacoes.php">Gerir Formações</a>
+                    <a href="../RH/gerir_recibos.php">Submeter Recibos</a>
+                </div>
+            </div>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
+                </div>
+            </div>
+            <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
                 <a href="../Convidado/onboarding_convidado.php">Preencher Dados</a>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php endif; ?>
         </nav>
     </header>
+    <!-- Modal de Onboarding (logo após o nav/header) -->
+    <div id="modalOnboarding" class="modal-onboarding-bg" style="display:none;">
+        <div class="modal-onboarding-content compacto">
+            <button class="close" onclick="fecharModalOnboarding()" title="Fechar">&times;</button>
+            <div class="modal-onboarding-header">
+                <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="modal-onboarding-logo">
+                <h2>Ficha de Onboarding do Candidato</h2>
+            </div>
+            <div id="onboarding-dados" class="onboarding-dados-detalhes">
+                <!-- Conteúdo preenchido via JS -->
+            </div>
+            <form method="POST" id="formAprovarOnboarding" class="modal-onboarding-actions">
+                <input type="hidden" name="onboarding_token" id="onboarding_token">
+                <button type="submit" name="aprovar_onboarding" class="btn btn-aprovar" title="Aceitar este onboarding">
+                    <span>✔ Aceitar</span>
+                </button>
+                <button type="submit" name="recusar_onboarding" class="btn btn-recusar" title="Recusar este onboarding">
+                    <span>✖ Recusar</span>
+                </button>
+            </form>
+        </div>
+    </div>
     <main>
         <div class="portal-brand">
             <div class="color-bar">
@@ -471,7 +638,7 @@ if ($_SESSION['profile'] === 'rh') {
                                             <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($pc['comprovativo_antigo']); ?>" 
                                                target="_blank" 
                                                class="comprovativo-link anterior">
-                                                📄 Ver arquivo anterior
+                                                📄 Ver ficheiro anterior
                                             </a>
                                         <?php else: ?>
                                             <span class="comprovativo-sem-arquivo">Sem comprovativo anterior</span>
@@ -482,7 +649,7 @@ if ($_SESSION['profile'] === 'rh') {
                                         <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($pc['comprovativo_novo']); ?>" 
                                            target="_blank" 
                                            class="comprovativo-link novo">
-                                            📄 Ver novo arquivo
+                                            📄 Ver novo ficheiro
                                         </a>
                                     </div>
                                 </div>
@@ -502,6 +669,21 @@ if ($_SESSION['profile'] === 'rh') {
                     </div>
                 <?php endif; ?>
             </div>
+
+            <?php if (!empty($onboardingsPendentes)): ?>
+                <h2 class="notificacoes-section-title">Onboardings Pendentes</h2>
+                <div class="onboarding-lista">
+                    <?php foreach ($onboardingsPendentes as $ob): ?>
+                        <div class="onboarding-card">
+                            <span>
+                                <b><?= htmlspecialchars($ob['nome']) ?></b>
+                                <span class="onboarding-email">(<?= htmlspecialchars($ob['email_pessoal']) ?>)</span>
+                            </span>
+                            <button class="btn-ver-onboarding" data-token="<?= htmlspecialchars($ob['token']) ?>">Ver Dados Onboarding</button>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
         <?php endif; ?>
 
         <?php if (!empty($mensagensRecebidas)): ?>
@@ -663,36 +845,94 @@ if ($_SESSION['profile'] === 'rh') {
             }
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Abrir modal e buscar dados via AJAX
+        document.querySelectorAll('.btn-ver-onboarding').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const token = this.getAttribute('data-token');
+                fetch('../../BLL/RH/ajax_onboarding_dados.php?token=' + encodeURIComponent(token))
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data && data.dados) {
+                            let html = '<ul class="onboarding-campos-lista">';
+                            const ordem = [
+                                'nome','apelido','data_nascimento','morada','localidade','codigo_postal','telemovel','sexo','estado_civil','habilitacoes','curso','nif','niss','iban','nome_contacto_emergencia','grau_relacionamento','contacto_emergencia'
+                            ];
+                            const labels = {
+                                nome: "Primeiro Nome",
+                                apelido: "Apelido",
+                                data_nascimento: "Data de Nascimento",
+                                morada: "Morada",
+                                localidade: "Localidade",
+                                codigo_postal: "Código Postal",
+                                telemovel: "Telemóvel",
+                                sexo: "Sexo",
+                                estado_civil: "Estado Civil",
+                                habilitacoes: "Habilitações Literárias",
+                                curso: "Curso",
+                                nif: "NIF",
+                                niss: "NISS",
+                                iban: "IBAN",
+                                nome_contacto_emergencia: "Nome Contacto Emergência",
+                                grau_relacionamento: "Grau de Parentesco",
+                                contacto_emergencia: "Nº Contacto Emergência"
+                            };
+                            ordem.forEach(k => {
+                                if (data.dados[k] !== undefined) {
+                                    html += `<li>
+                                        <span class="campo-label">${labels[k] ?? k}:</span>
+                                        <span class="campo-valor">${data.dados[k]}</span>
+                                    </li>`;
+                                }
+                            });
+                            html += '</ul>';
+                            document.getElementById('onboarding-dados').innerHTML = html;
+                            document.getElementById('onboarding_token').value = token;
+                            document.getElementById('modalOnboarding').style.display = 'flex';
+                            document.body.style.overflow = 'hidden';
+                        } else {
+                            document.getElementById('onboarding-dados').innerHTML = '<div style="color:red;">Erro ao carregar dados.</div>';
+                        }
+                    });
+            });
+        });
+    });
+
+    function fecharModalOnboarding() {
+        document.getElementById('modalOnboarding').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    window.addEventListener('keydown', function(e) {
+        if (e.key === "Escape") fecharModalOnboarding();
+    });
     </script>
 
-    <?php if ($_SESSION['profile'] === 'colaborador'): ?>
- <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
-      <button id="open-chatbot" style="
-          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
-          color:rgb(255, 255, 255);
-          border: none;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          font-size: 28px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          ">
-        ?
-      </button>
-      <iframe
-        id="chatbot-iframe"
-        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
-        title="Ajuda Chatbot"
-        width="350"
-        height="500"
-        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-      </iframe>
+    <?php if (isset($_GET['onboarding_popup'])): 
+        // Preferir o id do GET, se existir, senão usar o da sessão
+        $novoColabId = $_GET['colab_id'] ?? ($_SESSION['onboarding_novo_colab_id'] ?? null);
+        unset($_SESSION['onboarding_novo_colab_id']);
+    ?>
+    <div id="popupSucessoOnboarding" class="popup-sucesso-bg">
+        <div class="popup-sucesso-content">
+            <button class="close" onclick="document.getElementById('popupSucessoOnboarding').style.display='none'">&times;</button>
+            <span class="icon">🎉</span>
+            <h3>Novo colaborador adicionado com sucesso!</h3>
+            <p>
+                O colaborador foi integrado.<br>
+                <b>Aceda à ficha do colaborador para completar ou atualizar os dados finais.</b>
+            </p>
+        </div>
     </div>
-    <script src="../../assets/chatbot.js"></script>
-<?php endif; ?>
+    <script>
+        // Fechar popup ao pressionar ESC ou clicar fora
+        window.addEventListener('keydown', function(e) {
+            if (e.key === "Escape") document.getElementById('popupSucessoOnboarding').style.display = 'none';
+        });
+        document.getElementById('popupSucessoOnboarding').onclick = function(e) {
+            if (e.target === this) this.style.display = 'none';
+        };
+    </script>
+    <?php endif; ?>
 </body>
 </html>

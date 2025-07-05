@@ -187,6 +187,7 @@ header nav a.active {
     padding: 0 32px 32px 32px;
     width: 100%;
     box-sizing: border-box;
+    margin-top: -40px; /* ADICIONADO: puxa o main para cima */
 }
 
 /* Header DENTRO do container azul */
@@ -426,6 +427,10 @@ main h1 {
     .dash-carousel-container {
         margin: 40px 0 0 0;
     }
+    
+    .azul-container main {
+        margin-top: -24px; /* Também puxa para cima em telas menores */
+    }
 }
 
 @media (max-width: 480px) {
@@ -476,6 +481,10 @@ main h1 {
     
     .funcionalidade-card span {
         font-size: 0.75rem;
+    }
+    
+    .azul-container main {
+        margin-top: -16px;
     }
 }
 

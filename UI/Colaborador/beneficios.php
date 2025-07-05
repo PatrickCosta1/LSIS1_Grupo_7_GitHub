@@ -30,6 +30,34 @@ $beneficios = $beneficiosBLL->listarBeneficios();
             <?php endif; ?>
         >
         <nav>
+            <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+      <button id="open-chatbot" style="
+          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
+          color:rgb(255, 255, 255);
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+          font-size: 28px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          ">
+        ?
+      </button>
+      <iframe
+        id="chatbot-iframe"
+        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
+        title="Ajuda Chatbot"
+        width="350"
+        height="500"
+        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+      </iframe>
+    </div>
+    <script src="../../assets/chatbot.js"></script>
+
             <?php if ($perfil === 'coordenador'): ?>
                 <?php
                     require_once '../../BLL/Coordenador/BLL_dashboard_coordenador.php';
@@ -134,34 +162,6 @@ $beneficios = $beneficiosBLL->listarBeneficios();
         <?php endif; ?>
     </main>
 </div>
-
- <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
-      <button id="open-chatbot" style="
-          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
-          color:rgb(255, 255, 255);
-          border: none;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          font-size: 28px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          ">
-        ?
-      </button>
-      <iframe
-        id="chatbot-iframe"
-        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
-        title="Ajuda Chatbot"
-        width="350"
-        height="500"
-        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-      </iframe>
-    </div>
-    <script src="../../assets/chatbot.js"></script>
 
 <script>
 function abrirModal(modalId) {

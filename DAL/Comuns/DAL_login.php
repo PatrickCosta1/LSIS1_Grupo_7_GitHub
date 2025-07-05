@@ -28,16 +28,21 @@ class DAL_Login {
         $stmt->execute([$userId]);
         return $stmt->fetch();
     }
-    public function updatePassword($userId, $newPassword) {
+    public function updatePassword($userId, $newPasswordHash) {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare("UPDATE utilizadores SET password = ? WHERE id = ?");
-        return $stmt->execute([$newPassword, $userId]);
+        return $stmt->execute([$newPasswordHash, $userId]);
     }
     public function getPermissoesByPerfilId($perfil_id) {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare("SELECT permissao, valor FROM permissoes WHERE perfil_id = ?");
         $stmt->execute([$perfil_id]);
         return $stmt->fetchAll();
+    }
+    public function setGoogle2FASecret($userId, $secret) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("UPDATE utilizadores SET google2fa_secret = ? WHERE id = ?");
+        return $stmt->execute([$secret, $userId]);
     }
 }
 

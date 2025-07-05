@@ -7,6 +7,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-x: hidden; /* Adicionado para remover scroll lateral */
 }
 
 header {
@@ -60,7 +61,7 @@ header nav a.active {
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     margin-top: 36px;
     max-width: 1600px;
@@ -72,13 +73,17 @@ header nav a.active {
     background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
     border: 1px solid rgba(25, 54, 95, 0.08);
     border-radius: 10px;
-    padding: 13px 8px;
+    padding: 13px 5px;
     text-align: center;
     box-shadow: 0 2px 8px rgba(25, 54, 95, 0.05);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
     min-width: 120px;
+}
+.kpi-card[style*="background:rgba(255, 210, 90"] {
+    border: 2px solid #DAA520;
+    box-shadow: 0 2px 12px rgba(218,165,32,0.08);
 }
 
 .kpi-card:hover {

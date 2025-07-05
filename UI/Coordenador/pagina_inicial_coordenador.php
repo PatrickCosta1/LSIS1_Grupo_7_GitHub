@@ -61,39 +61,38 @@ $equipas = $coordBLL->getEquipasByCoordenador($_SESSION['user_id']);
         <p class="descricao-inicial">
             Gere a tua Equipa através da consulta de relatórios e dashboards, acede à tua Ficha de Colaborador, recebe notificações importantes e muito mais!
         </p>
-        <?php if (count($equipas) > 1): ?>
-        <form method="get" id="formEscolherEquipa" style="text-align:center; margin-bottom:24px;">
-            <label for="equipaSelect" style="font-weight:bold;">Escolher Equipa:</label>
-            <select id="equipaSelect" name="equipa_id" style="margin-left:8px; padding:4px 8px; border-radius:6px; border:1px solid #ccd; background:#f7f8fa;">
-                <?php foreach ($equipas as $e): ?>
-                    <option value="<?php echo $e['id']; ?>" <?php if (isset($_GET['equipa_id']) && $_GET['equipa_id'] == $e['id']) echo 'selected'; ?>>
-                        <?php echo htmlspecialchars($e['nome']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </form>
+        
         <script>
         document.getElementById('equipaSelect').addEventListener('change', function() {
             document.getElementById('formEscolherEquipa').submit();
         });
         </script>
-        <?php endif; ?>
         <?php
-            // Determinar equipa selecionada
-            $equipaSelecionada = $equipas[0];
-            if (isset($_GET['equipa_id'])) {
-                foreach ($equipas as $e) {
-                    if ($e['id'] == $_GET['equipa_id']) {
-                        $equipaSelecionada = $e;
-                        break;
+            // Determinar equipa selecionada de forma segura
+            $equipaSelecionada = null;
+            if (!empty($equipas)) {
+                $equipaSelecionada = $equipas[0];
+                if (isset($_GET['equipa_id'])) {
+                    foreach ($equipas as $e) {
+                        if ($e['id'] == $_GET['equipa_id']) {
+                            $equipaSelecionada = $e;
+                            break;
+                        }
                     }
                 }
+                $equipaLink = "equipa.php?id=" . urlencode($equipaSelecionada['id']);
+            } else {
+                $equipaLink = "equipa.php";
             }
-            $equipaLink = "equipa.php?id=" . urlencode($equipaSelecionada['id']);
         ?>
         <div class="botoes-atalho">
-            <a href="<?php echo $equipaLink; ?>" class="botao-atalho roxo">A Minha Equipa</a>
-            <a href="relatorios_equipa.php?equipa_id=<?php echo urlencode($equipaSelecionada['id']); ?>" class="botao-atalho laranja">Relatórios</a>
+            <?php if ($equipaSelecionada): ?>
+                <a href="<?php echo $equipaLink; ?>" class="botao-atalho roxo">A Minha Equipa</a>
+                <a href="relatorios_equipa.php?equipa_id=<?php echo urlencode($equipaSelecionada['id']); ?>" class="botao-atalho laranja">Relatórios</a>
+            <?php else: ?>
+                <a href="equipa.php" class="botao-atalho roxo">A Minha Equipa</a>
+                <a href="relatorios_equipa.php" class="botao-atalho laranja">Relatórios</a>
+            <?php endif; ?>
             <a href="../Colaborador/ficha_colaborador.php" class="botao-atalho verde">A Minha Ficha</a>
         </div>
         <div class="dash-carousel-container">

@@ -107,7 +107,7 @@ class DAL_FichaColaborador {
                     data_inicio,
                     data_fim,
                     data_pedido,
-                    status,
+                    estado,
                     observacoes
                 FROM pedidos_ferias
                 WHERE colaborador_id = ?

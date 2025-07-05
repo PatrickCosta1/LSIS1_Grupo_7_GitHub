@@ -24,6 +24,25 @@ if (!$equipaId) {
     }
 }
 $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
+
+// Buscar o ID do colaborador do coordenador logado
+$coordenador_user_id = $_SESSION['user_id'];
+$coordenador_colab_id = null;
+foreach ($colaboradores as $c) {
+    if (isset($c['email']) && isset($_SESSION['email']) && $c['email'] === $_SESSION['email']) {
+        $coordenador_colab_id = $c['id'];
+        break;
+    }
+}
+// Alternativamente, buscar pelo utilizador_id na tabela colaboradores
+if (!$coordenador_colab_id) {
+    require_once '../../DAL/Database.php';
+    $pdo = Database::getConnection();
+    $stmt = $pdo->prepare("SELECT id FROM colaboradores WHERE utilizador_id = ?");
+    $stmt->execute([$coordenador_user_id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row) $coordenador_colab_id = $row['id'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -113,20 +132,43 @@ $colaboradores = $coordBLL->getColaboradoresByEquipa($equipaId);
                 </thead>
                 <tbody>
                     <?php foreach ($colaboradores as $c): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($c['nome']); ?></td>
+                        <?php
+                        // Não mostrar o próprio coordenador na lista OU destacar visualmente
+                        if ($c['id'] == $coordenador_colab_id) {
+                            // Pode comentar a linha abaixo para não mostrar o coordenador
+                            // continue;
+                            $isSelf = true;
+                        } else {
+                            $isSelf = false;
+                        }
+                        ?>
+                    <tr<?php if ($isSelf): ?> style="background:linear-gradient(90deg,#e6f0ff 0,#f7fbff 100%);font-weight:bold;"<?php endif; ?>>
+                        <td>
+                            <?php echo htmlspecialchars($c['nome']); ?>
+                            <?php if ($isSelf): ?>
+                                <span style="color:#299cf3;font-size:0.95em;font-weight:600;margin-left:8px;padding:2px 8px;border-radius:8px;background:#eaf6ff;vertical-align:middle;">
+                                    (Tu)
+                                </span>
+                            <?php endif; ?>
+                        </td>
                         <td><?php echo htmlspecialchars($c['email']); ?></td>
                         <td><?php echo htmlspecialchars($c['cargo']); ?></td>
                         <td><!-- Última Atividade --></td>
                         <td>
-                            <a class="btn-azul-ficha" href="../Colaborador/ficha_colaborador.php?id=<?php echo urlencode($c['id']); ?>" title="Ver Ficha">
+                            <a class="btn-azul-ficha" href="../Colaborador/ficha_colaborador.php" title="Ver Ficha">
                                 Ver Ficha
                             </a>
                         </td>
                         <td>
-                            <button class="btn-contactar" data-nome="<?php echo htmlspecialchars($c['nome']); ?>" data-id="<?php echo $c['id']; ?>" title="Enviar mensagem">
-                                <img src="https://cdn-icons-png.flaticon.com/512/3682/3682321.png" alt="Mensagem" style="width:22px;height:22px;display:block;margin:0 auto;">
-                            </button>              
+                            <?php if (!$isSelf): ?>
+                                <button class="btn-contactar" data-nome="<?php echo htmlspecialchars($c['nome']); ?>" data-id="<?php echo $c['id']; ?>" title="Enviar mensagem">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/3682/3682321.png" alt="Mensagem" style="width:22px;height:22px;display:block;margin:0 auto;">
+                                </button>
+                            <?php else: ?>
+                                <span style="display:inline-block;padding:6px 18px;background:linear-gradient(90deg,#299cf3 0,#764ba2 100%);color:#fff;font-weight:bold;border-radius:16px;font-size:1em;letter-spacing:0.5px;">
+                                    Tu
+                                </span>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>

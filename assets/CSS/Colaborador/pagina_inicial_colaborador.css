@@ -84,24 +84,45 @@ header nav a.active {
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: flex-start;
-    padding: 0 32px 32px 32px; /* Removido padding top */
+    padding: 0 32px 32px 32px;
     width: 100%;
     box-sizing: border-box;
+    /* Centralização vertical absoluta */
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    /* Garante que o main não ultrapassa o container azul */
+    max-width: 100%;
+}
+
+@media (max-width: 900px) {
+    .azul-container main {
+        padding: 0 8px 16px 8px;
+    }
+}
+
+@media (max-width: 600px) {
+    .azul-container main {
+        padding: 0 4px 8px 4px;
+    }
 }
 
 /* Título principal */
 main h1 {
     color: #fff;
-    text-align: left; /* Alinha à esquerda */
+    text-align: left;
     font-size: 3.5rem;
     font-weight: 700;
-    margin: 16px 0 12px 0; /* Reduzido margin top de 32px para 16px e bottom de 18px para 12px */
+    margin: 32px 0 12px 0;
     letter-spacing: 0.5px;
     text-shadow: 0 2px 12px rgba(3,96,233,0.18);
-    width: 100%;         /* Ocupa toda a largura do main */
-    padding-left: 330px;     /* Remove qualquer padding extra à esquerda */
+    width: 100%;
+    margin-left: 165px; /* igual à descricao-inicial */
+    align-self: flex-start;
 }
 
 .descricao-inicial {
@@ -171,7 +192,7 @@ main h1 {
     position: relative;
     height: 70px;
     width: 100%;
-    margin-top: -10%; /* Reduzido de -15% para -20% - puxa mais para cima */
+    margin-top: -13%; /* Reduzido de -15% para -20% - puxa mais para cima */
     margin-left: 25%;
     align-self: flex-start;
 }
@@ -233,6 +254,25 @@ main h1 {
     main h1 { font-size: 1.3rem; margin: 18px 0 12px 0; }
 }
 
+@media (max-width: 900px) {
+    main h1 {
+        margin-left: 40px;
+    }
+    .descricao-inicial,
+    .botoes-atalho {
+        margin-left: 40px !important;
+    }
+}
+@media (max-width: 600px) {
+    main h1 {
+        margin-left: 10px;
+    }
+    .descricao-inicial,
+    .botoes-atalho {
+        margin-left: 10px !important;
+    }
+}
+
 .dropdown-perfil {
     position: relative;
     display: inline-block;
@@ -288,4 +328,3 @@ main h1 {
 .dropdown-perfil:hover .dropdown-menu {
     display: block;
 }
-

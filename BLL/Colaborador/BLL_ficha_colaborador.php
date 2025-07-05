@@ -31,7 +31,7 @@ class ColaboradorFichaManager {
 
         // Caso contrário, cria pedidos de alteração para cada campo alterado
         $camposPermitidos = [
-            'morada_fiscal', 'sexo', 'situacao_irs', 'dependentes', 'iban', 'habilitacoes', 'curso',
+            'morada_fiscal', 'sexo', 'estado_civil', 'situacao_irs', 'dependentes', 'iban', 'habilitacoes', 'curso',
             'telemovel', 'matricula_viatura', 'nome_contacto_emergencia', 'grau_relacionamento',
             'contacto_emergencia', 'cartao_continente'
         ];

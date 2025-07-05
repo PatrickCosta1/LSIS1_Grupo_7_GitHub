@@ -64,7 +64,16 @@ class RHDashboardManager {
     public function getColaboradoresLocalidadePorEquipa() {
         return $this->dal->getColaboradoresLocalidadePorEquipa();
     }
+    public function getTaxaRetencaoPorEquipa($ano = null) {
+        return $this->dal->getTaxaRetencaoPorEquipa($ano);
+    }
+    public function getTaxaRetencaoGlobal($ano = null) {
+        return $this->dal->getTaxaRetencaoGlobal($ano);
+    }
+    public function getNomesColaboradoresPorEquipaComGenero() {
+        return $this->dal->getNomesColaboradoresPorEquipaComGenero();
+    }
 }
 
-// Nenhuma alteração necessária para centralização dos gráficos
+// Nenhuma alteração necessária para centralização dos gráficos
 ?>

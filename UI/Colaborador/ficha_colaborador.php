@@ -1,9 +1,13 @@
 <?php
 session_start();
-$perfil = $_SESSION['profile'] ?? '';
-$userId = $_SESSION['user_id'] ?? null;
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../Comuns/erro.php');
+    exit();
+}
 
-// Define variáveis de perfil ANTES de usar
+$colaboradorId = null;
+$userId = $_SESSION['user_id'];
+$perfil = $_SESSION['profile'] ?? '';
 $isColab = ($perfil === 'colaborador');
 $isCoord = ($perfil === 'coordenador');
 $isRH = ($perfil === 'rh');
@@ -20,13 +24,14 @@ $colabBLL = new ColaboradorFichaManager();
 $editColabId = $_GET['id'] ?? null;
 $targetUserId = $userId;
 
-// Corrigir: RH/Admin pode editar qualquer colaborador via ?id= (id do colaborador, não utilizador)
 if (in_array($perfil, ['rh', 'admin']) && $editColabId) {
+    // Buscar colaborador pelo ID de colaborador
     $colab = $colabBLL->getColaboradorById($editColabId);
     if ($colab && isset($colab['utilizador_id'])) {
         $targetUserId = $colab['utilizador_id'];
     } else {
-        header('Location: ../Comuns/erro.php');
+        // Mostra erro apenas se realmente não existir colaborador com esse ID
+        echo "<div style='color:red;padding:24px;'>Colaborador não encontrado (ID: ".htmlspecialchars($editColabId).").</div>";
         exit();
     }
 } else {
@@ -147,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     'comprovativo_cartao_continente' => $colab['comprovativo_cartao_continente'] ?? ''
 ];
 
-    // Adicionar id do colaborador ao array de dados se RH/Admin estiver a editar outro colaborador
+    // Adicionar id do colaborador ao array se RH/Admin estiver a editar outro colaborador
     if (($isRH || $isAdmin) && $editColabId) {
         $dados['id'] = $editColabId;
     }
@@ -257,6 +262,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($colabBLL->updateColaboradorByUserId($targetUserId, $dados, $perfil)) {
         if ($canEditAll) {
             $success_message = "Dados atualizados com sucesso!";
+            $modal_type = "rh";
         } else {
             // Notificar RH
             require_once '../../BLL/Comuns/BLL_notificacoes.php';
@@ -268,8 +274,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $nomeColab = $colab['nome'] ?? '';
             $notBLL->notificarRH("O colaborador $nomeColab solicitou alteração de dados na ficha. Acesse a área de aprovações.");
-            // Mensagem para popup
-            $success_message = "O seu pedido de alteração foi enviado e será analisado pelo RH. Em breve terá uma resposta.";
+            // Mensagem para modal
+            $success_message = "Pedido de atualização de dados enviado!";
+            $modal_type = "colaborador";
         }
         // Recarregar dados após atualização
         if (in_array($perfil, ['rh', 'admin']) && $editColabId) {
@@ -323,6 +330,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
+
+                <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+      <button id="open-chatbot" style="
+          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
+          color:rgb(255, 255, 255);
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+          font-size: 28px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          ">
+        ?
+      </button>
+      <iframe
+        id="chatbot-iframe"
+        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
+        title="Ajuda Chatbot"
+        width="350"
+        height="500"
+        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+      </iframe>
+    </div>
+    <script src="../../assets/chatbot.js"></script>
+
             <?php elseif ($perfil === 'coordenador'): ?>
                 <?php
                     // Corrigir link da equipa para incluir o id da equipa do coordenador
@@ -904,10 +940,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="ficha-campo">
                 <label>Remuneração:</label>
                 <div class="remuneracao-container">
-                    <span class="euro-symbol">€</span>
                     <input type="number" name="remuneracao" step="0.01" min="0" placeholder="0.00" 
-                           value="<?php echo htmlspecialchars(str_replace('€', '', $colab['remuneracao'] ?? '')); ?>" 
+                           value="<?php echo htmlspecialchars($colab['remuneracao'] ?? ''); ?>" 
                            <?php echo fieldAttr('remuneracao', $canEditAll, []); ?>>
+                    <span class="euro-symbol">€</span>
                 </div>
             </div>
             <div class="ficha-campo">
@@ -950,34 +986,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
     </form>
 </main>
-
- <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
-      <button id="open-chatbot" style="
-          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
-          color:rgb(255, 255, 255);
-          border: none;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          font-size: 28px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          ">
-        ?
-      </button>
-      <iframe
-        id="chatbot-iframe"
-        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
-        title="Ajuda Chatbot"
-        width="350"
-        height="500"
-        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-      </iframe>
-    </div>
-    <script src="../../assets/chatbot.js"></script>
 
     <script>
     window.addEventListener('scroll', function() {
@@ -1050,17 +1058,64 @@ window.addEventListener('scroll', function() {
 </script>
 
 <?php if ($success_message): ?>
-<div id="popup-success" class="popup-overlay">
-    <div class="popup-content">
-        <button onclick="document.getElementById('popup-success').style.display='none';" class="popup-close">&times;</button>
-        <div class="popup-message">
+<!-- Modal de Sucesso -->
+<div id="modal-success" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-icon">
+            <?php if (isset($modal_type) && $modal_type === 'rh'): ?>
+                ✓
+            <?php else: ?>
+                📤
+            <?php endif; ?>
+        </div>
+        <h3 class="modal-title">
+            <?php if (isset($modal_type) && $modal_type === 'rh'): ?>
+                Sucesso!
+            <?php else: ?>
+                Pedido Enviado!
+            <?php endif; ?>
+        </h3>
+        <div class="modal-message">
             <?php echo htmlspecialchars($success_message); ?>
         </div>
-        <div class="popup-actions">
-            <button onclick="document.getElementById('popup-success').style.display='none';" class="popup-btn">Fechar</button>
-        </div>
+        <button onclick="closeModal()" class="modal-button">OK</button>
     </div>
 </div>
+
+<script>
+// Mostrar modal automaticamente se houver mensagem de sucesso
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('modal-success');
+    if (modal) {
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 100);
+    }
+});
+
+function closeModal() {
+    const modal = document.getElementById('modal-success');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
+
+// Fechar modal ao clicar fora dele
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('modal-success');
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// Fechar modal com tecla ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+</script>
 <?php endif; ?>
 
 <script>
@@ -1382,7 +1437,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Adicionar € à remuneração
         const remuneracao = document.querySelector('input[name="remuneracao"]');
         if (remuneracao && remuneracao.value) {
-            remuneracao.value = '€' + remuneracao.value;
+            // REMOVIDO - Não adicionar € automaticamente
+            // remuneracao.value = '€' + remuneracao.value;
         }
 
         // Adicionar id do colaborador ao POST se RH/Admin estiver a editar outro colaborador

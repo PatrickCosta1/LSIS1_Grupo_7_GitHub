@@ -84,7 +84,6 @@ if (isset($_GET['export'])) {
     <meta charset="UTF-8">
     <title>Exportar Dados - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/exportar.css">
-    <link rel="stylesheet" href="../../assets/CSS/Comuns/header.css">
     <script>
     // Mostra/esconde selects conforme opção
     function onTipoChange() {
@@ -116,7 +115,7 @@ if (isset($_GET['export'])) {
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
-            <div class="dropdown-equipas">
+               <div class="dropdown-equipas">
                 <a href="equipas.php" class="equipas-link">
                     Equipas
                     <span class="seta-baixo">&#9662;</span>
@@ -143,6 +142,7 @@ if (isset($_GET['export'])) {
                 <div class="dropdown-menu">
                     <a href="gerir_beneficios.php">Gerir Benefícios</a>
                     <a href="gerir_formacoes.php">Gerir Formações</a>
+                    <a href="gerir_recibos.php">Submeter Recibos</a>
                 </div>
             </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>

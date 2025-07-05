@@ -137,7 +137,7 @@ class DAL_DashboardRH {
     public function getNomesColaboradoresPorEquipa() {
         $pdo = Database::getConnection();
         $sql = "
-            SELECT e.nome as equipa_nome, c.nome as colaborador_nome
+            SELECT e.nome as equipa_nome, c.nome as colaborador_nome, c.id as colaborador_id
             FROM equipa_colaboradores ec
             INNER JOIN equipas e ON ec.equipa_id = e.id
             INNER JOIN colaboradores c ON ec.colaborador_id = c.id
@@ -213,6 +213,162 @@ class DAL_DashboardRH {
         $stmt = $pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // Taxa de retenção por equipa (percentagem de colaboradores com mais de 1 ano na empresa)
+    public function getTaxaRetencaoPorEquipa($ano = null) {
+        if ($ano === null) $ano = date('Y');
+        
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT 
+                e.nome as equipa_nome,
+                COUNT(DISTINCT col.id) as total_colaboradores,
+                SUM(CASE 
+                    WHEN col.data_inicio_contrato IS NOT NULL 
+                    AND col.data_inicio_contrato != '0000-00-00' 
+                    AND YEAR(col.data_inicio_contrato) <= ?
+                    AND (col.data_fim_contrato IS NULL 
+                         OR col.data_fim_contrato = '0000-00-00' 
+                         OR YEAR(col.data_fim_contrato) > ?)
+                    THEN 1 ELSE 0 
+                END) as retidos
+            FROM equipas e
+            LEFT JOIN equipa_colaboradores ec ON e.id = ec.equipa_id
+            LEFT JOIN colaboradores col ON ec.colaborador_id = col.id
+            WHERE col.id IS NOT NULL
+            GROUP BY e.id, e.nome
+            
+            UNION ALL
+            
+            SELECT 
+                e.nome as equipa_nome,
+                1 as total_colaboradores,
+                CASE 
+                    WHEN coord.data_inicio_contrato IS NOT NULL 
+                    AND coord.data_inicio_contrato != '0000-00-00' 
+                    AND YEAR(coord.data_inicio_contrato) <= ?
+                    AND (coord.data_fim_contrato IS NULL 
+                         OR coord.data_fim_contrato = '0000-00-00' 
+                         OR YEAR(coord.data_fim_contrato) > ?)
+                    THEN 1 ELSE 0 
+                END as retidos
+            FROM equipas e
+            INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+            WHERE e.responsavel_id NOT IN (
+                SELECT COALESCE(colaborador_id, 0) FROM equipa_colaboradores WHERE equipa_id = e.id
+            )
+        ");
+        
+        $stmt->execute([$ano, $ano, $ano, $ano]);
+        
+        $result = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $equipa = $row['equipa_nome'];
+            $total = (int)$row['total_colaboradores'];
+            $retidos = (int)$row['retidos'];
+            
+            if (!isset($result[$equipa])) {
+                $result[$equipa] = ['total' => 0, 'retidos' => 0];
+            }
+            $result[$equipa]['total'] += $total;
+            $result[$equipa]['retidos'] += $retidos;
+        }
+        
+        $taxas = [];
+        foreach ($result as $equipa => $dados) {
+            $taxas[$equipa] = $dados['total'] > 0 ? round($dados['retidos'] / $dados['total'] * 100, 1) : 0;
+        }
+        
+        return $taxas;
+    }
+
+    // Taxa de retenção global (percentagem de colaboradores com mais de 1 ano na empresa)
+    public function getTaxaRetencaoGlobal($ano = null) {
+        if ($ano === null) $ano = date('Y');
+        
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT 
+                COUNT(DISTINCT col.id) as total_colaboradores,
+                SUM(CASE 
+                    WHEN col.data_inicio_contrato IS NOT NULL 
+                    AND col.data_inicio_contrato != '0000-00-00' 
+                    AND YEAR(col.data_inicio_contrato) <= ?
+                    AND (col.data_fim_contrato IS NULL 
+                         OR col.data_fim_contrato = '0000-00-00' 
+                         OR YEAR(col.data_fim_contrato) > ?)
+                    THEN 1 ELSE 0 
+                END) as retidos
+            FROM equipas e
+            LEFT JOIN equipa_colaboradores ec ON e.id = ec.equipa_id
+            LEFT JOIN colaboradores col ON ec.colaborador_id = col.id
+            WHERE col.id IS NOT NULL
+            
+            UNION ALL
+            
+            SELECT 
+                1 as total_colaboradores,
+                CASE 
+                    WHEN coord.data_inicio_contrato IS NOT NULL 
+                    AND coord.data_inicio_contrato != '0000-00-00' 
+                    AND YEAR(coord.data_inicio_contrato) <= ?
+                    AND (coord.data_fim_contrato IS NULL 
+                         OR coord.data_fim_contrato = '0000-00-00' 
+                         OR YEAR(coord.data_fim_contrato) > ?)
+                    THEN 1 ELSE 0 
+                END as retidos
+            FROM equipas e
+            INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+            WHERE e.responsavel_id NOT IN (
+                SELECT COALESCE(colaborador_id, 0) FROM equipa_colaboradores WHERE equipa_id = e.id
+            )
+        ");
+        
+        $stmt->execute([$ano, $ano, $ano, $ano]);
+        
+        $totalColaboradores = 0;
+        $totalRetidos = 0;
+        
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $totalColaboradores += (int)$row['total_colaboradores'];
+            $totalRetidos += (int)$row['retidos'];
+        }
+        
+        return $totalColaboradores > 0 ? round($totalRetidos / $totalColaboradores * 100, 1) : 0;
+    }
+
+    public function getNomesColaboradoresPorEquipaComGenero() {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT 
+                e.nome as equipa_nome,
+                c.nome as colaborador_nome,
+                c.id as colaborador_id,
+                c.sexo as sexo
+            FROM equipas e
+            LEFT JOIN equipa_colaboradores ec ON e.id = ec.equipa_id
+            LEFT JOIN colaboradores c ON ec.colaborador_id = c.id
+            WHERE c.id IS NOT NULL
+            
+            UNION ALL
+            
+            SELECT 
+                e.nome as equipa_nome,
+                coord.nome as colaborador_nome,
+                coord.id as colaborador_id,
+                coord.sexo as sexo
+            FROM equipas e
+            INNER JOIN colaboradores coord ON e.responsavel_id = coord.id
+            WHERE e.responsavel_id NOT IN (
+                SELECT COALESCE(colaborador_id, 0) FROM equipa_colaboradores WHERE equipa_id = e.id
+            )
+            
+            ORDER BY equipa_nome, colaborador_nome
+        ");
+        
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
-// Nenhuma alteração necessária para centralização dos gráficos
+// Nenhuma alteração necessária para centralização dos gráficos
 ?>
