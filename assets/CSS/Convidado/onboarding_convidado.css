@@ -1,0 +1,568 @@
+/* Reset e base */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #eaf2ff 0%, #f7faff 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    color: #1c3c69;
+    line-height: 1.6;
+}
+
+/* Container principal */
+.onboarding-container {
+    max-width: 450px;
+    margin: 32px auto;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(3, 96, 233, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1.5px solid #e6eaf7;
+    overflow: hidden;
+    animation: fadeInUp 0.7s ease-out;
+}
+
+/* Header da página */
+.onboarding-header {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    padding: 32px 24px 24px 24px;
+    text-align: center;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.onboarding-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+}
+
+.onboarding-header img {
+    height: 42px;
+    margin-bottom: 12px;
+    filter: brightness(1.1);
+    position: relative;
+    z-index: 2;
+}
+
+.onboarding-header h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.3px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2;
+}
+
+/* Formulário */
+.onboarding-form {
+    padding: 32px 28px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.onboarding-form label {
+    display: block;
+    margin-bottom: 0;
+    color: #1c3c69;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.1px;
+    position: relative;
+}
+
+.onboarding-form input[type="text"],
+.onboarding-form input[type="date"],
+.onboarding-form select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid #d1dae6;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    margin-top: 6px;
+    background: #f8fafc;
+    color: #1c3c69;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.onboarding-form input:focus,
+.onboarding-form select:focus {
+    border: 2px solid #0360e9;
+    outline: none;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(3, 96, 233, 0.1);
+    transform: translateY(-1px);
+}
+
+.onboarding-form input:hover,
+.onboarding-form select:hover {
+    border-color: #0360e9;
+    background: #fff;
+}
+
+/* Linha de formulário */
+.onboarding-form .form-row {
+    display: flex;
+    gap: 16px;
+}
+
+.onboarding-form .form-row > label {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* Botão principal */
+.onboarding-form .btn {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    width: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(3, 96, 233, 0.2);
+    text-decoration: none;
+    display: block;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.onboarding-form .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.onboarding-form .btn:hover {
+    background: linear-gradient(135deg, #1c3c69 0%, #0360e9 100%);
+    box-shadow: 0 6px 24px rgba(3, 96, 233, 0.3);
+    transform: translateY(-2px);
+}
+
+.onboarding-form .btn:hover::before {
+    left: 100%;
+}
+
+.onboarding-form .btn:active {
+    transform: translateY(0);
+}
+
+/* Mensagens de sucesso e erro */
+.success-message, .error-message {
+    padding: 16px 24px;
+    border-radius: 12px;
+    margin: 20px 28px 0 28px;
+    font-weight: 600;
+    text-align: center;
+    font-size: 0.95rem;
+    animation: slideIn 0.5s ease-out;
+}
+
+.success-message {
+    background: linear-gradient(135deg, #e6fffa 0%, #f0fff4 100%);
+    color: #0360e9;
+    border: 2px solid #36b3e9;
+    box-shadow: 0 4px 16px rgba(54, 179, 233, 0.1);
+}
+
+.error-message {
+    background: linear-gradient(135deg, #ffeaea 0%, #fff5f5 100%);
+    color: #e53e3e;
+    border: 2px solid #e53e3e;
+    box-shadow: 0 4px 16px rgba(229, 62, 62, 0.1);
+}
+
+/* Estilos do container original (para compatibilidade) */
+.onboarding-container h1 {
+    font-size: 1.35rem;
+    color: #430eae;
+    margin-bottom: 24px;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.onboarding-container form label {
+    display: block;
+    margin-bottom: 14px;
+    color: #1c3c69;
+    font-weight: 500;
+    font-size: 0.99rem;
+}
+
+.onboarding-container input[type="text"],
+.onboarding-container input[type="date"],
+.onboarding-container select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.2px solid #c3cfe2;
+    border-radius: 7px;
+    font-size: 0.99rem;
+    margin-top: 5px;
+    background: #f5f7fa;
+    color: #1c3c69;
+    transition: border 0.2s;
+}
+
+.onboarding-container input:focus,
+.onboarding-container select:focus {
+    border: 1.5px solid #0360e9;
+    outline: none;
+}
+
+.onboarding-container .btn {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    transition: background 0.2s;
+    box-shadow: 0 2px 8px rgba(3,96,233,0.08);
+    text-decoration: none;
+    display: block;
+}
+
+.onboarding-container .btn:hover {
+    background: linear-gradient(135deg, #1c3c69 0%, #0360e9 100%);
+}
+
+/* Modal de onboarding */
+.modal-onboarding-content {
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(3, 96, 233, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
+    padding: 48px 42px 36px 42px;
+    min-width: 360px;
+    max-width: 95vw;
+    max-height: 90vh;
+    position: relative;
+    animation: fadeInUp 0.5s ease-out;
+    overflow-y: auto;
+    border: 2px solid #e6eaf7;
+}
+
+.modal-onboarding-content h2 {
+    color: #0360e9;
+    margin-bottom: 28px;
+    font-size: 1.6rem;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: 0.3px;
+    text-shadow: 0 2px 8px rgba(3, 96, 233, 0.1);
+}
+
+#onboarding-dados ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 28px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+#onboarding-dados li {
+    background: linear-gradient(135deg, #f8faff 0%, #eef5ff 100%);
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 1rem;
+    color: #23408e;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(3, 96, 233, 0.08);
+    border-left: 4px solid #0360e9;
+    transition: all 0.3s ease;
+}
+
+#onboarding-dados li:hover {
+    background: linear-gradient(135deg, #eef5ff 0%, #e1f0ff 100%);
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(3, 96, 233, 0.12);
+}
+
+#onboarding-dados li b {
+    color: #0360e9;
+    font-weight: 700;
+    min-width: 150px;
+    display: inline-block;
+    margin-right: 12px;
+    font-size: 0.95rem;
+    letter-spacing: 0.2px;
+}
+
+/* Botões do modal */
+.modal-onboarding-content .btn {
+    margin: 0 16px 0 0;
+    min-width: 140px;
+    font-size: 1rem;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(3, 96, 233, 0.1);
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+}
+
+.btn-aprovar {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: #fff;
+}
+
+.btn-aprovar:hover {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    box-shadow: 0 6px 24px rgba(34, 197, 94, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-recusar {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #fff;
+}
+
+.btn-recusar:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    box-shadow: 0 6px 24px rgba(239, 68, 68, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Botão de fechar */
+.modal-onboarding-content .close {
+    position: absolute;
+    top: 20px;
+    right: 28px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #64748b;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    z-index: 10;
+    line-height: 1;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.modal-onboarding-content .close:hover {
+    color: #0360e9;
+    background: rgba(3, 96, 233, 0.1);
+    transform: rotate(90deg);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .onboarding-container {
+        margin: 16px;
+        border-radius: 16px;
+        max-width: calc(100vw - 32px);
+    }
+    
+    .onboarding-header {
+        padding: 24px 20px 20px 20px;
+    }
+    
+    .onboarding-header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .onboarding-form {
+        padding: 24px 20px 20px 20px;
+        gap: 16px;
+    }
+    
+    .onboarding-form .form-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .success-message, .error-message {
+        margin: 16px 20px 0 20px;
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .onboarding-container {
+        margin: 8px;
+        border-radius: 12px;
+        max-width: calc(100vw - 16px);
+    }
+    
+    .onboarding-header {
+        padding: 20px 16px 16px 16px;
+    }
+    
+    .onboarding-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .onboarding-form {
+        padding: 20px 16px 16px 16px;
+        gap: 14px;
+    }
+    
+    .success-message, .error-message {
+        margin: 14px 16px 0 16px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Modal responsivo */
+@media (max-width: 700px) {
+    .modal-onboarding-content {
+        padding: 24px 20px 20px 20px;
+        min-width: 0;
+        border-radius: 20px;
+    }
+    
+    #onboarding-dados li b {
+        min-width: 100px;
+        font-size: 0.9rem;
+    }
+    
+    .modal-onboarding-content h2 {
+        font-size: 1.3rem;
+    }
+    
+    .modal-onboarding-content .btn {
+        margin: 0 12px 8px 0;
+        min-width: 120px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Animações */
+@keyframes fadeInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0; 
+        transform: translateX(-20px);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 0.6; 
+    }
+    50% { 
+        opacity: 1; 
+    }
+}
+
+/* Garantia de modal fechado */
+.modal-onboarding-bg[style*="display: none"] {
+    pointer-events: none !important;
+    opacity: 0 !important;
+}
+
+/* Melhorias de acessibilidade */
+.onboarding-form input:invalid {
+    border-color: #ef4444;
+}
+
+.onboarding-form input:valid {
+    border-color: #22c55e;
+}
+
+/* Placeholders */
+.onboarding-form input::placeholder {
+    color: #9ca3af;
+    opacity: 1;
+}
+
+.onboarding-form input:focus::placeholder {
+    opacity: 0.7;
+}
+
+/* Estilização de select */
+.onboarding-form select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+/* Estados de loading */
+.onboarding-form .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.onboarding-form .btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.onboarding-form .btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}

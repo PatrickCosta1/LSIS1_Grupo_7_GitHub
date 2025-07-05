@@ -73,24 +73,41 @@ class DAL_Perfil {
             error_log("=== getPedidosFeriasPorColaborador ===");
             error_log("Parâmetro colaboradorId recebido: " . $colaboradorId);
             
-            // Verificar se existem registros na tabela para este colaborador específico
-            $debugStmt = $this->pdo->prepare("SELECT * FROM pedidos_ferias WHERE colaborador_id = ?");
-            $debugStmt->execute([$colaboradorId]);
-            $allResults = $debugStmt->fetchAll(PDO::FETCH_ASSOC);
+            // Query com LEFT JOIN para garantir compatibilidade e buscar todos os campos possíveis
+            $stmt = $this->pdo->prepare("
+                SELECT 
+                    pf.id,
+                    pf.colaborador_id,
+                    pf.data_inicio,
+                    pf.data_fim,
+                    pf.data_pedido,
+                    COALESCE(pf.estado, pf.status, 'pendente') as estado,
+                    pf.observacoes
+                FROM pedidos_ferias pf
+                WHERE pf.colaborador_id = ?
+                ORDER BY pf.data_pedido DESC
+            ");
+            $stmt->execute([$colaboradorId]);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            error_log("Registros encontrados para colaborador_id " . $colaboradorId . ": " . count($allResults));
-            
-            if (!empty($allResults)) {
-                error_log("Primeiro registro encontrado: " . print_r($allResults[0], true));
+            // Debug: log do resultado
+            error_log("Pedidos encontrados para colaborador_id " . $colaboradorId . ": " . count($result));
+            if (!empty($result)) {
+                error_log("Primeiro pedido: " . print_r($result[0], true));
                 
                 // Mostrar TODOS os registros para debug
-                foreach ($allResults as $index => $record) {
-                    error_log("Registro " . ($index + 1) . ": ID=" . $record['id'] . ", colaborador_id=" . $record['colaborador_id'] . ", data_inicio=" . $record['data_inicio'] . ", data_fim=" . $record['data_fim'] . ", status=" . ($record['status'] ?? 'NULL'));
+                foreach ($result as $index => $record) {
+                    error_log("Registro " . ($index + 1) . ": ID=" . $record['id'] . ", colaborador_id=" . $record['colaborador_id'] . ", data_inicio=" . $record['data_inicio'] . ", data_fim=" . $record['data_fim'] . ", estado=" . ($record['estado'] ?? 'NULL'));
                 }
             } else {
                 error_log("NENHUM registro encontrado na tabela pedidos_ferias para colaborador_id = " . $colaboradorId);
                 
-                // Debug adicional: verificar se existem registros na tabela
+                // Debug adicional: verificar estrutura da tabela
+                $descStmt = $this->pdo->query("DESCRIBE pedidos_ferias");
+                $columns = $descStmt->fetchAll(PDO::FETCH_ASSOC);
+                error_log("Estrutura da tabela pedidos_ferias: " . print_r($columns, true));
+                
+                // Verificar se existem registros na tabela
                 $totalStmt = $this->pdo->query("SELECT COUNT(*) as total FROM pedidos_ferias");
                 $totalRecords = $totalStmt->fetch()['total'];
                 error_log("Total de registros na tabela pedidos_ferias: " . $totalRecords);
@@ -99,9 +116,15 @@ class DAL_Perfil {
                 $sampleStmt = $this->pdo->query("SELECT * FROM pedidos_ferias LIMIT 5");
                 $sampleResults = $sampleStmt->fetchAll(PDO::FETCH_ASSOC);
                 error_log("Amostra de registros da tabela pedidos_ferias: " . print_r($sampleResults, true));
+                
+                // Verificar se o colaborador_id existe na tabela colaboradores
+                $colabStmt = $this->pdo->prepare("SELECT id FROM colaboradores WHERE id = ?");
+                $colabStmt->execute([$colaboradorId]);
+                $colabExists = $colabStmt->fetch();
+                error_log("Colaborador ID " . $colaboradorId . " existe na tabela colaboradores: " . ($colabExists ? 'SIM' : 'NÃO'));
             }
             
-            return $allResults;
+            return $result;
             
         } catch (PDOException $e) {
             error_log("ERRO na query getPedidosFeriasPorColaborador: " . $e->getMessage());

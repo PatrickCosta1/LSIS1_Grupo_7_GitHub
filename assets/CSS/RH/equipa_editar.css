@@ -52,40 +52,46 @@ header nav a.active {
     color: #e0eaff !important;
 }
 
+/* Moderniza o conteúdo principal e formulário */
 main {
     max-width: 900px;
     margin: 0 auto 40px auto;
     padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 h1 {
     color: #19365f;
     text-align: center;
-    font-size: 2.2rem;
+    font-size: 2.1rem;
     font-weight: 700;
-    margin: 4px 0 32px 0;
+    margin: 4px 0 18px 0;
     letter-spacing: 1px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 h2 {
     color: #299cf3;
-    font-size: 1.3rem;
+    font-size: 1.15rem;
     font-weight: 700;
-    margin: 32px 0 12px 0;
+    margin: 28px 0 10px 0;
     text-align: left;
     letter-spacing: 0.2px;
     text-shadow: 0 1px 2px rgba(102,126,234,0.07);
 }
 
+/* Mensagens */
 .success-message, .error-message {
     max-width: 500px;
     margin: 0 auto 24px auto;
-    padding: 16px 24px;
+    padding: 14px 22px;
     border-radius: 14px;
     font-weight: 600;
     text-align: center;
     font-size: 1rem;
+    box-shadow: 0 2px 12px rgba(41,156,243,0.10);
 }
 .success-message {
     background: linear-gradient(90deg, #299cf3 0%, #0360e9 100%);
@@ -96,62 +102,67 @@ h2 {
     color: #fff;
 }
 
-/* Formulário de edição */
+/* Formulário moderno com bordas arredondadas, sem barra superior, borda cinzenta e animação no hover */
 .ficha-form-moderna {
     background: rgba(255,255,255,0.97);
-    border-radius: 24px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.10);
-    padding: 40px 48px;
-    max-width: 600px;
+    border-radius: 22px;
+    box-shadow: 0 8px 32px rgba(41,156,243,0.13);
+    padding: 32px 32px;
+    max-width: 520px;
     margin: 0 auto 32px auto;
-    border: 1px solid #c3cfe2;
+    border: 2px solid #c3cfe2;
     position: relative;
     overflow: hidden;
+    transition: 
+        box-shadow 0.22s,
+        border-color 0.22s,
+        transform 0.22s;
 }
 
 .ficha-form-moderna::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #0360e9 0%, #299cf3 100%);
-    border-radius: 24px 24px 0 0;
+    display: none !important; /* Remove barra superior */
+}
+
+.ficha-form-moderna:hover, .ficha-form-moderna:focus-within {
+    border-color: #299cf3;
+    box-shadow: 0 12px 40px rgba(41,156,243,0.18), 0 2px 16px rgba(41,156,243,0.10);
+    transform: translateY(-2px) scale(1.012);
 }
 
 .ficha-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px 32px;
-    max-width: 500px;
+    gap: 20px 24px;
+    max-width: 420px;
     margin: 0 auto;
 }
 
 .ficha-campo {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: 7px;
+    margin-bottom: 6px;
 }
 
 .ficha-campo label {
     color: #4a5568;
     font-weight: 600;
-    margin-bottom: 4px;
-    font-size: 0.92rem;
+    margin-bottom: 2px;
+    font-size: 0.93rem;
     letter-spacing: 0.02em;
 }
 
 .ficha-campo input,
 .ficha-campo select {
     border: 2px solid #e2e8f0;
-    background: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.85);
     color: #2d3748;
-    border-radius: 12px;
+    border-radius: 10px;
     font-size: 0.97rem;
-    padding: 12px 16px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    backdrop-filter: blur(10px);
+    padding: 10px 14px;
+    transition: all 0.22s;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+    backdrop-filter: blur(8px);
 }
 
 .ficha-campo select option {
@@ -163,40 +174,78 @@ h2 {
 .ficha-campo input:focus,
 .ficha-campo select:focus {
     border: 2px solid #299cf3;
-    background: rgba(255,255,255,0.95);
+    background: rgba(255,255,255,0.97);
     outline: none;
     color: #2d3748;
-    box-shadow: 0 0 0 3px rgba(41,156,243,0.13);
+    box-shadow: 0 0 0 3px rgba(41,156,243,0.10);
     transform: translateY(-1px);
 }
 
-/* Botões */
+/* Botões modernos */
 .btn {
-    font-size: 1.1rem;
-    padding: 14px 40px;
-    border-radius: 16px;
+    font-size: 1.05rem;
+    padding: 12px 32px;
+    border-radius: 12px;
     border: none;
-    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    background: #19365f;
     color: #fff;
     font-weight: 700;
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 18px rgba(3,96,233,0.10);
+    transition: background 0.22s, color 0.22s, border 0.22s, transform 0.15s, box-shadow 0.22s;
+    outline: none;
     cursor: pointer;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.04em;
     text-align: center;
     margin: 0 8px;
     display: inline-block;
+    border: 2px solid #fff;
 }
 
-.btn:hover {
-    background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+.btn:hover,
+.btn:focus {
+    background: #299cf3;
+    color: #fff;
+    border: 2px solid #299cf3;
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 8px 28px rgba(41,156,243,0.18);
 }
 
-.btn:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+/* Botão voltar moderno */
+.voltar-btn {
+    display: flex;
+    justify-content: center;
+    margin: 32px 0 24px 0;
+}
+
+.voltar-btn .btn {
+    font-size: 1.05rem;
+    padding: 12px 32px;
+    border-radius: 12px;
+    background: #19365f;
+    color: #fff;
+    font-weight: 700;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 18px rgba(3,96,233,0.10);
+    letter-spacing: 0.04em;
+    transition: 
+        background 0.25s,
+        color 0.25s,
+        border 0.25s,
+        transform 0.18s,
+        box-shadow 0.25s;
+    outline: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.voltar-btn .btn:hover,
+.voltar-btn .btn:focus {
+    background: #299cf3;
+    color: #fff;
+    border: 2px solid #299cf3;
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 8px 28px rgba(41,156,243,0.18);
 }
 
 /* Tabelas de colaboradores - visual moderno e clean */
@@ -315,159 +364,88 @@ h2 {
     box-shadow: 0 4px 16px rgba(41,156,243,0.18);
 }
 
-/* Tabelas lado a lado, compactas e robustas */
-.tabelas-colabs-wrapper {
-    display: flex;
-    gap: 18px;
-    justify-content: center;
-    align-items: flex-start;
-    margin: 24px 0;
-    flex-wrap: wrap;
+/* Agrupamento das tabelas de colaboradores lado a lado dentro do card - FORÇA LADO A LADO */
+.equipa-tabelas {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 24px !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+    margin-top: 24px !important;
+    flex-wrap: nowrap !important;
 }
 
 .tabela-colab-box {
-    flex: 1 1 320px;
-    min-width: 240px;
-    max-width: 350px;
-    background: #fafdff;
-    border-radius: 14px;
-    box-shadow: 0 2px 12px 0 rgba(41,156,243,0.10), 0 1.5px 16px 0 rgba(102,126,234,0.08);
-    padding: 10px 6px 16px 6px;
-    margin-bottom: 0;
-    border: 1.5px solid #e2e8f0;
-    transition: box-shadow 0.18s, border 0.18s;
+    flex: 1 1 45% !important;
+    min-width: 300px !important;
+    max-width: 450px !important;
+    background: #fff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 24px 0 rgba(41,156,243,0.10), 0 1.5px 16px 0 rgba(102,126,234,0.08) !important;
+    padding: 18px 12px 24px 12px !important;
+    margin-bottom: 0 !important;
+    border: 1.5px solid #e2e8f0 !important;
+    transition: box-shadow 0.18s, border 0.18s, transform 0.18s !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
 }
 
 .tabela-colab-box h2 {
-    text-align: center;
-    color: #0360e9;
-    font-size: 1.01rem;
-    margin-bottom: 10px;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-    text-shadow: 0 1px 4px rgba(41,156,243,0.07);
+    text-align: center !important;
+    color: #19365f !important;
+    font-size: 1.08rem !important;
+    margin-bottom: 14px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em !important;
 }
 
-.tabela-colabs {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    background: transparent;
-    font-size: 0.97rem;
-    margin-bottom: 0;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: none;
+.tabela-colab-box .tabela-colabs {
+    background: #fff !important;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 8px rgba(41,156,243,0.08) !important;
 }
 
-.tabela-colabs th, .tabela-colabs td {
-    padding: 7px 8px;
-    text-align: left;
-    font-size: 0.93rem;
-    border: none;
+.tabela-colab-box .tabela-colabs th {
+    background: #19365f !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    padding: 10px 12px !important;
 }
 
-.tabela-colabs th {
-    background: linear-gradient(90deg, #0360e9 0%, #299cf3 100%);
-    color: #fff;
-    font-weight: 700;
-    font-size: 0.97rem;
-    border-bottom: 1.5px solid #e2e8f0;
-    letter-spacing: 0.01em;
-    text-shadow: 0 1px 4px rgba(41,156,243,0.07);
+.tabela-colab-box .tabela-colabs td {
+    color: #19365f !important;
+    padding: 8px 12px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
 }
 
-.tabela-colabs tr:last-child td {
-    border-bottom: none;
+.tabela-colab-box:hover {
+    box-shadow: 0 8px 32px 0 rgba(41,156,243,0.16), 0 2px 16px 0 rgba(102,126,234,0.10) !important;
+    border-color: #299cf3 !important;
+    transform: translateY(-2px) scale(1.01) !important;
 }
 
-.tabela-colabs tbody tr {
-    transition: background 0.14s, box-shadow 0.14s;
-}
-
-.tabela-colabs tbody tr:nth-child(even) {
-    background: #f3f8fe;
-}
-
-.tabela-colabs tbody tr:hover {
-    background: #e0eaff;
-    box-shadow: 0 1px 8px 0 rgba(41,156,243,0.06);
-}
-
-.tabela-colabs td {
-    color: #23408e;
-    font-weight: 500;
-    border-bottom: 1px solid #e2e8f0;
-    vertical-align: middle;
-    max-width: 180px;
-    overflow-wrap: break-word;
-}
-
-.tabela-colabs td:first-child {
-    border-left: 3px solid transparent;
-    transition: border-color 0.18s;
-}
-.tabela-colabs tbody tr:hover td:first-child {
-    border-left: 3px solid #299cf3;
-}
-
-/* Botões compactos nas tabelas */
-.tabela-colabs .btn,
-.tabela-colabs .btn-danger,
-.tabela-colabs .btn-add {
-    font-size: 0.91rem;
-    padding: 4px 13px;
-    border-radius: 7px;
-    border: none;
-    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
-    color: #fff;
-    font-weight: 600;
-    box-shadow: 0 1px 4px rgba(41,156,243,0.10);
-    transition: background 0.14s, box-shadow 0.14s, transform 0.11s;
-    cursor: pointer;
-    letter-spacing: 0.01em;
-    text-decoration: none;
-    display: inline-block;
-    margin-right: 2px;
-    min-width: 60px;
-}
-
-.tabela-colabs .btn-danger {
-    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
-    color: #fff;
-    box-shadow: 0 1px 4px rgba(229, 62, 62, 0.10);
-}
-
-.tabela-colabs .btn-add {
-    background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%);
-    color: #fff;
-    box-shadow: 0 1px 4px rgba(41,156,243,0.10);
-}
-
-.tabela-colabs .btn:hover,
-.tabela-colabs .btn-danger:hover,
-.tabela-colabs .btn-add:hover {
-    filter: brightness(1.08) saturate(1.2);
-    box-shadow: 0 2px 8px rgba(41,156,243,0.13);
-    transform: translateY(-1px) scale(1.04);
-}
-
-.tabela-colabs .btn-danger:hover {
-    background: linear-gradient(135deg, #c53030 0%, #e53e3e 100%);
-    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.13);
-}
-
-.tabela-colabs .btn-add:hover {
-    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
-    box-shadow: 0 2px 8px rgba(41,156,243,0.13);
-}
-
-/* Responsividade para tabelas lado a lado */
+/* Responsividade para as tabelas lado a lado */
 @media (max-width: 1000px) {
-    .tabelas-colabs-wrapper {
+    .equipa-tabelas {
+        flex-direction: column !important;
+        gap: 18px !important;
+    }
+    .tabela-colab-box {
+        max-width: 100% !important;
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+    }
+}
+
+@media (max-width: 1100px) {
+    .equipa-tabelas {
         flex-direction: column;
         gap: 18px;
-        align-items: stretch;
+        width: 100%;
     }
     .tabela-colab-box {
         max-width: 98vw;

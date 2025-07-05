@@ -62,7 +62,7 @@ $nmr_notificacoes = isset($dados['notificacoes_novas']) ? (int)$dados['notificac
 </main>
 </div>
 
- <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+<div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
       <button id="open-chatbot" style="
           background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
           color:rgb(255, 255, 255);

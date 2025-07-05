@@ -29,7 +29,7 @@ $equipas = $equipasBLL->getAllEquipas();
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
-            <div class="dropdown-equipas">
+               <div class="dropdown-equipas">
                 <a href="equipas.php" class="equipas-link">
                     Equipas
                     <span class="seta-baixo">&#9662;</span>
@@ -56,6 +56,7 @@ $equipas = $equipasBLL->getAllEquipas();
                 <div class="dropdown-menu">
                     <a href="gerir_beneficios.php">Gerir Benefícios</a>
                     <a href="gerir_formacoes.php">Gerir Formações</a>
+                    <a href="gerir_recibos.php">Submeter Recibos</a>
                 </div>
             </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>
@@ -84,28 +85,27 @@ $equipas = $equipasBLL->getAllEquipas();
         <div class="equipas-header">
             <h1>Gestão de Equipas</h1>
         </div>
-        <table class="tabela-equipas">
-            <thead>
-                <tr>
-                    <th>Equipa</th>
-                    <th>Responsável</th>
-                    <th>Nº Colaboradores</th>
-                    <th style="min-width:120px;">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($equipas as $eq): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($eq['nome']); ?></td>
-                    <td><?php echo htmlspecialchars($eq['responsavel']); ?></td>
-                    <td><?php echo htmlspecialchars($eq['num_colaboradores']); ?></td>
-                    <td>
-                        <a href="equipa.php?id=<?php echo $eq['id']; ?>" class="btn">Ver</a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="equipas-cards-lista">
+            <?php foreach ($equipas as $eq): ?>
+                <button class="equipa-card-flip" onclick="window.location.href='equipa.php?id=<?php echo $eq['id']; ?>'" title="Ver equipa <?php echo htmlspecialchars($eq['nome']); ?>">
+                    <div class="equipa-card-inner">
+                        <div class="equipa-card-front">
+                            <span class="equipa-nome"><?php echo htmlspecialchars($eq['nome']); ?></span>
+                        </div>
+                        <div class="equipa-card-back">
+                            <div>
+                                <span class="equipa-info-label">Responsável</span><br>
+                                <span class="equipa-info-value"><?php echo htmlspecialchars($eq['responsavel']); ?></span>
+                            </div>
+                            <div>
+                                <span class="equipa-info-label">Nº Colaboradores</span><br>
+                                <span class="equipa-info-ncolab"><?php echo htmlspecialchars($eq['num_colaboradores']); ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+            <?php endforeach; ?>
+        </div>
         <div class="nova-equipa-btn">
             <a href="equipa_nova.php" class="btn">+ Nova Equipa</a>
         </div>

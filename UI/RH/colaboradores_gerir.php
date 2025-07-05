@@ -6,6 +6,14 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admi
 }
 require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
 $colabBLL = new RHColaboradoresManager();
+
+// --- Remover colaborador ---
+if (isset($_GET['remover']) && is_numeric($_GET['remover'])) {
+    $colabBLL->removerColaboradorComUtilizador((int)$_GET['remover']);
+    header('Location: colaboradores_gerir.php?removido=1');
+    exit();
+}
+
 $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
@@ -14,6 +22,13 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
     <meta charset="UTF-8">
     <title>Gestão de Colaboradores - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/colaboradores_gerir.css">
+    <script>
+    function confirmarRemocao(nome, id) {
+        if (confirm('Tem a certeza que deseja remover o colaborador "' + nome + '"? Esta ação é irreversível.')) {
+            window.location.href = 'colaboradores_gerir.php?remover=' + id;
+        }
+    }
+    </script>
 </head>
 <body>
     <header>
@@ -28,7 +43,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                 <a href="../Comuns/perfil.php">Perfil</a>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
-            <div class="dropdown-equipas">
+               <div class="dropdown-equipas">
                 <a href="equipas.php" class="equipas-link">
                     Equipas
                     <span class="seta-baixo">&#9662;</span>
@@ -55,6 +70,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                 <div class="dropdown-menu">
                     <a href="gerir_beneficios.php">Gerir Benefícios</a>
                     <a href="gerir_formacoes.php">Gerir Formações</a>
+                    <a href="gerir_recibos.php">Submeter Recibos</a>
                 </div>
             </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>
@@ -123,7 +139,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                         <td><?php echo htmlspecialchars($col['equipas']); ?></td>
                         <td>
                             <a href="../Colaborador/ficha_colaborador.php?id=<?php echo $col['id']; ?>" class="btn btn-sm">Ver</a>
-                            <a href="#" class="btn btn-danger btn-sm">Remover</a>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmarRemocao('<?php echo htmlspecialchars($col['nome']); ?>', <?php echo $col['id']; ?>)">Remover</button>
                         </td>
                     </tr>
                     <?php endforeach; ?>
