@@ -38,20 +38,21 @@ if ($_GET['action'] === 'aniversarios' && isset($_GET['eid'])) {
 }
 
 if ($_GET['action'] === 'alteracoes') {
-    require_once '../../DAL/Database.php';
     $pdo = Database::getConnection();
-    $stmt = $pdo->query("
-        SELECT p.id, c.nome as colaborador_nome, p.campo, p.valor_antigo, p.valor_novo, p.estado, p.data_pedido, p.data_resposta
+    $stmt = $pdo->prepare("
+        SELECT c.nome as colaborador_nome, p.campo, p.valor_antigo, p.valor_novo, p.estado, p.data_pedido, p.data_resposta
         FROM pedidos_alteracao_ficha p
         INNER JOIN colaboradores c ON p.colaborador_id = c.id
+        WHERE p.campo IN ('cargo', 'remuneracao', 'tipo_contrato', 'regime_horario', 'data_inicio_contrato', 'data_fim_contrato')
+          AND p.estado = 'aprovado'
         ORDER BY p.data_pedido DESC
     ");
+    $stmt->execute();
     $alteracoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     if (empty($alteracoes)) {
-        echo '<p>Não existem alterações contratuais registadas.</p>';
+        echo '<p>Não existem alterações contratuais aprovadas para estes campos.</p>';
     } else {
-        // Torna a tabela mais moderna, igual à dos aniversários
         echo '<table class="alteracoes-table"><thead><tr>
                 <th>Colaborador</th>
                 <th>Campo</th>

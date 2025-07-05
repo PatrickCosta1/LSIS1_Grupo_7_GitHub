@@ -24,12 +24,15 @@ if ($tipo === 'aniversarios' && isset($_GET['eid'])) {
     $html .= "</tbody></table>";
 } elseif ($tipo === 'alteracoes') {
     $pdo = Database::getConnection();
-    $stmt = $pdo->query("
+    $stmt = $pdo->prepare("
         SELECT c.nome as colaborador_nome, p.campo, p.valor_antigo, p.valor_novo, p.estado, p.data_pedido, p.data_resposta
         FROM pedidos_alteracao_ficha p
         INNER JOIN colaboradores c ON p.colaborador_id = c.id
+        WHERE p.campo IN ('cargo', 'remuneracao', 'tipo_contrato', 'regime_horario', 'data_inicio_contrato', 'data_fim_contrato')
+          AND p.estado = 'aprovado'
         ORDER BY p.data_pedido DESC
     ");
+    $stmt->execute();
     $alteracoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $title = 'Relatório de Alterações Contratuais';
     $html .= "<h2 style='color:#19365f;'>$title</h2>";
