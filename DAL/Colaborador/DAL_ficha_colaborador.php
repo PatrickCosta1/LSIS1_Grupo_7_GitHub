@@ -211,4 +211,40 @@ class DAL_FichaColaborador {
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute($values);
     }
+
+    // --- CAMPOS PERSONALIZADOS ---
+
+    // Buscar valores dos campos personalizados para um colaborador
+    public function getCamposPersonalizadosValores($colaborador_id) {
+        $stmt = $this->pdo->prepare("
+            SELECT cp.id as campo_id, cp.nome, cp.tipo, cpv.valor
+            FROM campos_personalizados cp
+            LEFT JOIN campos_personalizados_valores cpv
+                ON cp.id = cpv.campo_id AND cpv.colaborador_id = ?
+        ");
+        $stmt->execute([$colaborador_id]);
+        $result = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            error_log("Campo personalizado: " . print_r($row, true)); // <-- Adiciona isto para debug
+            $result[$row['campo_id']] = $row;
+        }
+        return $result;
+    }
+
+    // Salvar ou atualizar valores dos campos personalizados para um colaborador
+    public function salvarCamposPersonalizadosValores($colaborador_id, $valores) {
+        foreach ($valores as $campo_id => $valor) {
+            // Verifica se já existe valor
+            $stmt = $this->pdo->prepare("SELECT id FROM campos_personalizados_valores WHERE colaborador_id = ? AND campo_id = ?");
+            $stmt->execute([$colaborador_id, $campo_id]);
+            if ($stmt->fetchColumn()) {
+                $upd = $this->pdo->prepare("UPDATE campos_personalizados_valores SET valor = ? WHERE colaborador_id = ? AND campo_id = ?");
+                $upd->execute([$valor, $colaborador_id, $campo_id]);
+            } else {
+                $ins = $this->pdo->prepare("INSERT INTO campos_personalizados_valores (colaborador_id, campo_id, valor) VALUES (?, ?, ?)");
+                $ins->execute([$colaborador_id, $campo_id, $valor]);
+            }
+        }
+        return true;
+    }
 }

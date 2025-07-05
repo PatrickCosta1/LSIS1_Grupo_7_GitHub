@@ -111,5 +111,13 @@ class ColaboradorFichaManager {
     public function getPedidoComprovantivoById($pedidoId) {
         return $this->dal->getPedidoComprovantivoById($pedidoId);
     }
+
+    // Métodos para campos personalizados (ficha extra)
+    public function getCamposPersonalizadosValores($colaborador_id) {
+        return $this->dal->getCamposPersonalizadosValores($colaborador_id);
+    }
+    public function salvarCamposPersonalizadosValores($colaborador_id, $valores) {
+        return $this->dal->salvarCamposPersonalizadosValores($colaborador_id, $valores);
+    }
 }
 ?>

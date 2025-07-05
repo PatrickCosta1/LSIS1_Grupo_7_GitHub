@@ -229,6 +229,7 @@ $retencao_media_equipas = count($taxas_retencao_validas) > 0 ? (array_sum($taxas
                     <a href="gerir_beneficios.php">Gerir Benefícios</a>
                     <a href="gerir_formacoes.php">Gerir Formações</a>
                     <a href="gerir_recibos.php">Submeter Recibos</a>
+                    <a href="campos_personalizados.php">Campos Personalizados</a>
                 </div>
             </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>

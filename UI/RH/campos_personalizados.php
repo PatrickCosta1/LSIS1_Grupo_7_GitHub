@@ -27,11 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['novo_campo'])) {
 
 // Editar campo existente
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_campo'])) {
-    $nome_antigo = $_POST['nome_antigo'] ?? '';
+    $id = $_POST['campo_id'] ?? '';
     $nome_novo = trim($_POST['nome_novo'] ?? '');
     $tipo = $_POST['tipo'] ?? 'texto';
-    if ($nome_antigo && $nome_novo) {
-        if ($camposBLL->editarCampo($nome_antigo, $nome_novo, $tipo)) {
+    if ($id && $nome_novo) {
+        if ($camposBLL->editarCampo($id, $nome_novo, $tipo)) {
             $success = "Campo atualizado com sucesso!";
         } else {
             $error = "Erro ao atualizar campo.";
@@ -76,11 +76,47 @@ $campos = $camposBLL->listarCampos();
     <header>
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" onclick="window.location.href='pagina_inicial_RH.php';" style="cursor:pointer;">
         <nav>
-            <a href="colaboradores_gerir.php">Colaboradores</a>
-            <a href="equipas.php">Equipas</a>
-            <a href="campos_personalizados.php" class="active">Campos Personalizados</a>
-            <a href="dashboard_rh.php">Dashboard</a>
-            <a href="../Comuns/perfil.php">Perfil</a>
+            <div class="dropdown-equipas">
+                <a href="equipas.php" class="equipas-link">
+                    Equipas
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="relatorios.php">Relatórios</a>
+                    <a href="dashboard_rh.php">Dashboard</a>
+                </div>
+            </div>
+            <div class="dropdown-colaboradores">
+                <a href="colaboradores_gerir.php" class="colaboradores-link">
+                    Colaboradores
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="exportar.php">Exportar</a>
+                </div>
+            </div>
+            <div class="dropdown-gestao">
+                <a href="#" class="gestao-link">
+                    Gestão
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="gerir_beneficios.php">Gerir Benefícios</a>
+                    <a href="gerir_formacoes.php">Gerir Formações</a>
+                    <a href="gerir_recibos.php">Submeter Recibos</a>
+                    <a href="campos_personalizados.php">Campos Personalizados</a>
+                </div>
+            </div>
+            <a href="../Comuns/notificacoes.php">Notificações</a>
+            <div class="dropdown-perfil">
+                <a href="../Comuns/perfil.php" class="perfil-link">
+                    Perfil
+                    <span class="seta-baixo">&#9662;</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
+                </div>
+            </div>
             <a href="../Comuns/logout.php">Sair</a>
         </nav>
     </header>
@@ -114,17 +150,17 @@ $campos = $camposBLL->listarCampos();
                 <div class="campo-item">
                     <span class="campo-nome"><?= htmlspecialchars($campo['nome']) ?> (<?= htmlspecialchars($campo['tipo']) ?>)</span>
                     <form method="post" style="display:inline;">
-                        <input type="hidden" name="nome_antigo" value="<?= htmlspecialchars($campo['nome']) ?>">
+                        <input type="hidden" name="campo_id" value="<?= htmlspecialchars($campo['id']) ?>">
                         <input type="text" name="nome_novo" value="<?= htmlspecialchars($campo['nome']) ?>" required>
                         <select name="tipo">
-                            <option value="texto" <?= strpos($campo['tipo'],'varchar')!==false?'selected':''; ?>>Texto</option>
-                            <option value="numero" <?= strpos($campo['tipo'],'int')!==false?'selected':''; ?>>Número</option>
-                            <option value="data" <?= strpos($campo['tipo'],'date')!==false?'selected':''; ?>>Data</option>
-                            <option value="email" <?= strpos($campo['tipo'],'email')!==false?'selected':''; ?>>Email</option>
+                            <option value="texto" <?= $campo['tipo']=='texto'?'selected':''; ?>>Texto</option>
+                            <option value="numero" <?= $campo['tipo']=='numero'?'selected':''; ?>>Número</option>
+                            <option value="data" <?= $campo['tipo']=='data'?'selected':''; ?>>Data</option>
+                            <option value="email" <?= $campo['tipo']=='email'?'selected':''; ?>>Email</option>
                         </select>
                         <button type="submit" name="editar_campo" class="btn btn-edit">&#9998;</button>
                     </form>
-                    <a href="?remover=<?= htmlspecialchars($campo['nome']) ?>" class="btn btn-remove" onclick="return confirm('Remover este campo?')">-</a>
+                    <a href="?remover=<?= htmlspecialchars($campo['id']) ?>" class="btn btn-remove" onclick="return confirm('Remover este campo?')">-</a>
                 </div>
             <?php endforeach; ?>
         </div>
