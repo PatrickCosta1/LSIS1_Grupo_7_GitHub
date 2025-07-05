@@ -1,0 +1,735 @@
+body {
+    background: linear-gradient(135deg, #ffffff 0%, #98c1ff 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    /* aumenta o padding-top para compensar o header mais largo e com margem */
+    padding-top: calc(100px + 2cm); /* 100px altura header + 0.5cm top + 0.5cm bottom */
+}
+header {
+    position: fixed;
+    top: 0.5cm;
+    left: 0.5cm;
+    right: 0.5cm;
+    width: auto;
+    margin: 0;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 24px;
+    min-height: 100px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* igual ao dashboard */
+    padding: 24px 60px;
+    z-index: 1000;
+}
+.logo-header {
+    width: 120px;
+    height: auto;
+}
+header nav {
+    display: flex;
+    gap: 1px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+header nav a {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+}
+header nav a:hover,
+header nav a.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+/* Layout principal: tabela à esquerda, cards à direita */
+.relatorios-main-layout {
+    display: flex;
+    flex-direction: row;
+    gap: 36px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: flex-start; /* Alinha tabela e cards pelo topo */
+    justify-content: flex-start; /* Alinha à esquerda, permitindo controle manual dos cards */
+    min-height: 70vh;
+    padding: 0 16px;
+}
+
+/* Tabela de relatórios */
+.relatorios-table-container {
+    flex: 2 1 0;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 6px 24px rgba(3,96,233,0.07);
+    padding: 32px 24px 24px 24px;
+    min-width: 340px;
+    max-width: 700px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* centraliza conteúdo horizontalmente */
+    justify-content: flex-start;
+}
+
+
+
+.relatorios-titulo {
+        color: #19365f;
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 4px 0 32px 0;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.indicadores-titulo {
+    color: #19365f;
+    font-size: 1.08rem;
+    font-weight: 600;
+    text-align: center;
+    margin-left: 515px;
+    margin-bottom: 8px;
+    margin-top: 18px;
+    letter-spacing: 0.3px;
+}
+
+/* Indicadores em tabela moderna */
+.indicadores-table {
+    width: 340px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-top: 32px;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    box-shadow: 0 4px 18px rgba(3,96,233,0.10);
+}
+
+.indicadores-table th, .indicadores-table td {
+    background: #f7faff;
+    color: #0360e9;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-align: center;
+    border: none;
+    box-shadow: 0 1px 4px rgba(3,96,233,0.06);
+}
+
+.indicadores-table th {
+    background: #299cf3;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.07rem;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(3,96,233,0.10);
+}
+
+.indicadores-table tr:hover td {
+    background: #e3eefe;
+    color: #0360e9;
+}
+
+/* Responsivo para ecrãs pequenos */
+@media (max-width: 500px) {
+    .indicadores-table {
+        width: 98vw;
+        min-width: unset;
+        font-size: 0.95rem;
+    }
+    .indicadores-table th, .indicadores-table td {
+        padding: 8px 4px;
+        font-size: 0.95rem;
+    }
+}
+
+.relatorios-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.05rem;
+    background: transparent;
+}
+
+.relatorios-table th, .relatorios-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #e3eefe;
+    text-align: left;
+}
+
+.relatorios-table th {
+    background: #f7faff;
+    color: #0360e9;
+    font-weight: 700;
+    font-size: 1.08rem;
+    border-radius: 8px 8px 0 0;
+}
+
+.relatorios-table tr:last-child td {
+    border-bottom: none;
+}
+
+.relatorios-table tr:hover {
+    background: #e3eefe;
+}
+
+/* Cards modernos à direita */
+.dashboard-cards {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    gap: 32px;
+    margin: 32px auto 0 auto;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.dashboard-cards .card {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(3,96,233,0.13);
+    padding: 22px 18px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    min-height: 90px;
+    transition: transform 0.18s, box-shadow 0.18s;
+    max-width: 320px;
+    min-width: 220px;
+    flex: 1 1 0;
+}
+
+.dashboard-cards .card::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 70px;
+    height: 70px;
+    background: rgba(255,255,255,0.10);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.dashboard-cards .card h2 {
+    color: #fff;
+    font-size: 1.08rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    margin-top: 0;
+    text-shadow: 0 2px 8px rgba(3,96,233,0.10);
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard-cards .card p {
+    color: #e3eefe;
+    font-size: 0.98rem;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard-cards .card .btn {
+    font-size: 0.98rem;
+    padding: 10px 24px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(3, 96, 233, 0.13);
+    transition: all 0.2s;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    margin-top: 14px;
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+}
+
+.dashboard-cards .card .btn:hover {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    transform: translateY(-2px) scale(1.04);
+}
+
+/* Espaçamento entre cards e tabela */
+.indicadores-titulo,
+.indicadores-table {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 36px !important;
+}
+
+/* Remove margens laterais e topo antigas da tabela */
+.indicadores-table {
+    margin-top: 12px !important;
+    margin-bottom: 32px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Responsivo: cards em coluna no mobile */
+@media (max-width: 1000px) {
+    .dashboard-cards {
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+    }
+    .dashboard-cards .card {
+        max-width: 98vw;
+        width: 100%;
+    }
+}
+
+/* Dropdown styles for RH pages */
+.dropdown-equipas, .dropdown-colaboradores, .dropdown-perfil {
+    position: relative;
+    display: inline-block;
+}
+
+.equipas-link, .colaboradores-link, .perfil-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.equipas-link:hover, .colaboradores-link:hover, .perfil-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+.seta-baixo {
+    font-size: 0.8em;
+    margin-left: 3px;
+    transition: transform 0.2s;
+}
+
+.dropdown-equipas:hover .seta-baixo,
+.dropdown-colaboradores:hover .seta-baixo,
+.dropdown-perfil:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-equipas:hover .dropdown-menu,
+.dropdown-colaboradores:hover .dropdown-menu,
+.dropdown-perfil:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+
+.dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}
+
+/* Estilos da marca do portal */
+.portal-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 32px 0 12px 0; /* Adiciona mais espaço acima da marca do portal */
+}
+
+.color-bar {
+    height: 6px;
+    width: 80px;
+    border-radius: 3px;
+    display: flex;
+}
+
+.color-segment {
+    flex: 1;
+    height: 100%;
+}
+
+.color-segment:first-child {
+    background: #8155ff;
+    border-radius: 3px 0 0 3px;
+}
+
+.color-segment:nth-child(2) {
+    background: #ff9b37;
+}
+
+.color-segment:last-child {
+    background: #3ed829;
+    border-radius: 0 3px 3px 0;
+}
+
+.portal-text {
+    font-size: 0.75rem;
+    color: #19365f;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Novas regras para o dropdown de gestão */
+.dropdown-gestao {
+    position: relative;
+    display: inline-block;
+}
+.gestao-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+.gestao-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+.dropdown-gestao:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+.dropdown-gestao .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+.dropdown-gestao .dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+.dropdown-gestao .dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}
+.dropdown-gestao:hover .dropdown-menu,
+.dropdown-gestao:focus-within .dropdown-menu {
+    display: block;
+}
+
+/* Tabela moderna para aniversários no modal */
+.aniversarios-table {
+    width: 100%;
+    max-width: 420px;
+    margin: 18px auto 0 auto;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    box-shadow: 0 4px 18px rgba(3,96,233,0.10);
+    background: transparent;
+}
+
+.aniversarios-table th, .aniversarios-table td {
+    background: #f7faff;
+    color: #0360e9;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-align: center;
+    border: none;
+    box-shadow: 0 1px 4px rgba(3,96,233,0.06);
+}
+
+.aniversarios-table th {
+    background: #299cf3;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.07rem;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(3,96,233,0.10);
+}
+
+.aniversarios-table tr:hover td {
+    background: #e3eefe;
+    color: #0360e9;
+}
+
+/* Responsivo para a tabela de aniversários */
+@media (max-width: 600px) {
+    .aniversarios-table {
+        width: 98vw;
+        min-width: unset;
+        font-size: 0.95rem;
+    }
+    .aniversarios-table th, .aniversarios-table td {
+        padding: 8px 4px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Modernizar frase e caixa "Escolha a equipa" no modal */
+#modalAniversarios label[for="equipa_id_modal"] {
+    display: block;
+    font-size: 1.08rem;
+    color: #0360e9;
+    font-weight: 600;
+    margin-bottom: 8px;
+    margin-top: 8px;
+    letter-spacing: 0.2px;
+    text-align: center;
+}
+
+#equipa_id_modal {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 16px auto;
+    padding: 10px 14px;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 1.5px solid #299cf3;
+    background: #f7faff;
+    color: #23408e;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(3,96,233,0.07);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#equipa_id_modal:focus {
+    border-color: #0360e9;
+    outline: none;
+    box-shadow: 0 0 0 2px #299cf333;
+}
+
+/* Título do modal de aniversários em azul escuro */
+#modalAniversarios h2 {
+    color: #19365f;
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 12px;
+    margin-top: 0;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(25,54,95,0.08);
+}
+
+/* Título do modal de alterações contratuais em azul escuro */
+#modalAlteracoes h2 {
+    color: #19365f;
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 12px;
+    margin-top: 0;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(25,54,95,0.08);
+}
+
+#modalAlteracoes .modal-content {
+    background-color: #f8f8f8;
+    box-sizing: border-box;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Título do modal de vouchers em azul escuro */
+#modalVouchers h2 {
+    color: #19365f;
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 12px;
+    margin-top: 0;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(25,54,95,0.08);
+}
+
+/* Tabela moderna para alterações contratuais no modal */
+.alteracoes-table {
+    width: 100%;
+    max-width: 520px;
+    margin: 18px auto 0 auto;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    box-shadow: 0 4px 18px rgba(3,96,233,0.10);
+    background: transparent;
+}
+
+.alteracoes-table th, .alteracoes-table td {
+    background: #f7faff;
+    color: #0360e9;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 10px 10px;
+    border-radius: 10px;
+    text-align: center;
+    border: none;
+    box-shadow: 0 1px 4px rgba(3,96,233,0.06);
+}
+
+.alteracoes-table th {
+    background: #299cf3;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.07rem;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(3,96,233,0.10);
+}
+
+.alteracoes-table tr:hover td {
+    background: #e3eefe;
+    color: #0360e9;
+}
+
+/* Responsivo para a tabela de alterações */
+@media (max-width: 700px) {
+    .alteracoes-table {
+        width: 98vw;
+        min-width: unset;
+        font-size: 0.95rem;
+    }
+    .alteracoes-table th, .alteracoes-table td {
+        padding: 8px 4px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Tabela moderna para vouchers no modal */
+.vouchers-table {
+    width: 100%;
+    max-width: 420px;
+    margin: 18px auto 0 auto;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    box-shadow: 0 4px 18px rgba(3,96,233,0.10);
+    background: transparent;
+}
+
+.vouchers-table th, .vouchers-table td {
+    background: #f7faff;
+    color: #0360e9;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-align: center;
+    border: none;
+    box-shadow: 0 1px 4px rgba(3,96,233,0.06);
+}
+
+.vouchers-table th {
+    background: #299cf3;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.07rem;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(3,96,233,0.10);
+}
+
+.vouchers-table tr:hover td {
+    background: #e3eefe;
+    color: #0360e9;
+}
+
+/* Responsivo para a tabela de vouchers */
+@media (max-width: 600px) {
+    .vouchers-table {
+        width: 98vw;
+        min-width: unset;
+        font-size: 0.95rem;
+    }
+    .vouchers-table th, .vouchers-table td {
+        padding: 8px 4px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Modal de Aniversários */
+#modalAniversarios .modal-content {
+    min-width: 200px;
+    max-width: 500px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Modal de Alterações Contratuais */
+#modalAlteracoes .modal-content {
+    min-width: 500px;
+    max-width: 900px;
+    width: 100%;
+    background-color: #f8f8f8;
+    box-sizing: border-box;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Modal de Vouchers */
+#modalVouchers .modal-content {
+    min-width: 200px;
+    max-width: 500px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Scroll para tabelas dos modais */
+.aniversarios-table,
+.vouchers-table {
+    display: block;
+    max-height: 350px;
+    overflow-y: auto;
+    width: 100%;
+}

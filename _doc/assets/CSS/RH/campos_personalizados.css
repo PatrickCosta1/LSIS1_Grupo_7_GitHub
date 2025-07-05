@@ -1,0 +1,331 @@
+/* Fundo e fonte */
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    padding-top: calc(100px + 2cm);
+}
+
+/* Header igual ao resto do RH */
+header {
+    position: fixed;
+    top: 0.5cm;
+    left: 0.5cm;
+    right: 0.5cm;
+    width: auto;
+    margin: 0;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 24px;
+    min-height: 100px;
+    box-shadow: 0 8px 32px rgba(3,96,233,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 60px;
+    z-index: 1000;
+}
+.logo-header {
+    width: 120px;
+    height: auto;
+}
+header nav {
+    display: flex;
+    gap: 1px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+header nav a {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+}
+header nav a:hover,
+header nav a.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+/* Marca do portal */
+.portal-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 32px 0 12px 0;
+}
+.color-bar {
+    height: 6px;
+    width: 80px;
+    border-radius: 3px;
+    display: flex;
+}
+.color-segment {
+    flex: 1;
+    height: 100%;
+}
+.color-segment:first-child {
+    background: #8155ff;
+    border-radius: 3px 0 0 3px;
+}
+.color-segment:nth-child(2) {
+    background: #ff9b37;
+}
+.color-segment:last-child {
+    background: #3ed829;
+    border-radius: 0 3px 3px 0;
+}
+.portal-text {
+    font-size: 0.75rem;
+    color: #19365f;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Título */
+main h1 {
+    color: #19365f;
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 4px 0 32px 0;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Lista de campos personalizados */
+.campos-lista {
+    max-width: 700px;
+    margin: 30px auto;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 16px #23408e1a;
+    padding: 32px 28px;
+}
+.campo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.campo-nome {
+    flex: 1;
+}
+
+/* Formulários */
+.campo-form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+.campo-form input, .campo-form select {
+    padding: 6px 8px;
+    border-radius: 5px;
+    border: 1px solid #cfd8e3;
+}
+
+/* Botões */
+.btn {
+    background: #23408e;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-edit {
+    background: #ffb347;
+    color: #23408e;
+}
+.btn-remove {
+    background: #e53e3e;
+    color: #fff;
+}
+.btn-add {
+    background: #38a169;
+    color: #fff;
+}
+.btn:hover, .btn-edit:hover, .btn-remove:hover, .btn-add:hover {
+    filter: brightness(0.95);
+}
+
+/* Mensagens */
+.sucesso {
+    color: #38a169;
+    margin-bottom: 8px;
+}
+.erro {
+    color: #e53e3e;
+    margin-bottom: 8px;
+}
+
+/* Responsivo */
+@media (max-width: 900px) {
+    header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 18px 5vw;
+        min-height: 80px;
+        width: 95vw;
+        margin: 20px auto 0 auto;
+    }
+    main h1 {
+        font-size: 1.4rem;
+    }
+    .campos-lista {
+        padding: 18px 6vw;
+    }
+}
+@media (max-width: 600px) {
+    header {
+        padding: 10px 2vw;
+        min-height: 60px;
+        border-radius: 14px;
+    }
+    .campos-lista {
+        padding: 10px 2vw;
+    }
+}
+
+
+/* Dropdown styles for RH pages */
+.dropdown-equipas, .dropdown-colaboradores, .dropdown-perfil {
+    position: relative;
+    display: inline-block;
+}
+
+.equipas-link, .colaboradores-link, .perfil-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.equipas-link:hover, .colaboradores-link:hover, .perfil-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+.seta-baixo {
+    font-size: 0.8em;
+    margin-left: 3px;
+    transition: transform 0.2s;
+}
+
+.dropdown-equipas:hover .seta-baixo,
+.dropdown-colaboradores:hover .seta-baixo,
+.dropdown-perfil:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-equipas:hover .dropdown-menu,
+.dropdown-colaboradores:hover .dropdown-menu,
+.dropdown-perfil:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+
+/* Novas regras para o dropdown de gestão */
+.dropdown-gestao {
+    position: relative;
+    display: inline-block;
+}
+.gestao-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+.gestao-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+.dropdown-gestao:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+.dropdown-gestao .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+.dropdown-gestao .dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+.dropdown-gestao .dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}
+.dropdown-gestao:hover .dropdown-menu,
+.dropdown-gestao:focus-within .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}

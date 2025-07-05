@@ -1,0 +1,785 @@
+/* Fundo e layout geral */
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    padding-top: calc(100px + 2cm);
+}
+
+header {
+    position: fixed;
+    top: 0.5cm;
+    left: 0.5cm;
+    right: 0.5cm;
+    width: auto;
+    margin: 0;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 24px;
+    min-height: 100px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 60px;
+    z-index: 1000;
+}
+.logo-header {
+    width: 120px;
+    height: auto;
+}
+header nav {
+    display: flex;
+    gap: 1px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+header nav a {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+}
+header nav a:hover,
+header nav a.active {
+    background: rgba(255, 255, 255, 0.18);
+    color: #e0eaff !important;
+}
+
+/* Moderniza o conteúdo principal e formulário */
+main {
+    max-width: 900px;
+    margin: 0 auto 40px auto;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    color: #19365f;
+    text-align: center;
+    font-size: 2.1rem;
+    font-weight: 700;
+    margin: 4px 0 18px 0;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+h2 {
+    color: #299cf3;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 28px 0 10px 0;
+    text-align: left;
+    letter-spacing: 0.2px;
+    text-shadow: 0 1px 2px rgba(102,126,234,0.07);
+}
+
+/* Mensagens */
+.success-message, .error-message {
+    max-width: 500px;
+    margin: 0 auto 24px auto;
+    padding: 14px 22px;
+    border-radius: 14px;
+    font-weight: 600;
+    text-align: center;
+    font-size: 1rem;
+    box-shadow: 0 2px 12px rgba(41,156,243,0.10);
+}
+.success-message {
+    background: linear-gradient(90deg, #299cf3 0%, #0360e9 100%);
+    color: #fff;
+}
+.error-message {
+    background: linear-gradient(90deg, #e53e3e 0%, #c53030 100%);
+    color: #fff;
+}
+
+/* Formulário moderno com bordas arredondadas, sem barra superior, borda cinzenta e animação no hover */
+.ficha-form-moderna {
+    background: rgba(255,255,255,0.97);
+    border-radius: 22px;
+    box-shadow: 0 8px 32px rgba(41,156,243,0.13);
+    padding: 32px 32px;
+    max-width: 520px;
+    margin: 0 auto 32px auto;
+    border: 2px solid #c3cfe2;
+    position: relative;
+    overflow: hidden;
+    transition: 
+        box-shadow 0.22s,
+        border-color 0.22s,
+        transform 0.22s;
+}
+
+.ficha-form-moderna::before {
+    display: none !important; /* Remove barra superior */
+}
+
+.ficha-form-moderna:hover, .ficha-form-moderna:focus-within {
+    border-color: #299cf3;
+    box-shadow: 0 12px 40px rgba(41,156,243,0.18), 0 2px 16px rgba(41,156,243,0.10);
+    transform: translateY(-2px) scale(1.012);
+}
+
+.ficha-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 24px;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+.ficha-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 6px;
+}
+
+.ficha-campo label {
+    color: #4a5568;
+    font-weight: 600;
+    margin-bottom: 2px;
+    font-size: 0.93rem;
+    letter-spacing: 0.02em;
+}
+
+.ficha-campo input,
+.ficha-campo select {
+    border: 2px solid #e2e8f0;
+    background: rgba(255,255,255,0.85);
+    color: #2d3748;
+    border-radius: 10px;
+    font-size: 0.97rem;
+    padding: 10px 14px;
+    transition: all 0.22s;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+    backdrop-filter: blur(8px);
+}
+
+.ficha-campo select option {
+    background: #fff;
+    color: #2d3748;
+    padding: 8px;
+}
+
+.ficha-campo input:focus,
+.ficha-campo select:focus {
+    border: 2px solid #299cf3;
+    background: rgba(255,255,255,0.97);
+    outline: none;
+    color: #2d3748;
+    box-shadow: 0 0 0 3px rgba(41,156,243,0.10);
+    transform: translateY(-1px);
+}
+
+/* Botões modernos */
+.btn {
+    font-size: 1.05rem;
+    padding: 12px 32px;
+    border-radius: 12px;
+    border: none;
+    background: #19365f;
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 4px 18px rgba(3,96,233,0.10);
+    transition: background 0.22s, color 0.22s, border 0.22s, transform 0.15s, box-shadow 0.22s;
+    outline: none;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    text-align: center;
+    margin: 0 8px;
+    display: inline-block;
+    border: 2px solid #fff;
+}
+
+.btn:hover,
+.btn:focus {
+    background: #299cf3;
+    color: #fff;
+    border: 2px solid #299cf3;
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 8px 28px rgba(41,156,243,0.18);
+}
+
+/* Botão voltar moderno */
+.voltar-btn {
+    display: flex;
+    justify-content: center;
+    margin: 32px 0 24px 0;
+}
+
+.voltar-btn .btn {
+    font-size: 1.05rem;
+    padding: 12px 32px;
+    border-radius: 12px;
+    background: #19365f;
+    color: #fff;
+    font-weight: 700;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 18px rgba(3,96,233,0.10);
+    letter-spacing: 0.04em;
+    transition: 
+        background 0.25s,
+        color 0.25s,
+        border 0.25s,
+        transform 0.18s,
+        box-shadow 0.25s;
+    outline: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.voltar-btn .btn:hover,
+.voltar-btn .btn:focus {
+    background: #299cf3;
+    color: #fff;
+    border: 2px solid #299cf3;
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 8px 28px rgba(41,156,243,0.18);
+}
+
+/* Tabelas de colaboradores - visual moderno e clean */
+.tabela-colabs {
+    width: 100%;
+    min-width: 220px;
+    max-width: 420px;
+    background: rgba(255,255,255,0.98);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px 0 rgba(41,156,243,0.10), 0 1.5px 32px 0 rgba(102,126,234,0.10);
+    overflow: hidden;
+    font-size: 1.04rem;
+    margin-bottom: 0;
+    border: 1.5px solid rgba(41,156,243,0.10);
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+    transition: box-shadow 0.2s;
+}
+
+.tabela-colabs th, .tabela-colabs td {
+    padding: 14px 18px;
+    text-align: left;
+    font-size: 1.01rem;
+    border: none;
+}
+
+.tabela-colabs th {
+    background: linear-gradient(90deg, #0360e9 0%, #299cf3 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.08rem;
+    letter-spacing: 0.02em;
+    border-bottom: 2px solid #e2e8f0;
+    text-shadow: 0 2px 8px rgba(41,156,243,0.08);
+}
+
+.tabela-colabs tr:last-child td {
+    border-bottom: none;
+}
+
+.tabela-colabs tbody tr {
+    transition: background 0.18s, box-shadow 0.18s;
+}
+
+.tabela-colabs tbody tr:nth-child(even) {
+    background: rgba(41,156,243,0.04);
+}
+
+.tabela-colabs tbody tr:hover {
+    background: linear-gradient(90deg, #e0eaff 0%, #f5f7fa 100%);
+    box-shadow: 0 2px 12px 0 rgba(41,156,243,0.08);
+}
+
+.tabela-colabs td {
+    color: #23408e;
+    font-weight: 500;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.tabela-colabs td:first-child {
+    border-left: 4px solid transparent;
+    transition: border-color 0.2s;
+}
+.tabela-colabs tbody tr:hover td:first-child {
+    border-left: 4px solid #299cf3;
+}
+
+/* Botões nas tabelas */
+.tabela-colabs .btn,
+.tabela-colabs .btn-danger,
+.tabela-colabs .btn-add {
+    font-size: 0.98rem;
+    padding: 7px 20px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(41,156,243,0.13);
+    transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 4px;
+}
+
+.tabela-colabs .btn-danger {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.13);
+}
+
+.tabela-colabs .btn-add {
+    background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(41,156,243,0.13);
+}
+
+.tabela-colabs .btn:hover,
+.tabela-colabs .btn-danger:hover,
+.tabela-colabs .btn-add:hover {
+    filter: brightness(1.08) saturate(1.2);
+    box-shadow: 0 4px 16px rgba(41,156,243,0.18);
+    transform: translateY(-2px) scale(1.04);
+}
+
+.tabela-colabs .btn-danger:hover {
+    background: linear-gradient(135deg, #c53030 0%, #e53e3e 100%);
+    box-shadow: 0 4px 16px rgba(229, 62, 62, 0.18);
+}
+
+.tabela-colabs .btn-add:hover {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    box-shadow: 0 4px 16px rgba(41,156,243,0.18);
+}
+
+/* Agrupamento das tabelas de colaboradores lado a lado dentro do card - FORÇA LADO A LADO */
+.equipa-tabelas {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 24px !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+    margin-top: 24px !important;
+    flex-wrap: nowrap !important;
+}
+
+.tabela-colab-box {
+    flex: 1 1 45% !important;
+    min-width: 300px !important;
+    max-width: 450px !important;
+    background: #fff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 24px 0 rgba(41,156,243,0.10), 0 1.5px 16px 0 rgba(102,126,234,0.08) !important;
+    padding: 18px 12px 24px 12px !important;
+    margin-bottom: 0 !important;
+    border: 1.5px solid #e2e8f0 !important;
+    transition: box-shadow 0.18s, border 0.18s, transform 0.18s !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+}
+
+.tabela-colab-box h2 {
+    text-align: center !important;
+    color: #19365f !important;
+    font-size: 1.08rem !important;
+    margin-bottom: 14px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em !important;
+}
+
+.tabela-colab-box .tabela-colabs {
+    background: #fff !important;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 8px rgba(41,156,243,0.08) !important;
+}
+
+.tabela-colab-box .tabela-colabs th {
+    background: #19365f !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    padding: 10px 12px !important;
+}
+
+.tabela-colab-box .tabela-colabs td {
+    color: #19365f !important;
+    padding: 8px 12px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.tabela-colab-box:hover {
+    box-shadow: 0 8px 32px 0 rgba(41,156,243,0.16), 0 2px 16px 0 rgba(102,126,234,0.10) !important;
+    border-color: #299cf3 !important;
+    transform: translateY(-2px) scale(1.01) !important;
+}
+
+/* Responsividade para as tabelas lado a lado */
+@media (max-width: 1000px) {
+    .equipa-tabelas {
+        flex-direction: column !important;
+        gap: 18px !important;
+    }
+    .tabela-colab-box {
+        max-width: 100% !important;
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+    }
+}
+
+@media (max-width: 1100px) {
+    .equipa-tabelas {
+        flex-direction: column;
+        gap: 18px;
+        width: 100%;
+    }
+    .tabela-colab-box {
+        max-width: 98vw;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 1200px) {
+    header {
+        padding: 18px 5vw;
+        min-height: 100px;
+        width: 95vw;
+        margin: 20px auto 0 auto;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .logo-header { width: 90px; }
+    main h1 { font-size: 2rem; margin: 28px 0 18px 0; }
+    main { max-width: 98vw; }
+    .ficha-form-moderna { max-width: 95vw; padding: 32px 24px; }
+    .tabela-colabs { max-width: 98vw; }
+}
+
+@media (max-width: 900px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 14px 3vw;
+        min-height: 80px;
+    }
+    .logo-header { width: 70px; }
+    header nav { gap: 6px; }
+    header nav a { padding: 8px 10px; font-size: 0.9rem; }
+    main h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.1rem; }
+    .ficha-form-moderna { padding: 20px 10px; }
+    .ficha-grid { grid-template-columns: 1fr; gap: 16px 8px; }
+    .tabela-colabs th, .tabela-colabs td { padding: 12px 10px; }
+}
+
+@media (max-width: 600px) {
+    header {
+        border-radius: 14px;
+        padding: 10px 2vw;
+        min-height: 60px;
+    }
+    .logo-header { width: 50px; }
+    header nav a { font-size: 0.8rem; padding: 7px 6px; }
+    main h1 { font-size: 1.1rem; margin: 18px 0 10px 0; }
+    h2 { font-size: 1rem; }
+    .ficha-form-moderna { font-size: 0.92rem; padding: 10px 4px; }
+    .ficha-grid { grid-template-columns: 1fr; gap: 10px 0; }
+    .tabela-colabs { font-size: 0.92rem; }
+    .tabela-colabs th, .tabela-colabs td { padding: 8px 6px; }
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%);
+}
+
+/* Efeitos de hover suaves */
+header nav a, .btn, .tabela-colabs .btn, .tabela-colabs .btn-danger, .tabela-colabs .btn-add {
+    position: relative;
+    overflow: hidden;
+}
+header nav a::before,
+.btn::before,
+.tabela-colabs .btn::before,
+.tabela-colabs .btn-danger::before,
+.tabela-colabs .btn-add::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+header nav a:hover::before,
+.btn:hover::before,
+.tabela-colabs .btn:hover::before,
+.tabela-colabs .btn-danger:hover::before,
+.tabela-colabs .btn-add:hover::before {
+    left: 100%;
+}
+::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%);
+}
+
+/* Efeitos de hover suaves */
+header nav a, .btn, .tabela-colabs .btn, .tabela-colabs .btn-danger, .tabela-colabs .btn-add {
+    position: relative;
+    overflow: hidden;
+}
+header nav a::before,
+.btn::before,
+.tabela-colabs .btn::before,
+.tabela-colabs .btn-danger::before,
+.tabela-colabs .btn-add::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+header nav a:hover::before,
+.btn:hover::before,
+.tabela-colabs .btn:hover::before,
+.tabela-colabs .btn-danger:hover::before,
+.tabela-colabs .btn-add:hover::before {
+    left: 100%;
+}
+
+/* Dropdown Equipas */
+.dropdown-equipas {
+    position: relative;
+    display: inline-block;
+}
+
+.equipas-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.equipas-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+/* Dropdown Colaboradores */
+.dropdown-colaboradores {
+    position: relative;
+    display: inline-block;
+}
+
+.colaboradores-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.colaboradores-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+
+.seta-baixo {
+    font-size: 0.8em;
+    margin-left: 3px;
+    transition: transform 0.2s;
+}
+
+.dropdown-equipas:hover .seta-baixo,
+.dropdown-colaboradores:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+
+.dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}
+
+.dropdown-equipas:hover .dropdown-menu,
+.dropdown-colaboradores:hover .dropdown-menu {
+    display: block;
+}
+
+/* Estilos da marca do portal */
+.portal-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 32px 0 12px 0; /* Adiciona mais espaço acima da marca do portal */
+}
+
+.color-bar {
+    height: 6px;
+    width: 80px;
+    border-radius: 3px;
+    display: flex;
+}
+
+.color-segment {
+    flex: 1;
+    height: 100%;
+}
+
+/* Novas regras para o dropdown de gestão */
+.dropdown-gestao {
+    position: relative;
+    display: inline-block;
+}
+.gestao-link {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+.gestao-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+}
+.dropdown-gestao:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+.dropdown-gestao .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+.dropdown-gestao .dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;
+}
+.dropdown-gestao .dropdown-menu a:hover {
+    background: #e3eafc;
+    color: #0360e9 !important;
+}
+.dropdown-gestao:hover .dropdown-menu,
+.dropdown-gestao:focus-within .dropdown-menu {
+    display: block;
+}
+
+.color-segment:first-child {
+    background: #8155ff;
+    border-radius: 3px 0 0 3px;
+}
+
+.color-segment:nth-child(2) {
+    background: #ff9b37;
+}
+
+.color-segment:last-child {
+    background: #3ed829;
+    border-radius: 0 3px 3px 0;
+}
+
+.portal-text {
+    font-size: 0.75rem;
+    color: #19365f;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}

@@ -1,0 +1,330 @@
+/* Fundo geral */
+body, html {
+    height: 100vh;
+    overflow: hidden; /* Impede scroll vertical */
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    padding: 0;
+}
+
+/* Retângulo azul 16:9 que engloba tudo */
+.azul-container {
+    background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%);
+    border-radius: 50px;   /* Mantém as bordas arredondadas */
+    margin: 20px;          /* Margem igual em todos os lados */
+    height: calc(100vh - 40px); /* Garante espaço para mostrar todas as bordas */
+    overflow: hidden;
+    box-shadow: none;
+    display: flex;
+    gap: 110px; /* Reduzido de 150px para 80px - puxa conteúdo para cima */
+    flex-direction: column;
+    position: relative;
+    justify-content: flex-start;
+}
+
+/* Header dentro do retângulo azul */
+.azul-container header {
+    display: flex;
+    align-items: center;
+    padding: 10px 60px 10px 200px; /* Reduzido padding bottom de 18px para 10px */
+    box-shadow: none;
+    border-radius: 0;
+    min-height: 80px; /* Reduzido de 90px para 80px */
+    position: relative;
+    z-index: 2;
+}
+
+.logo-header {
+    width: 120px;
+    height: auto;
+    filter: brightness(1.1);
+    transition: transform 0.3s ease;
+}
+
+.logo-header:hover {
+    transform: scale(1.05);
+}
+
+header nav {
+    display: flex;
+    gap: 1px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+header nav a {
+    color: #fff !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    margin: 0;
+    display: inline-block;
+    letter-spacing: 0.02em;
+    position: relative;
+    backdrop-filter: blur(10px);
+}
+header nav a:hover,
+header nav a.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0eaff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Main dentro do retângulo azul */
+.azul-container main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0 32px 32px 32px;
+    width: 100%;
+    box-sizing: border-box;
+    /* Centralização vertical absoluta */
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    /* Garante que o main não ultrapassa o container azul */
+    max-width: 100%;
+}
+
+@media (max-width: 900px) {
+    .azul-container main {
+        padding: 0 8px 16px 8px;
+    }
+}
+
+@media (max-width: 600px) {
+    .azul-container main {
+        padding: 0 4px 8px 4px;
+    }
+}
+
+/* Título principal */
+main h1 {
+    color: #fff;
+    text-align: left;
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin: 32px 0 12px 0;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 12px rgba(3,96,233,0.18);
+    width: 100%;
+    margin-left: 165px; /* igual à descricao-inicial */
+    align-self: flex-start;
+}
+
+.descricao-inicial {
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 400;
+    margin: 0 0 18px 0; /* Reduzido margin bottom de 24px para 18px */
+    text-align: left;
+    width: 100%;
+    max-width: 50ch;      /* Limita a largura a ~50 caracteres */
+    margin-left: 165px;       /* Encosta à esquerda do main */
+    align-self: flex-start; /* Só este elemento fica à esquerda */
+    letter-spacing: 0.01em;
+}
+
+.botoes-atalho {
+    display: flex;
+    flex-direction: row;
+    gap: 11px;
+    margin-bottom: 20px; /* Reduzido de 32px para 20px */
+    margin-left: 165px;       /* Encosta à esquerda do main */
+    align-self: flex-start; /* Só este elemento fica à esquerda */
+}
+
+.botao-atalho {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;      /* ainda mais baixo na vertical */
+    border-radius: 22px;    /* menos arredondado, mais "pílula" */
+    font-size: 0.80rem;
+    font-weight: 600; 
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    transition: filter 0.18s, box-shadow 0.18s;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    letter-spacing: 0.03em;
+    text-align: center;
+    min-width: 50px;       /* podes reduzir se quiseres botões mais curtos */
+    text-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.botao-atalho.roxo {
+    background: linear-gradient(135deg, #9a0acb 0%, #d558ff 100%);
+}
+.botao-atalho.laranja {
+    background: linear-gradient(135deg, #ff6f00 0%, #ffb347 100%);
+}
+.botao-atalho.verde {
+    background: linear-gradient(135deg, #009933 0%, #1fde5f 100%);
+}
+
+.botao-atalho:hover {
+    filter: brightness(1.08) saturate(1.2);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.13);
+}
+
+
+.dash-carousel-container {
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.03em;
+    position: relative;
+    height: 70px;
+    width: 100%;
+    margin-top: -13%; /* Reduzido de -15% para -20% - puxa mais para cima */
+    margin-left: 25%;
+    align-self: flex-start;
+}
+
+.dash-topic {
+    opacity: 0;
+    position: absolute;
+    left: 50%;
+    bottom: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    transition:
+        opacity 0.7s cubic-bezier(.77,0,.18,1),
+        transform 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.dash-topic.active {
+    opacity: 1;
+    pointer-events: auto;
+    color: #ffffff;
+    text-shadow: 0 4px 24px rgba(3,96,233,0.13);
+}
+
+.dash-img {
+    position: absolute;
+    max-width: 450px;
+    max-height: 400px;
+    transition: opacity 1s;
+    background: none;
+    right: 35%;
+
+}
+
+.dash-img.fade {
+    opacity: 0;
+}
+
+@media (max-width: 600px) {
+    .azul-container {
+        margin: 0.1cm;
+        border-radius: 12px;
+    }
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        max-width: 100vw;
+    }
+    .dashboard-card {
+        min-width: unset;
+        width: 100%;
+        padding: 18px 8px 14px 8px;
+        font-size: 0.98rem;
+    }
+    .azul-container main {
+        padding: 0 6px 16px 6px;
+    }
+    .logo-header { width: 70px; }
+    main h1 { font-size: 1.3rem; margin: 18px 0 12px 0; }
+}
+
+@media (max-width: 900px) {
+    main h1 {
+        margin-left: 40px;
+    }
+    .descricao-inicial,
+    .botoes-atalho {
+        margin-left: 40px !important;
+    }
+}
+@media (max-width: 600px) {
+    main h1 {
+        margin-left: 10px;
+    }
+    .descricao-inicial,
+    .botoes-atalho {
+        margin-left: 10px !important;
+    }
+}
+
+.dropdown-perfil {
+    position: relative;
+    display: inline-block;
+}
+
+.perfil-link {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.seta-baixo {
+    font-size: 0.8em;
+    margin-left: 3px;
+    transition: transform 0.2s;
+}
+
+.dropdown-perfil:hover .seta-baixo {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #a5c9ff;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 5px 24px 5px 25px;  /* aumenta o padding à esquerda */
+    color: #111 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.80rem;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 6px;
+    text-align: left;            /* garante alinhamento à esquerda */
+}
+
+.dropdown-menu a:hover {
+    background: #a3bfff;
+    color: #000000 !important;          /* texto branco ao passar o rato */
+}
+
+.dropdown-perfil:hover .dropdown-menu {
+    display: block;
+}
