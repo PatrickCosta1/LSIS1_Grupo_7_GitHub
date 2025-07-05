@@ -31,8 +31,8 @@ class RHColaboradoresManager {
         return $this->dal->getColaboradoresPorPerfil($perfilId);
     }
 
-    public function criarUtilizadorConvidado($username, $perfil_convidado, $password) {
-        return $this->dal->criarUtilizadorConvidado($username, $perfil_convidado, $password);
+    public function criarUtilizadorConvidado($username, $perfil_convidado, $password, $email_institucional = null) {
+        return $this->dal->criarUtilizadorConvidado($username, $perfil_convidado, $password, $email_institucional);
     }
 
     public function criarOnboardingTemp($dados) {

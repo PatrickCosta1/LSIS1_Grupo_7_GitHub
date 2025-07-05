@@ -23,10 +23,17 @@ class DAL_FichaColaborador {
     public function updateColaboradorByUserId($userId, $dados) {
         $set = [];
         $params = [];
+        // Filtrar apenas campos válidos (existentes na tabela)
+        $validFields = [
+            'nome','apelido','nome_abreviado','num_mecanografico','data_nascimento','email','telemovel','sexo','habilitacoes','curso','matricula_viatura','morada','localidade','codigo_postal','cc','nif','niss','iban','situacao_irs','dependentes','irs_jovem','primeiro_ano_descontos','cartao_continente','voucher_nos','nome_contacto_emergencia','grau_relacionamento','contacto_emergencia','cargo','data_inicio_contrato','data_fim_contrato','remuneracao','tipo_contrato','regime_horario','estado_civil','morada_fiscal'
+        ];
         foreach ($dados as $campo => $valor) {
-            $set[] = "$campo = ?";
-            $params[] = $valor;
+            if (in_array($campo, $validFields)) {
+                $set[] = "$campo = ?";
+                $params[] = $valor;
+            }
         }
+        if (empty($set)) return false; // Não há campos válidos para atualizar
         $params[] = $userId;
         $sql = "UPDATE colaboradores SET " . implode(', ', $set) . " WHERE utilizador_id = ?";
         $stmt = $this->pdo->prepare($sql);
@@ -196,5 +203,12 @@ class DAL_FichaColaborador {
         ");
         $stmt->execute([$pedidoId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function insertColaboradorFromImport($fields, $values) {
+        if (empty($fields) || empty($values)) return false;
+        $sql = "INSERT INTO colaboradores (" . implode(',', $fields) . ") VALUES (" . implode(',', array_fill(0, count($fields), '?')) . ")";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute($values);
     }
 }
