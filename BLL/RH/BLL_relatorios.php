@@ -15,5 +15,9 @@ class RHRelatoriosManager {
     public function getAniversariosPorEquipa($equipaId) {
         return $this->dal->getAniversariosPorEquipa($equipaId);
     }
+    // Novo método para obter o nome do colaborador pelo user_id
+    public function getNomeColaboradorByUserId($userId) {
+        return $this->dal->getNomeColaboradorByUserId($userId);
+    }
 }
 ?>

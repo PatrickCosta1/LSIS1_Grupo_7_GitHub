@@ -2344,15 +2344,7 @@ class mPDF
 			$clh = $this->h - 2 * $cly;
 		}
 
-		if ($this->bodyBackgroundColor) {
-			$s .= 'q ' . $this->SetFColor($this->bodyBackgroundColor, true) . "\n";
-			if ($this->bodyBackgroundColor{0} == 5) { // RGBa
-				$s .= $this->SetAlpha(ord($this->bodyBackgroundColor{4}) / 100, 'Normal', true, 'F') . "\n";
-			} elseif ($this->bodyBackgroundColor{0} == 6) { // CMYKa
-				$s .= $this->SetAlpha(ord($this->bodyBackgroundColor{5}) / 100, 'Normal', true, 'F') . "\n";
-			}
-			$s .= sprintf('%.3F %.3F %.3F %.3F re f Q', ($clx * _MPDFK), ($cly * _MPDFK), $clw * _MPDFK, $clh * _MPDFK) . "\n";
-		}
+
 
 		/* -- BACKGROUNDS -- */
 		if ($this->bodyBackgroundGradient) {
@@ -2426,8 +2418,7 @@ class mPDF
 						$s .= $pb['clippath'] . "\n";
 					}
 					$s .= 'q ' . $this->SetFColor($pb['col'], true) . "\n";
-					if ($pb['col']{0} == 5) { // RGBa
-						$s .= $this->SetAlpha(ord($pb['col']{4}) / 100, 'Normal', true, 'F') . "\n";
+					
 					} elseif ($pb['col']{0} == 6) { // CMYKa
 						$s .= $this->SetAlpha(ord($pb['col']{5}) / 100, 'Normal', true, 'F') . "\n";
 					}
@@ -12913,7 +12904,8 @@ class mPDF
 	function _twobytes2int($s)
 	{ // equivalent to _get_ushort
 		//Read a 2-byte integer from string
-		return (ord(substr($s, 0, 1)) << 8) + ord(substr($s, 1, 1));
+		$a = (ord($s[0]) << 8) + ord($s[1]);
+		return $a;
 	}
 
 	function _jpgHeaderFromString(&$data)

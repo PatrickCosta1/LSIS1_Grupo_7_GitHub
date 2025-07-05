@@ -1,28 +1,44 @@
 <?php
-require_once __DIR__ . '/../../vendor/autoload.php';
-
+require_once __DIR__ . '/../../vendor/fpdf/fpdf.php';
 require_once '../../BLL/RH/BLL_relatorios.php';
+require_once '../../DAL/Database.php';
+
+session_start();
+
+// Buscar nome do RH à base de dados pelo user_id da sessão
+$nome_rh = '';
+if (isset($_SESSION['user_id'])) {
+    $pdo = Database::getConnection();
+    $stmt = $pdo->prepare("SELECT username FROM utilizadores WHERE id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $nome_rh = $stmt->fetchColumn();
+}
+if (!$nome_rh) {
+    die("Não foi possível identificar o utilizador RH.");
+}
+
+// Definir timezone para Lisboa e obter data/hora correta
+date_default_timezone_set('Europe/Lisbon');
+$datahora = date('d/m/Y H:i');
 
 $tipo = $_GET['tipo'] ?? '';
 $relatoriosBLL = new RHRelatoriosManager();
-$html = '';
 $title = '';
+$header = [];
+$data = [];
 
 if ($tipo === 'aniversarios' && isset($_GET['eid'])) {
     $eid = intval($_GET['eid']);
     $colaboradores = $relatoriosBLL->getAniversariosPorEquipa($eid);
-    $title = 'Relatório de Aniversários por Equipa';
-    $html .= "<h2 style='color:#19365f;'>$title</h2>";
-    $html .= "<table border='1' cellpadding='8' cellspacing='0' width='100%'><thead><tr>
-        <th>Nome</th><th>Data de Nascimento</th><th>Aniversário</th></tr></thead><tbody>";
+    $title = 'Relatorio de Aniversarios por Equipa';
+    $header = ['Nome', 'Data de Nascimento', 'Aniversario'];
     foreach ($colaboradores as $col) {
-        $html .= "<tr>";
-        $html .= "<td>" . htmlspecialchars($col['nome']) . "</td>";
-        $html .= "<td>" . date('d/m/Y', strtotime($col['data_nascimento'])) . "</td>";
-        $html .= "<td>" . date('d/m', strtotime($col['data_nascimento'])) . "</td>";
-        $html .= "</tr>";
+        $data[] = [
+            $col['nome'],
+            date('d/m/Y', strtotime($col['data_nascimento'])),
+            date('d/m', strtotime($col['data_nascimento']))
+        ];
     }
-    $html .= "</tbody></table>";
 } elseif ($tipo === 'alteracoes') {
     $pdo = Database::getConnection();
     $stmt = $pdo->query("
@@ -32,23 +48,19 @@ if ($tipo === 'aniversarios' && isset($_GET['eid'])) {
         ORDER BY p.data_pedido DESC
     ");
     $alteracoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $title = 'Relatório de Alterações Contratuais';
-    $html .= "<h2 style='color:#19365f;'>$title</h2>";
-    $html .= "<table border='1' cellpadding='8' cellspacing='0' width='100%'><thead><tr>
-        <th>Colaborador</th><th>Campo</th><th>De</th><th>Para</th><th>Estado</th><th>Data Pedido</th><th>Data Resposta</th>
-        </tr></thead><tbody>";
+    $title = 'Relatorio de Alteracoes Contratuais';
+    $header = ['Colaborador', 'Campo', 'De', 'Para', 'Estado', 'Data Pedido', 'Data Resposta'];
     foreach ($alteracoes as $a) {
-        $html .= "<tr>";
-        $html .= "<td>" . htmlspecialchars($a['colaborador_nome']) . "</td>";
-        $html .= "<td>" . htmlspecialchars($a['campo']) . "</td>";
-        $html .= "<td>" . htmlspecialchars($a['valor_antigo']) . "</td>";
-        $html .= "<td>" . htmlspecialchars($a['valor_novo']) . "</td>";
-        $html .= "<td>" . htmlspecialchars(ucfirst($a['estado'])) . "</td>";
-        $html .= "<td>" . date('d/m/Y H:i', strtotime($a['data_pedido'])) . "</td>";
-        $html .= "<td>" . ($a['data_resposta'] ? date('d/m/Y H:i', strtotime($a['data_resposta'])) : '-') . "</td>";
-        $html .= "</tr>";
+        $data[] = [
+            $a['colaborador_nome'],
+            $a['campo'],
+            $a['valor_antigo'],
+            $a['valor_novo'],
+            ucfirst($a['estado']),
+            date('d/m/Y H:i', strtotime($a['data_pedido'])),
+            ($a['data_resposta'] ? date('d/m/Y H:i', strtotime($a['data_resposta'])) : '-')
+        ];
     }
-    $html .= "</tbody></table>";
 } elseif ($tipo === 'vouchers') {
     $pdo = Database::getConnection();
     $stmt = $pdo->query("
@@ -58,36 +70,90 @@ if ($tipo === 'aniversarios' && isset($_GET['eid'])) {
         ORDER BY v.data_emissao DESC
     ");
     $vouchers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $title = 'Relatório de Vouchers Atribuídos';
-    $html .= "<h2 style='color:#19365f;'>$title</h2>";
-    $html .= "<table border='1' cellpadding='8' cellspacing='0' width='100%'><thead><tr>
-        <th>Colaborador</th><th>Tipo</th><th>Data de Emissão</th>
-        </tr></thead><tbody>";
+    $title = 'Relatorio de Vouchers Atribuidos';
+    $header = ['Colaborador', 'Tipo', 'Data de Emissao'];
     foreach ($vouchers as $v) {
-        $html .= "<tr>";
-        $html .= "<td>" . htmlspecialchars($v['colaborador_nome'] ?? '-') . "</td>";
-        $html .= "<td>" . htmlspecialchars($v['tipo']) . "</td>";
-        $html .= "<td>" . date('d/m/Y', strtotime($v['data_emissao'])) . "</td>";
-        $html .= "</tr>";
+        $data[] = [
+            $v['colaborador_nome'] ?? '-',
+            $v['tipo'],
+            date('d/m/Y', strtotime($v['data_emissao']))
+        ];
     }
-    $html .= "</tbody></table>";
 } else {
-    $html = "<h2>Relatório não encontrado.</h2>";
+    die("Relatorio nao encontrado.");
 }
 
-// Antes de usar a classe Mpdf, certifique-se que a biblioteca está instalada.
-// Execute no terminal, na raiz do projeto:
-// composer require mpdf/mpdf
-
-// Se não tiver o composer.json ou a pasta vendor, instale o Composer e execute o comando acima.
-// O ficheiro vendor/autoload.php deve existir e ser carregado corretamente.
-
-try {
-    $mpdf = new \Mpdf\Mpdf();
-    $mpdf->WriteHTML($html);
-    $mpdf->Output($title . '.pdf', 'I');
-} catch (\Throwable $e) {
-    echo "<h3 style='color:red'>Erro ao gerar PDF: " . htmlspecialchars($e->getMessage()) . "</h3>";
-    exit();
+// Definir largura das colunas (ajustado para caber mais informação)
+function getColumnWidths($header) {
+    $map = [
+        'Nome' => 38,
+        'Colaborador' => 38,
+        'Campo' => 28,
+        'De' => 22,
+        'Para' => 22,
+        'Estado' => 22,
+        'Data Pedido' => 28,
+        'Data Resposta' => 28,
+        'Data de Nascimento' => 28,
+        'Aniversario' => 22,
+        'Tipo' => 28,
+        'Data de Emissao' => 28,
+    ];
+    $widths = [];
+    foreach ($header as $col) {
+        $widths[] = $map[$col] ?? 28;
+    }
+    return $widths;
 }
-   
+
+// Geração do PDF com FPDF
+class RelatorioPDF extends FPDF {
+    public $nome_rh;
+    public $datahora;
+    public $header_cols;
+    public $data_rows;
+    public $title;
+    public $col_widths;
+    function Header() {
+        // Logo da Tlantic escuro no canto superior direito
+        $logoPath = __DIR__ . '/../../assets/tlantic-logo-escuro.png';
+        if (file_exists($logoPath)) {
+            $this->Image($logoPath, 170, 8, 28, 0, 'PNG');
+        }
+        $this->SetFont('Arial', 'B', 12);
+        $this->Cell(0, 7, 'Gerado por: ' . $this->nome_rh . '  |  Data: ' . $this->datahora, 0, 1, 'L');
+        $this->Ln(2);
+        $this->SetFont('Arial', 'B', 14);
+        $this->Cell(0, 10, $this->title, 0, 1, 'C');
+        $this->Ln(4);
+        // Cabeçalho da tabela (não centrado, começa à esquerda)
+        $this->SetFont('Arial', 'B', 10);
+        foreach ($this->header_cols as $i => $col) {
+            $col_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $col);
+            $this->Cell($this->col_widths[$i], 7, $col_sem_acentos, 1, 0, 'C');
+        }
+        $this->Ln();
+    }
+    function FancyTable() {
+        $this->SetFont('Arial', '', 10);
+        foreach ($this->data_rows as $row) {
+            foreach ($row as $i => $col) {
+                $this->Cell($this->col_widths[$i], 6, $col, 1);
+            }
+            $this->Ln();
+        }
+    }
+}
+
+$pdf = new RelatorioPDF();
+$pdf->nome_rh = $nome_rh;
+$pdf->datahora = $datahora;
+$pdf->header_cols = $header;
+$pdf->data_rows = $data;
+$pdf->title = $title;
+$pdf->col_widths = getColumnWidths($header);
+$pdf->AddPage();
+$pdf->FancyTable();
+$pdf->Output('I', $title . '.pdf');
+exit;
+

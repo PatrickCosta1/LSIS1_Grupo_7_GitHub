@@ -86,35 +86,7 @@ $indicadores = $relatoriosBLL->getIndicadoresGlobais();
     </div>
     <main>
         <h1 class="relatorios-titulo">Relatórios</h1>
-        <section>
-            <div class="indicadores-titulo">Indicadores Gerais</div>
-            <table class="indicadores-table">                   
-                        <thead>
-                            <tr>
-                                <th>Indicador</th>
-                                <th>Valor</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Total de colaboradores</td>
-                                <td><?php echo htmlspecialchars($indicadores['total_colaboradores']); ?></td>
-                            </tr>
-                            <tr>
-                                <td>Colaboradores ativos</td>
-                                <td><?php echo htmlspecialchars($indicadores['ativos']); ?></td>
-                            </tr>
-                            <tr>
-                                <td>Colaboradores inativos</td>
-                                <td><?php echo htmlspecialchars($indicadores['inativos']); ?></td>
-                            </tr>
-                            <tr>
-                                <td>Total de equipas</td>
-                                <td><?php echo htmlspecialchars($indicadores['total_equipas']); ?></td>
-                            </tr>
-                        </tbody>
-                    </table>
-        </section>
+        <!-- Mover os cards para cima da tabela -->
         <section class="dashboard-cards">
             <div class="card">
                 <h2>Aniversários por Equipa</h2>
@@ -128,6 +100,35 @@ $indicadores = $relatoriosBLL->getIndicadoresGlobais();
                 <h2>Vouchers Atribuídos</h2>
                 <button class="btn" onclick="openModal('modalVouchers')">Ver Relatório</button>
             </div>
+        </section>
+        <section>
+            <div class="indicadores-titulo">Indicadores Gerais</div>
+            <table class="indicadores-table">                   
+                <thead>
+                    <tr>
+                        <th>Indicador</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total de Utilizadores</td>
+                        <td><?php echo htmlspecialchars($indicadores['total_colaboradores']); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Utilizadores ativos</td>
+                        <td><?php echo htmlspecialchars($indicadores['ativos']); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Utilizadores inativos</td>
+                        <td><?php echo htmlspecialchars($indicadores['inativos']); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Total de equipas</td>
+                        <td><?php echo htmlspecialchars($indicadores['total_equipas']); ?></td>
+                    </tr>
+                </tbody>
+            </table>
         </section>
     </main>
 
