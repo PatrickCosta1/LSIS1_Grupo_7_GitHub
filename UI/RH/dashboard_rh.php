@@ -344,7 +344,7 @@ $retencao_media_equipas = count($taxas_retencao_validas) > 0 ? (array_sum($taxas
             </div>
             <!-- Segunda linha -->
             <div class="chart-card">
-                <div class="chart-card-title">Nível Hierárquico/Cargo</div>
+                <div class="chart-card-title">Nível Hierárquico/Perfil</div>
                 <div id="chartNivelHierarquico" class="chart-area"></div>
                 <div id="statsNivelHierarquico" class="stats-nivel"></div>
                  <span style="display:block;font-size:0.95em;font-weight:400;color:#888;margin-top:4px;">
@@ -374,7 +374,7 @@ $retencao_media_equipas = count($taxas_retencao_validas) > 0 ? (array_sum($taxas
             </div>
             <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;">
                 <div style="flex:1 1 120px;">
-                    <div style="font-size:13px;color:#888;">Salário Médio</div>
+                    <div style="font-size:13px;color:#888;">Remuneração Média</div>
                     <div style="font-size:1.3em;color:#19365f;font-weight:bold;">
                         <?php
                         $media_salario = isset($equipas_remuneracao_media) && count($equipas_remuneracao_media) && array_sum($equipas_remuneracao_media) > 0
@@ -406,15 +406,7 @@ $retencao_media_equipas = count($taxas_retencao_validas) > 0 ? (array_sum($taxas
                         ?>
                     </div>
                 </div>
-                <div style="flex:1 1 120px;">
-                    <div style="font-size:13px;color:#888;">Remuneração Média</div>
-                    <div style="font-size:1.3em;color:#19365f;font-weight:bold;">
-                        <?php
-                        // Remuneração média já calculada acima, pode ser igual ao salário médio
-                        echo $media_salario;
-                        ?>
-                    </div>
-                </div>
+                
                 <div style="flex:1 1 120px;">
                     <div style="font-size:13px;color:#888;">Taxa de Retenção</div>
                     <div id="perfilRetencao" style="font-size:1.3em;color:#19365f;font-weight:bold;">
@@ -788,7 +780,7 @@ $retencao_media_equipas = count($taxas_retencao_validas) > 0 ? (array_sum($taxas
                 chartTempo.render();
                 setChartCanvasStyle("chartTempoMedio");
             }
-            // Nível Hierárquico/Cargo - Doughnut moderno
+            // Nível Hierárquico/Perfil - Doughnut moderno
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartNivelHierarquico")) {
                 setChartContainerStyle("chartNivelHierarquico");
                 let dataPointsNivel;
@@ -1292,7 +1284,7 @@ $retencao_media_equipas = count($taxas_retencao_validas) > 0 ? (array_sum($taxas
                         
                         // Atualizar gráficos
                         let equipaIdx = document.getElementById("equipaSelect").value;
-                        atualizarKPIs(equipaIdx === "all" ? equipaIdx : parseInt(equipaIdx));
+                        atualizarKPIs(equipaIdx === "all" ? equipaIdx : parseint(this.value));
                         
                         // Atualizar gráficos de comparação
                         renderComparacaoEquipa(equipaIdx === "all" ? equipaIdx : parseInt(equipaIdx));
@@ -1353,4 +1345,5 @@ $retencao_media_equipas = count($taxas_retencao_validas) > 0 ? (array_sum($taxas
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script src="../../assets/chatbot.js"></script>
 </body>
+<div style="height:100px;"></div>
 </html>

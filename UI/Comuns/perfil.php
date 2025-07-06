@@ -159,28 +159,11 @@ if ($colaborador_id) {
             </div>
             <a href="../Comuns/logout.php">Sair</a>
         <?php elseif ($_SESSION['profile'] === 'admin'): ?>
-            <a href="../Admin/dashboard_admin.php">Dashboard</a>
-            <a href="../Admin/utilizadores.php">Utilizadores</a>
+            <<a href="../Admin/utilizadores.php">Utilizadores</a>
             <a href="../Admin/permissoes.php">Permissões</a>
-            <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
             <a href="../Admin/alertas.php">Alertas</a>
-            <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-            <a href="../RH/equipas.php">Equipas</a>
-            <a href="../RH/relatorios.php">Relatórios</a>
-            <div class="dropdown-perfil">
-                <a href="../Comuns/perfil.php" class="perfil-link">
-                    Perfil
-                    <span class="seta-baixo">▾</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
-                    <a href="../Colaborador/beneficios.php">Benefícios</a>
-                    <a href="../Colaborador/ferias.php">Férias</a>
-                    <a href="../Colaborador/formacoes.php">Formações</a>
-                    <a href="../Colaborador/recibos.php">Recibos</a>
-                </div>
-            </div>
-            <a href="../Comuns/logout.php">Sair</a>
+            <a href="../Comuns/perfil.php" class="perfil-link">Perfil</a>
+            <a href="../Comuns/logout.php" class="sair-link">Sair</a>
         <?php elseif ($_SESSION['profile'] === 'rh'): ?>
                 <div class="dropdown-equipas">
                 <a href="../RH/equipas.php" class="equipas-link">

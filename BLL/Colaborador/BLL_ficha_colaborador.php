@@ -19,12 +19,48 @@ class ColaboradorFichaManager {
 
         // Se for RH/Admin, altera diretamente
         if ($perfil === 'rh' || $perfil === 'admin') {
+            // Campos contratuais que devem ser logados
+            $camposContratuais = [
+                'cargo', 'remuneracao', 'tipo_contrato', 'regime_horario', 
+                'data_inicio_contrato', 'data_fim_contrato'
+            ];
+            
             // Se o $dados tiver 'id' (colaborador), atualizar por id, senão por utilizador_id
             if (isset($dados['id'])) {
                 $colabId = $dados['id'];
                 unset($dados['id']);
+                
+                // Buscar dados atuais do colaborador para comparar
+                $colaboradorAtual = $this->dal->getColaboradorById($colabId);
+                
+                // Registar logs das alterações contratuais antes de atualizar
+                foreach ($camposContratuais as $campo) {
+                    if (isset($dados[$campo]) && $dados[$campo] != ($colaboradorAtual[$campo] ?? null)) {
+                        $this->dal->registarLogAlteracaoContratual(
+                            $colabId,
+                            $campo,
+                            $colaboradorAtual[$campo] ?? null,
+                            $dados[$campo],
+                            $userId
+                        );
+                    }
+                }
+                
                 return $this->dal->updateColaboradorById($colabId, $dados);
             } else {
+                // Registar logs das alterações contratuais antes de atualizar
+                foreach ($camposContratuais as $campo) {
+                    if (isset($dados[$campo]) && $dados[$campo] != ($colab[$campo] ?? null)) {
+                        $this->dal->registarLogAlteracaoContratual(
+                            $colabId,
+                            $campo,
+                            $colab[$campo] ?? null,
+                            $dados[$campo],
+                            $userId
+                        );
+                    }
+                }
+                
                 return $this->dal->updateColaboradorByUserId($userId, $dados);
             }
         }

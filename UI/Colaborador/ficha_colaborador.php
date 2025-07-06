@@ -5,6 +5,10 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// VERIFICAÇÃO AUTOMÁTICA DE ALERTAS
+require_once '../../BLL/Comuns/BLL_verificador_alertas.php';
+VerificadorAlertas::verificarAlertasColaborador($_SESSION['user_id']);
+
 $colaboradorId = null;
 $userId = $_SESSION['user_id'];
 $perfil = $_SESSION['profile'] ?? '';
@@ -463,7 +467,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php elseif ($perfil === 'admin'): ?>
                 <a href="../Admin/utilizadores.php">Utilizadores</a>
                 <a href="../Admin/permissoes.php">Permissões</a>
-                <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
                 <a href="../Admin/alertas.php">Alertas</a>
                 <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
@@ -540,7 +543,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php elseif ($perfil === 'admin'): ?>
             <a href="../Admin/utilizadores.php">Utilizadores</a>
             <a href="../Admin/permissoes.php">Permissões</a>
-            <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
             <a href="../Admin/alertas.php">Alertas</a>
             <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
             <a href="../Comuns/logout.php">Sair</a>

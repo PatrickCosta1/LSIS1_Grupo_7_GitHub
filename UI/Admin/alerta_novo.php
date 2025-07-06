@@ -40,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <nav>
             <a href="utilizadores.php">Utilizadores</a>
             <a href="permissoes.php">Permissões</a>
-            <a href="campos_personalizados.php">Campos Personalizados</a>
             <a href="alertas.php">Alertas</a>
             <a href="../Comuns/perfil.php" class="perfil-link">Perfil</a>
             <a href="../Comuns/logout.php" class="sair-link">Sair</a>
@@ -73,4 +72,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
     </main>
 </body>
+</html>
 </html>

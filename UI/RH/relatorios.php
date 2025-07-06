@@ -24,7 +24,6 @@ $indicadores = $relatoriosBLL->getIndicadoresGlobais();
                 <a href="../Admin/dashboard_admin.php">Dashboard</a>
                 <a href="../Admin/utilizadores.php">Utilizadores</a>
                 <a href="../Admin/permissoes.php">Permissões</a>
-                <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
                 <a href="../Admin/alertas.php">Alertas</a>
                 <a href="colaboradores_gerir.php">Colaboradores</a>
                 <a href="equipas.php">Equipas</a>

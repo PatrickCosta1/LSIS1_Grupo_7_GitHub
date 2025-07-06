@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'data_inicio' => $_POST['data_inicio'] ?? '',
             'data_fim' => $_POST['data_fim'] ?? '',
             'horario_semanal' => $_POST['horario_semanal'] ?? '',
+            'formador' => $_POST['formador'] ?? '',
         ];
         if ($formacoesBLL->adicionarFormacao($dados)) {
             $success = "Formação adicionada com sucesso!";
@@ -36,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'data_inicio' => $_POST['data_inicio'] ?? '',
             'data_fim' => $_POST['data_fim'] ?? '',
             'horario_semanal' => $_POST['horario_semanal'] ?? '',
+            'formador' => $_POST['formador'] ?? '',
         ];
         if ($formacoesBLL->editarFormacao($id, $dados)) {
             $success = "Formação atualizada!";
@@ -130,6 +132,7 @@ $formacoes = $formacoesBLL->listarFormacoes();
             <form method="post" class="formacao-form">
                 <input type="text" name="nome" placeholder="Nome da formação" required>
                 <textarea name="descricao" placeholder="Descrição" required></textarea>
+                <input type="text" name="formador" placeholder="Nome do formador/instrutor" required>
                 <div class="formacao-form-row">
                     <label>Data de Início: <input type="date" name="data_inicio" required></label>
                     <label>Data de Fim: <input type="date" name="data_fim" required></label>
@@ -147,6 +150,7 @@ $formacoes = $formacoesBLL->listarFormacoes();
                     <tr>
                         <th>Nome</th>
                         <th>Descrição</th>
+                        <th>Formador</th>
                         <th>Início</th>
                         <th>Fim</th>
                         <th>Horário</th>
@@ -162,6 +166,9 @@ $formacoes = $formacoesBLL->listarFormacoes();
                             </td>
                             <td>
                                 <textarea name="descricao" required><?= htmlspecialchars($f['descricao']) ?></textarea>
+                            </td>
+                            <td>
+                                <input type="text" name="formador" value="<?= htmlspecialchars($f['formador'] ?? '') ?>" placeholder="Nome do formador" required>
                             </td>
                             <td>
                                 <input type="date" name="data_inicio" value="<?= htmlspecialchars($f['data_inicio']) ?>" required>

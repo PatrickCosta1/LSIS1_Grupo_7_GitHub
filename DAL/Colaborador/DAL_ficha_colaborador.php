@@ -247,4 +247,32 @@ class DAL_FichaColaborador {
         }
         return true;
     }
+
+    // Método para registar logs de alterações contratuais
+    public function registarLogAlteracaoContratual($colaboradorId, $campo, $valorAntigo, $valorNovo, $alteradoPorUserId) {
+        try {
+            // Buscar nome do utilizador que fez a alteração
+            $stmt = $this->pdo->prepare("SELECT nome FROM colaboradores WHERE utilizador_id = ?");
+            $stmt->execute([$alteradoPorUserId]);
+            $nomeAlterador = $stmt->fetchColumn();
+            
+            // Inserir log
+            $stmt = $this->pdo->prepare("
+                INSERT INTO logs_alteracoes_contratuais 
+                (colaborador_id, campo, valor_antigo, valor_novo, data_alteracao, alterado_por_user_id, alterado_por_nome) 
+                VALUES (?, ?, ?, ?, NOW(), ?, ?)
+            ");
+            return $stmt->execute([
+                $colaboradorId, 
+                $campo, 
+                $valorAntigo, 
+                $valorNovo, 
+                $alteradoPorUserId, 
+                $nomeAlterador
+            ]);
+        } catch (PDOException $e) {
+            error_log("Erro ao registar log de alteração contratual: " . $e->getMessage());
+            return false;
+        }
+    }
 }

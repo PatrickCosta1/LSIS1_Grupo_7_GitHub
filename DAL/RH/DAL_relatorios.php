@@ -36,18 +36,30 @@ class DAL_RelatoriosRH {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Novo método para obter o nome do RH (colaborador) pelo user_id
-    public function getNomeColaboradorByUserId($userId) {
+    // Método para obter o nome do RH (colaborador) pelo user_id
+    public function getRHNameByUserId($userId) {
         $pdo = Database::getConnection();
-        // Primeiro, obter o colaborador_id associado ao utilizador
-        $stmt = $pdo->prepare("SELECT colaborador_id FROM utilizadores WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT nome FROM colaboradores WHERE utilizador_id = ?");
         $stmt->execute([$userId]);
-        $colabId = $stmt->fetchColumn();
-        if (!$colabId) return null;
-        // Agora, obter o nome do colaborador
-        $stmt = $pdo->prepare("SELECT nome FROM colaboradores WHERE id = ?");
-        $stmt->execute([$colabId]);
         return $stmt->fetchColumn();
+    }
+
+    public function getAlteracoesContratuais() {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT 
+                c.nome as colaborador_nome, 
+                lac.campo, 
+                lac.valor_antigo, 
+                lac.valor_novo, 
+                lac.data_alteracao,
+                lac.alterado_por_nome
+            FROM logs_alteracoes_contratuais lac
+            INNER JOIN colaboradores c ON lac.colaborador_id = c.id
+            ORDER BY lac.data_alteracao DESC
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>
