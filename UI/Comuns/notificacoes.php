@@ -11,6 +11,139 @@ $notifBLL = new NotificacoesManager();
 $userId = $_SESSION['user_id'];
 $perfil = $_SESSION['profile'] ?? '';
 
+// Para RH, buscar pedidos pendentes
+$pedidosFeriasPendentes = [];
+$pedidosComprovantivosPendentes = [];
+$pedidosAlteracaoFichaPendentes = [];
+if ($perfil === 'rh') {
+    require_once '../../BLL/Colaborador/BLL_ficha_colaborador.php';
+    $fichaManager = new ColaboradorFichaManager();
+    $pedidosFeriasPendentes = $fichaManager->listarPedidosFeriasPendentes();
+    $pedidosComprovantivosPendentes = $fichaManager->listarPedidosComprovantivosPendentes();
+    $pedidosAlteracaoFichaPendentes = $fichaManager->listarPedidosPendentes();
+    
+    // Processar aprovação/recusa de férias
+    if (isset($_POST['aprovar_ferias'])) {
+        $pedidoId = $_POST['pedido_id'];
+        $fichaManager->atualizarEstadoPedidoFerias($pedidoId, 'aceite');
+        $pedido = $fichaManager->getPedidoFeriasById($pedidoId);
+        if ($pedido) {
+            require_once '../../DAL/Database.php';
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare("SELECT utilizador_id FROM colaboradores WHERE id = ?");
+            $stmt->execute([$pedido['colaborador_id']]);
+            $utilizador_id = $stmt->fetchColumn();
+            if ($utilizador_id) {
+                $notifBLL->enviarNotificacao(null, $utilizador_id, 
+                    "O seu pedido de férias de {$pedido['data_inicio']} até {$pedido['data_fim']} foi aprovado pelo RH.");
+            }
+        }
+        header('Location: notificacoes.php');
+        exit();
+    }
+    
+    if (isset($_POST['recusar_ferias'])) {
+        $pedidoId = $_POST['pedido_id'];
+        $fichaManager->atualizarEstadoPedidoFerias($pedidoId, 'recusado');
+        $pedido = $fichaManager->getPedidoFeriasById($pedidoId);
+        if ($pedido) {
+            require_once '../../DAL/Database.php';
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare("SELECT utilizador_id FROM colaboradores WHERE id = ?");
+            $stmt->execute([$pedido['colaborador_id']]);
+            $utilizador_id = $stmt->fetchColumn();
+            if ($utilizador_id) {
+                $notifBLL->enviarNotificacao(null, $utilizador_id, 
+                    "O seu pedido de férias de {$pedido['data_inicio']} até {$pedido['data_fim']} foi recusado pelo RH.");
+            }
+        }
+        header('Location: notificacoes.php');
+        exit();
+    }
+    
+    // Processar aprovação/recusa de comprovativos
+    if (isset($_POST['aprovar_comprovativo'])) {
+        $pedidoId = $_POST['pedido_id'];
+        $fichaManager->aprovarPedidoComprovativo($pedidoId);
+        $pedido = $fichaManager->getPedidoComprovantivoById($pedidoId);
+        if ($pedido) {
+            require_once '../../DAL/Database.php';
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare("SELECT utilizador_id FROM colaboradores WHERE id = ?");
+            $stmt->execute([$pedido['colaborador_id']]);
+            $utilizador_id = $stmt->fetchColumn();
+            if ($utilizador_id) {
+                $tipoLimpo = str_replace('comprovativo_', '', $pedido['tipo_comprovativo']);
+                $tipoLimpo = ucfirst(str_replace('_', ' ', $tipoLimpo));
+                $notifBLL->enviarNotificacao(null, $utilizador_id, 
+                    "O seu comprovativo '{$tipoLimpo}' foi aprovado pelo RH.");
+            }
+        }
+        header('Location: notificacoes.php');
+        exit();
+    }
+    
+    if (isset($_POST['recusar_comprovativo'])) {
+        $pedidoId = $_POST['pedido_id'];
+        $fichaManager->recusarPedidoComprovativo($pedidoId);
+        $pedido = $fichaManager->getPedidoComprovantivoById($pedidoId);
+        if ($pedido) {
+            require_once '../../DAL/Database.php';
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare("SELECT utilizador_id FROM colaboradores WHERE id = ?");
+            $stmt->execute([$pedido['colaborador_id']]);
+            $utilizador_id = $stmt->fetchColumn();
+            if ($utilizador_id) {
+                $tipoLimpo = str_replace('comprovativo_', '', $pedido['tipo_comprovativo']);
+                $tipoLimpo = ucfirst(str_replace('_', ' ', $tipoLimpo));
+                $notifBLL->enviarNotificacao(null, $utilizador_id, 
+                    "O seu comprovativo '{$tipoLimpo}' foi recusado pelo RH.");
+            }
+        }
+        header('Location: notificacoes.php');
+        exit();
+    }
+    
+    // Processar aprovação/recusa de alterações de ficha
+    if (isset($_POST['aprovar_alteracao'])) {
+        $pedidoId = $_POST['pedido_id'];
+        $fichaManager->aprovarPedido($pedidoId);
+        $pedido = $fichaManager->getPedidoById($pedidoId);
+        if ($pedido) {
+            require_once '../../DAL/Database.php';
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare("SELECT utilizador_id FROM colaboradores WHERE id = ?");
+            $stmt->execute([$pedido['colaborador_id']]);
+            $utilizador_id = $stmt->fetchColumn();
+            if ($utilizador_id) {
+                $notifBLL->enviarNotificacao(null, $utilizador_id, 
+                    "O seu pedido de alteração do campo '{$pedido['campo']}' foi aprovado pelo RH.");
+            }
+        }
+        header('Location: notificacoes.php');
+        exit();
+    }
+    
+    if (isset($_POST['recusar_alteracao'])) {
+        $pedidoId = $_POST['pedido_id'];
+        $fichaManager->recusarPedido($pedidoId);
+        $pedido = $fichaManager->getPedidoById($pedidoId);
+        if ($pedido) {
+            require_once '../../DAL/Database.php';
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare("SELECT utilizador_id FROM colaboradores WHERE id = ?");
+            $stmt->execute([$pedido['colaborador_id']]);
+            $utilizador_id = $stmt->fetchColumn();
+            if ($utilizador_id) {
+                $notifBLL->enviarNotificacao(null, $utilizador_id, 
+                    "O seu pedido de alteração do campo '{$pedido['campo']}' foi recusado pelo RH.");
+            }
+        }
+        header('Location: notificacoes.php');
+        exit();
+    }
+}
+
 // Marcar notificação como lida
 if (isset($_POST['marcar_lida']) && isset($_POST['notif_id'])) {
     $notifBLL->marcarComoLida($_POST['notif_id'], $userId);
@@ -128,6 +261,127 @@ $naoLidas = $notifBLL->contarNaoLidas($userId);
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             width: 90%;
+        }
+        
+        .page-layout {
+            display: flex;
+            max-width: 1200px;
+            margin: 20px auto;
+            gap: 20px;
+        }
+        
+        .menu-lateral-rh {
+            width: 320px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .menu-lateral-rh h3 {
+            color: #0360e9;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #0360e9;
+            padding-bottom: 8px;
+        }
+        
+        .menu-secao {
+            margin-bottom: 25px;
+        }
+        
+        .menu-secao h4 {
+            color: #333;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pedido-item {
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .pedido-item.ferias {
+            border-left: 4px solid #ff8c00;
+        }
+        
+        .pedido-item.comprovativo {
+            border-left: 4px solid #28a745;
+        }
+        
+        .pedido-item.alteracao {
+            border-left: 4px solid #6f42c1;
+        }
+        
+        .pedido-colaborador {
+            font-weight: 600;
+            color: #0360e9;
+            margin-bottom: 5px;
+        }
+        
+        .pedido-detalhes {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+        
+        .pedido-acoes {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-mini {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .btn-aprovar {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-recusar {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .notificacoes-principal {
+            flex: 1;
+        }
+        
+        .contador-pendentes {
+            background: #ff8c00;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .page-layout {
+                flex-direction: column;
+            }
+            
+            .menu-lateral-rh {
+                width: 100%;
+                order: 2;
+            }
         }
     </style>
 </head>
@@ -248,7 +502,125 @@ $naoLidas = $notifBLL->contarNaoLidas($userId);
     </header>
 
     <main>
+        <?php if ($perfil === 'rh'): ?>
+        <div class="page-layout">
+            <!-- Menu Lateral para RH -->
+            <div class="menu-lateral-rh">
+                <h3>⚡ Ações Rápidas</h3>
+                
+                <div class="menu-secao">
+                    <h4>
+                        🏖️ Pedidos de Férias
+                        <?php if (count($pedidosFeriasPendentes) > 0): ?>
+                            <span class="contador-pendentes"><?= count($pedidosFeriasPendentes) ?></span>
+                        <?php endif; ?>
+                    </h4>
+                    
+                    <?php if (empty($pedidosFeriasPendentes)): ?>
+                        <p style="color: #666; font-size: 0.9rem;">Nenhum pedido pendente</p>
+                    <?php else: ?>
+                        <?php foreach ($pedidosFeriasPendentes as $pedido): ?>
+                            <div class="pedido-item ferias">
+                                <div class="pedido-colaborador"><?= htmlspecialchars($pedido['colaborador_nome']) ?></div>
+                                <div class="pedido-detalhes">
+                                    <?= date('d/m/Y', strtotime($pedido['data_inicio'])) ?> até 
+                                    <?= date('d/m/Y', strtotime($pedido['data_fim'])) ?>
+                                </div>
+                                <div class="pedido-acoes">
+                                    <form method="post" style="display: inline;">
+                                        <input type="hidden" name="pedido_id" value="<?= $pedido['id'] ?>">
+                                        <button type="submit" name="aprovar_ferias" class="btn-mini btn-aprovar">✓ Aprovar</button>
+                                    </form>
+                                    <form method="post" style="display: inline;">
+                                        <input type="hidden" name="pedido_id" value="<?= $pedido['id'] ?>">
+                                        <button type="submit" name="recusar_ferias" class="btn-mini btn-recusar">✗ Recusar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="menu-secao">
+                    <h4>
+                        📎 Comprovativos
+                        <?php if (count($pedidosComprovantivosPendentes) > 0): ?>
+                            <span class="contador-pendentes"><?= count($pedidosComprovantivosPendentes) ?></span>
+                        <?php endif; ?>
+                    </h4>
+                    
+                    <?php if (empty($pedidosComprovantivosPendentes)): ?>
+                        <p style="color: #666; font-size: 0.9rem;">Nenhum comprovativo pendente</p>
+                    <?php else: ?>
+                        <?php foreach ($pedidosComprovantivosPendentes as $pedido): ?>
+                            <div class="pedido-item comprovativo">
+                                <div class="pedido-colaborador"><?= htmlspecialchars($pedido['colaborador_nome']) ?></div>
+                                <div class="pedido-detalhes">
+                                    <?php 
+                                    $tipo = str_replace('comprovativo_', '', $pedido['tipo_comprovativo']);
+                                    $tipo = ucfirst(str_replace('_', ' ', $tipo));
+                                    echo $tipo;
+                                    ?>
+                                    <br>
+                                    <a href="../../Uploads/comprovativos/<?= htmlspecialchars($pedido['comprovativo_novo']) ?>" 
+                                       target="_blank" style="color: #0360e9; font-size: 0.8rem;">📄 Ver ficheiro</a>
+                                </div>
+                                <div class="pedido-acoes">
+                                    <form method="post" style="display: inline;">
+                                        <input type="hidden" name="pedido_id" value="<?= $pedido['id'] ?>">
+                                        <button type="submit" name="aprovar_comprovativo" class="btn-mini btn-aprovar">✓ Aprovar</button>
+                                    </form>
+                                    <form method="post" style="display: inline;">
+                                        <input type="hidden" name="pedido_id" value="<?= $pedido['id'] ?>">
+                                        <button type="submit" name="recusar_comprovativo" class="btn-mini btn-recusar">✗ Recusar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="menu-secao">
+                    <h4>
+                        ✏️ Alterações Ficha
+                        <?php if (count($pedidosAlteracaoFichaPendentes) > 0): ?>
+                            <span class="contador-pendentes"><?= count($pedidosAlteracaoFichaPendentes) ?></span>
+                        <?php endif; ?>
+                    </h4>
+                    
+                    <?php if (empty($pedidosAlteracaoFichaPendentes)): ?>
+                        <p style="color: #666; font-size: 0.9rem;">Nenhuma alteração pendente</p>
+                    <?php else: ?>
+                        <?php foreach ($pedidosAlteracaoFichaPendentes as $pedido): ?>
+                            <div class="pedido-item alteracao">
+                                <div class="pedido-colaborador"><?= htmlspecialchars($pedido['colaborador_nome']) ?></div>
+                                <div class="pedido-detalhes">
+                                    <strong><?= htmlspecialchars($pedido['campo']) ?></strong><br>
+                                    De: <?= htmlspecialchars($pedido['valor_antigo'] ?: '-') ?><br>
+                                    Para: <?= htmlspecialchars($pedido['valor_novo']) ?>
+                                </div>
+                                <div class="pedido-acoes">
+                                    <form method="post" style="display: inline;">
+                                        <input type="hidden" name="pedido_id" value="<?= $pedido['id'] ?>">
+                                        <button type="submit" name="aprovar_alteracao" class="btn-mini btn-aprovar">✓ Aprovar</button>
+                                    </form>
+                                    <form method="post" style="display: inline;">
+                                        <input type="hidden" name="pedido_id" value="<?= $pedido['id'] ?>">
+                                        <button type="submit" name="recusar_alteracao" class="btn-mini btn-recusar">✗ Recusar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+            
+            <!-- Notificações Principal -->
+            <div class="notificacoes-principal">
+        <?php else: ?>
         <div class="notificacoes-container">
+        <?php endif; ?>
+        
             <h1>Notificações</h1>
             
             <div class="estatisticas">
@@ -309,81 +681,87 @@ $naoLidas = $notifBLL->contarNaoLidas($userId);
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>
-        </div>
-    </main>
-
-    <!-- Modal para mostrar apenas notificações não lidas -->
-    <div id="modalNaoLidas" class="modal-overlay" style="display: none;">
-        <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #ddd;">
-                <h2 style="margin: 0; color: #ff8c00;">🔔 Notificações Não Lidas (<?= $naoLidas ?>)</h2>
-                <button onclick="fecharModalNaoLidas()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
+            
+        <?php if ($perfil === 'rh'): ?>
             </div>
-            <div class="modal-body" style="padding: 20px;">
-                <?php 
-                $naoLidasList = array_filter($notificacoes, function($n) { return !$n['lida']; });
-                if (empty($naoLidasList)): 
-                ?>
-                    <p style="text-align: center; color: #666;">Não tem notificações não lidas</p>
-                <?php else: ?>
-                    <?php foreach ($naoLidasList as $notif): ?>
-                        <div class="notificacao-item nao-lida" style="margin-bottom: 15px;">
-                            <div class="notificacao-conteudo">
-                                <div class="notificacao-mensagem">
-                                    <?= htmlspecialchars($notif['mensagem']) ?>
+        </div>
+        <?php else: ?>
+        </div>
+        <?php endif; ?>
+
+        <!-- Modal para mostrar apenas notificações não lidas -->
+        <div id="modalNaoLidas" class="modal-overlay" style="display: none;">
+            <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #ddd;">
+                    <h2 style="margin: 0; color: #ff8c00;">🔔 Notificações Não Lidas (<?= $naoLidas ?>)</h2>
+                    <button onclick="fecharModalNaoLidas()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
+                </div>
+                <div class="modal-body" style="padding: 20px;">
+                    <?php 
+                    $naoLidasList = array_filter($notificacoes, function($n) { return !$n['lida']; });
+                    if (empty($naoLidasList)): 
+                    ?>
+                        <p style="text-align: center; color: #666;">Não tem notificações não lidas</p>
+                    <?php else: ?>
+                        <?php foreach ($naoLidasList as $notif): ?>
+                            <div class="notificacao-item nao-lida" style="margin-bottom: 15px;">
+                                <div class="notificacao-conteudo">
+                                    <div class="notificacao-mensagem">
+                                        <?= htmlspecialchars($notif['mensagem']) ?>
+                                    </div>
+                                    <div class="notificacao-data">
+                                        📅 <?= date('d/m/Y H:i', strtotime($notif['data_envio'])) ?>
+                                        <span style="color: #ff8c00; font-weight: bold;"> • NOVA</span>
+                                    </div>
                                 </div>
-                                <div class="notificacao-data">
-                                    📅 <?= date('d/m/Y H:i', strtotime($notif['data_envio'])) ?>
-                                    <span style="color: #ff8c00; font-weight: bold;"> • NOVA</span>
-                                </div>
-                            </div>
-                            
-                            <div class="notificacao-acoes" style="margin-top: 10px;">
-                                <form method="post" style="display: inline;">
-                                    <input type="hidden" name="notif_id" value="<?= $notif['id'] ?>">
-                                    <button type="submit" name="marcar_lida" class="btn-acao btn-marcar" style="font-size: 11px;">
-                                        ✓ Marcar lida
-                                    </button>
-                                </form>
                                 
-                                <form method="post" style="display: inline; margin-left: 5px;">
-                                    <input type="hidden" name="notif_id" value="<?= $notif['id'] ?>">
-                                    <button type="submit" name="remover_notif" class="btn-acao btn-remover" style="font-size: 11px;"
-                                            onclick="return confirm('Remover esta notificação?')">
-                                        🗑️ Remover
-                                    </button>
-                                </form>
+                                <div class="notificacao-acoes" style="margin-top: 10px;">
+                                    <form method="post" style="display: inline;">
+                                        <input type="hidden" name="notif_id" value="<?= $notif['id'] ?>">
+                                        <button type="submit" name="marcar_lida" class="btn-acao btn-marcar" style="font-size: 11px;">
+                                            ✓ Marcar lida
+                                        </button>
+                                    </form>
+                                    
+                                    <form method="post" style="display: inline; margin-left: 5px;">
+                                        <input type="hidden" name="notif_id" value="<?= $notif['id'] ?>">
+                                        <button type="submit" name="remover_notif" class="btn-acao btn-remover" style="font-size: 11px;"
+                                                onclick="return confirm('Remover esta notificação?')">
+                                            🗑️ Remover
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        function abrirModalNaoLidas() {
-            document.getElementById('modalNaoLidas').style.display = 'flex';
-        }
-        
-        function fecharModalNaoLidas() {
-            document.getElementById('modalNaoLidas').style.display = 'none';
-        }
-        
-        // Fechar modal ao clicar fora dele
-        document.addEventListener('click', function(e) {
-            const modal = document.getElementById('modalNaoLidas');
-            if (e.target === modal) {
-                fecharModalNaoLidas();
+        <script>
+            function abrirModalNaoLidas() {
+                document.getElementById('modalNaoLidas').style.display = 'flex';
             }
-        });
-        
-        // Fechar modal com tecla ESC
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                fecharModalNaoLidas();
+            
+            function fecharModalNaoLidas() {
+                document.getElementById('modalNaoLidas').style.display = 'none';
             }
-        });
-    </script>
+            
+            // Fechar modal ao clicar fora dele
+            document.addEventListener('click', function(e) {
+                const modal = document.getElementById('modalNaoLidas');
+                if (e.target === modal) {
+                    fecharModalNaoLidas();
+                }
+            });
+            
+            // Fechar modal com tecla ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    fecharModalNaoLidas();
+                }
+            });
+        </script>
+    </main>
 </body>
 </html>

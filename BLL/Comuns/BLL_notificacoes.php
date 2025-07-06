@@ -12,6 +12,10 @@ class NotificacoesManager {
         return $this->dal->criarNotificacao($utilizador_id, $mensagem, $tipo);
     }
     
+    public function enviarNotificacao($remetente_id, $destinatario_id, $mensagem, $tipo = null) {
+        return $this->dal->criarNotificacao($destinatario_id, $mensagem, $tipo);
+    }
+    
     public function getNotificacoesPorUtilizador($utilizador_id) {
         return $this->dal->getNotificacoesPorUtilizador($utilizador_id);
     }

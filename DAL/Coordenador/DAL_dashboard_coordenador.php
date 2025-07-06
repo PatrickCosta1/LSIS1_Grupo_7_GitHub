@@ -449,5 +449,18 @@ class DAL_DashboardCoordenador {
         
         return $totalColaboradores > 0 ? round($totalRetidos / $totalColaboradores * 100, 1) : 0;
     }
+
+    public function getColaboradoresByEquipa($equipaId) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT c.id, c.nome, c.email, c.cargo, c.utilizador_id
+            FROM equipa_colaboradores ec
+            INNER JOIN colaboradores c ON ec.colaborador_id = c.id
+            WHERE ec.equipa_id = ?
+            ORDER BY c.nome ASC
+        ");
+        $stmt->execute([$equipaId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

@@ -55,5 +55,9 @@ class CoordenadorDashboardManager {
     public function getTaxaRetencaoGlobal($userId, $ano = null) {
         return $this->dal->getTaxaRetencaoGlobal($userId, $ano);
     }
+
+    public function getColaboradoresByEquipa($equipaId) {
+        return $this->dal->getColaboradoresByEquipa($equipaId);
+    }
 }
 ?>

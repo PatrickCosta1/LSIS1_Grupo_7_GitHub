@@ -114,6 +114,9 @@ class ColaboradorFichaManager {
     public function recusarPedidoFerias($pedidoId) {
         return $this->dal->atualizarEstadoPedidoFerias($pedidoId, 'recusado');
     }
+    public function atualizarEstadoPedidoFerias($pedidoId, $estado) {
+        return $this->dal->atualizarEstadoPedidoFerias($pedidoId, $estado);
+    }
     public function getPedidoFeriasById($pedidoId) {
         return $this->dal->getPedidoFeriasById($pedidoId);
     }

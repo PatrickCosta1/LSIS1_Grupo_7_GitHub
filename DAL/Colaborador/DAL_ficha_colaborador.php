@@ -158,35 +158,8 @@ class DAL_FichaColaborador {
     }
 
     public function aprovarPedidoComprovativo($pedidoId) {
-        try {
-            $this->pdo->beginTransaction();
-            
-            // Buscar dados do pedido
-            $stmt = $this->pdo->prepare("SELECT * FROM pedidos_comprovativo WHERE id = ?");
-            $stmt->execute([$pedidoId]);
-            $pedido = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$pedido) {
-                $this->pdo->rollBack();
-                return false;
-            }
-            
-            // Atualizar colaborador com novo comprovativo
-            $campo = $pedido['tipo_comprovativo'];
-            $stmt = $this->pdo->prepare("UPDATE colaboradores SET {$campo} = ? WHERE id = ?");
-            $stmt->execute([$pedido['comprovativo_novo'], $pedido['colaborador_id']]);
-            
-            // Marcar pedido como aprovado
-            $stmt = $this->pdo->prepare("UPDATE pedidos_comprovativo SET status = 'aprovado', data_resposta = NOW() WHERE id = ?");
-            $stmt->execute([$pedidoId]);
-            
-            $this->pdo->commit();
-            return true;
-        } catch (PDOException $e) {
-            $this->pdo->rollBack();
-            error_log("Erro ao aprovar pedido de comprovativo: " . $e->getMessage());
-            return false;
-        }
+        $stmt = $this->pdo->prepare("UPDATE pedidos_comprovativo SET status = 'aprovado', data_resposta = NOW() WHERE id = ?");
+        return $stmt->execute([$pedidoId]);
     }
 
     public function recusarPedidoComprovativo($pedidoId) {
@@ -195,12 +168,7 @@ class DAL_FichaColaborador {
     }
 
     public function getPedidoComprovantivoById($pedidoId) {
-        $stmt = $this->pdo->prepare("
-            SELECT pc.*, c.nome as colaborador_nome 
-            FROM pedidos_comprovativo pc
-            INNER JOIN colaboradores c ON pc.colaborador_id = c.id
-            WHERE pc.id = ?
-        ");
+        $stmt = $this->pdo->prepare("SELECT * FROM pedidos_comprovativo WHERE id = ?");
         $stmt->execute([$pedidoId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
