@@ -6,6 +6,141 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admi
 }
 require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
 $colabBLL = new RHColaboradoresManager();
+<<<<<<< Updated upstream
+=======
+$notBLL = new NotificacoesManager();
+
+$import_success = '';
+$import_error = '';
+
+// --- Importar colaborador existente via CSV ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['importar_colaborador'])) {
+    $email_envio = trim($_POST['email_import'] ?? ''); // Email para envio das credenciais
+    $email_utilizador = trim($_POST['email_empresa_import'] ?? ''); // Email da empresa (login)
+    $perfil_id = intval($_POST['perfil_id_import'] ?? 2);
+    $csv_ok = isset($_FILES['csv_import']) && $_FILES['csv_import']['error'] === UPLOAD_ERR_OK;
+
+    if (!$email_envio || !filter_var($email_envio, FILTER_VALIDATE_EMAIL)) {
+        $import_error = "Email para envio inválido.";
+    } elseif (!$email_utilizador || !filter_var($email_utilizador, FILTER_VALIDATE_EMAIL)) {
+        $import_error = "Email da empresa inválido.";
+    } elseif (!in_array($perfil_id, [2,3,4])) {
+        $import_error = "Cargo inválido.";
+    } elseif (!$csv_ok) {
+        $import_error = "Ficheiro CSV inválido.";
+    } else {
+        // Processar CSV
+        $csvFile = $_FILES['csv_import']['tmp_name'];
+        $handle = fopen($csvFile, 'r');
+        if ($handle) {
+            $header = fgetcsv($handle);
+            $values = fgetcsv($handle);
+            fclose($handle);
+            if ($header && $values && count($header) === count($values)) {
+                $dados = array_combine($header, $values);
+
+                // Gerar username único e password
+                $base_username = strtolower(preg_replace('/[^a-z0-9]/', '', explode('@', $email_utilizador)[0]));
+                $username = $base_username;
+                require_once '../../DAL/Database.php';
+                $pdo = Database::getConnection();
+                $try = 0;
+                while (true) {
+                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM utilizadores WHERE username = ?");
+                    $stmt->execute([$username]);
+                    if ($stmt->fetchColumn() == 0) break;
+                    $try++;
+                    $username = $base_username . $try;
+                }
+                $password = bin2hex(random_bytes(5)); // 10 chars
+
+                // Criar utilizador com o perfil/cargo selecionado no modal
+                $userId = $colabBLL->criarUtilizadorComPerfil($username, $perfil_id, $password, $email_utilizador);
+                $maxTries = 30;
+                $tries = 0;
+                while ((!$userId || $userId === false) && $tries < $maxTries) {
+                    $tries++;
+                    $username = $base_username . ($try + $tries);
+                    $userId = $colabBLL->criarUtilizadorComPerfil($username, $perfil_id, $password, $email_utilizador);
+                }
+                if (!$userId || $userId === false) {
+                    $import_error = "Erro ao criar utilizador: username já existe ou conflito de dados. Tente outro email.";
+                } else {
+                    require_once '../../DAL/Colaborador/DAL_ficha_colaborador.php';
+                    $dalFicha = new \DAL_FichaColaborador();
+
+                    // Lista de campos pessoais aceitos (NÃO inclui cargos, emails institucionais, senhas, ids, perfis, etc)
+                    $validFields = [
+                        'utilizador_id',
+                        'nome',
+                        'apelido',
+                        'nome_abreviado',
+                        'num_mecanografico',
+                        'data_nascimento',
+                        'telemovel',
+                        'sexo',
+                        'habilitacoes',
+                        'curso',
+                        'matricula_viatura',
+                        'morada',
+                        'localidade',
+                        'codigo_postal',
+                        'cc',
+                        'nif',
+                        'niss',
+                        'iban',
+                        'situacao_irs',
+                        'dependentes',
+                        'irs_jovem',
+                        'primeiro_ano_descontos',
+                        'cartao_continente',
+                        'voucher_nos',
+                        'nome_contacto_emergencia',
+                        'grau_relacionamento',
+                        'contacto_emergencia',
+                        'data_inicio_contrato',
+                        'data_fim_contrato',
+                        'remuneracao',
+                        'tipo_contrato',
+                        'regime_horario',
+                        'estado_civil',
+                        'morada_fiscal'
+                    ];
+
+                    // Sempre sobrescrever/definir corretamente:
+                    $dadosColab = [];
+                    $dadosColab['utilizador_id'] = $userId;
+                    $dadosColab['email'] = $email_envio; // Email pessoal para contacto
+
+                    // Preencher apenas os campos pessoais do CSV, ignorando todos os campos sensíveis
+                    foreach ($validFields as $field) {
+                        if ($field === 'utilizador_id' || $field === 'email') continue; // já definidos acima
+                        if (isset($dados[$field])) {
+                            $dadosColab[$field] = $dados[$field];
+                        }
+                    }
+
+                    // Montar arrays para o insert
+                    $insertFields = array_keys($dadosColab);
+                    $insertValues = array_values($dadosColab);
+
+                    // Inserir colaborador novo
+                    $dalFicha->insertColaboradorFromImport($insertFields, $insertValues);
+
+                    // Enviar email com credenciais para o email_envio
+                    $notBLL->enviarEmailSimples($email_envio, "Acesso ao Portal Tlantic", 
+                        "Bem-vindo ao Portal Tlantic.<br>O seu username é <b>$username</b> e a sua palavra-passe é <b>$password</b>.<br>Aceda ao portal para completar a sua ficha.");
+                    $import_success = "Colaborador importado com sucesso e email enviado.";
+                }
+            } else {
+                $import_error = "Ficheiro CSV inválido ou mal formatado.";
+            }
+        } else {
+            $import_error = "Erro ao ler o ficheiro CSV.";
+        }
+    }
+}
+>>>>>>> Stashed changes
 
 // --- Remover colaborador ---
 if (isset($_GET['remover']) && is_numeric($_GET['remover'])) {
@@ -146,7 +281,46 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                 </tbody>
             </table>
         </div>
+<<<<<<< Updated upstream
         <a href="colaborador_novo.php" class="btn add-colab-btn">Adicionar Novo Colaborador</a>
+=======
+        <div style="height: 60px;"></div>
+        <div id="modal-importar">
+            <div class="modal-content">
+                <form method="post" enctype="multipart/form-data">
+                    <h2>Importar Colaborador Existente</h2>
+                    <?php if ($import_error): ?>
+                        <div class="erro"><?= htmlspecialchars($import_error) ?></div>
+                    <?php elseif ($import_success): ?>
+                        <div class="sucesso"><?= htmlspecialchars($import_success) ?></div>
+                    <?php endif; ?>
+                    <label for="email_import">Email para envio das credenciais:</label>
+                    <input type="email" name="email_import" id="email_import" required>
+                    <label for="email_empresa_import">Email da empresa (será usado como login):</label>
+                    <input type="email" name="email_empresa_import" id="email_empresa_import" required>
+                    <label for="perfil_id_import">Cargo:</label>
+                    <select name="perfil_id_import" id="perfil_id_import" required>
+                        <option value="2">Colaborador</option>
+                        <option value="3">Coordenador</option>
+                        <option value="4">RH</option>
+                    </select>
+                    <label for="csv_import">Ficheiro CSV:</label>
+                    <input type="file" name="csv_import" id="csv_import" accept=".csv" required>
+                    <div style="margin-top:16px;">
+                        <button type="submit" name="importar_colaborador" class="btn">Importar</button>
+                        <button type="button" class="btn btn-cancelar" onclick="fecharModalImportar()">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-importar');
+            if (event.target === modal) fecharModalImportar();
+        }
+        </script>
+>>>>>>> Stashed changes
     </main>
 </body>
 </html>

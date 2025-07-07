@@ -95,7 +95,13 @@ $beneficios = $beneficiosBLL->listarBeneficios();
                 <a href="../Comuns/logout.php">Sair</a>
             <?php else: ?>
                <header>
-        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header">
+        <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header"
+            <?php if ($perfil === 'colaborador'): ?>
+                style="cursor:pointer;" onclick="window.location.href='pagina_inicial_colaborador.php';"
+            <?php elseif ($perfil === 'coordenador'): ?>
+                style="cursor:pointer;" onclick="window.location.href='../Coordenador/pagina_inicial_coordenador.php';"
+            <?php endif; ?>
+        >
         <nav>
             <a href="ficha_colaborador.php">A Minha Ficha</a>
             <a href="../Comuns/notificacoes.php">Notificações</a>

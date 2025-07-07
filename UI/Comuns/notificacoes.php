@@ -155,6 +155,7 @@ if ($_SESSION['profile'] === 'rh') {
     $pedidosComprovantivosPendentes = $colabBLL->listarPedidosComprovantivosPendentes();
 }
 
+<<<<<<< Updated upstream
 // --- NOVO: Onboarding pendente para RH ---
 $onboardingsPendentes = [];
 if ($_SESSION['profile'] === 'rh') {
@@ -184,6 +185,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['onboarding_token'])) 
         header('Location: notificacoes.php?onboarding_recusado=1');
         exit();
     }
+=======
+$notificacoes = $notifBLL->getNotificacoesPorUtilizador($userId);
+$naoLidas = $notifBLL->contarNaoLidas($userId);
+
+// Adicionar lógica para buscar onboardings pendentes se for RH
+$onboardingsPendentes = [];
+if ($perfil === 'rh') {
+    require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
+    $rhColabBLL = new RHColaboradoresManager();
+    $onboardingsPendentes = $rhColabBLL->listarOnboardingsPendentes();
+    // Indexar por token para acesso rápido
+    $onboardingPorToken = [];
+    foreach ($onboardingsPendentes as $ob) {
+        $onboardingPorToken[$ob['token']] = $ob;
+    }
+}
+
+// Processar aprovação/recusa de onboarding
+if ($perfil === 'rh' && isset($_POST['onboarding_token'])) {
+    require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
+    $rhColabBLL = new RHColaboradoresManager();
+    $token = $_POST['onboarding_token'];
+    if (isset($_POST['aprovar_onboarding'])) {
+        $ok = $rhColabBLL->aprovarOnboarding($token);
+        if ($ok) {
+            $notifBLL->notificarRH("Onboarding aprovado com sucesso.");
+        }
+    } elseif (isset($_POST['recusar_onboarding'])) {
+        $ok = $rhColabBLL->recusarOnboarding($token);
+        if ($ok) {
+            $notifBLL->notificarRH("Onboarding recusado.");
+        }
+    }
+    header('Location: notificacoes.php');
+    exit();
+>>>>>>> Stashed changes
 }
 ?>
 <!DOCTYPE html>
@@ -193,6 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['onboarding_token'])) 
     <title>Notificações - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/Comuns/notificacoes.css">
     <style>
+<<<<<<< Updated upstream
     /* Popup de sucesso onboarding aprovado */
     .popup-sucesso-bg {
         position: fixed;
@@ -277,6 +315,342 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['onboarding_token'])) 
         from { opacity: 0;}
         to { opacity: 1;}
     }
+=======
+        .notificacoes-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .notificacao-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #0360e9;
+            background: #f8f9fa;
+            border-radius: 6px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        .notificacao-item.nao-lida {
+            background: #e7f3ff;
+            border-left-color: #ff8c00;
+        }
+        .notificacao-conteudo {
+            flex: 1;
+        }
+        .notificacao-mensagem {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .notificacao-data {
+            font-size: 12px;
+            color: #666;
+        }
+        .notificacao-acoes {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-acao {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-marcar {
+            background: #28a745;
+            color: white;
+        }
+        .btn-remover {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-todas {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+        }
+        .estatisticas {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(3,96,233,0.3);
+            width: 90%;
+        }
+        
+        .page-layout {
+            display: flex;
+            max-width: 1200px;
+            margin: 20px auto;
+            gap: 20px;
+        }
+        
+        .menu-lateral-rh {
+            width: 320px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .menu-lateral-rh h3 {
+            color: #0360e9;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #0360e9;
+            padding-bottom: 8px;
+        }
+        
+        .menu-secao {
+            margin-bottom: 25px;
+        }
+        
+        .menu-secao h4 {
+            color: #333;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pedido-item {
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .pedido-item.ferias {
+            border-left: 4px solid #ff8c00;
+        }
+        
+        .pedido-item.comprovativo {
+            border-left: 4px solid #28a745;
+        }
+        
+        .pedido-item.alteracao {
+            border-left: 4px solid #6f42c1;
+        }
+        
+        .pedido-colaborador {
+            font-weight: 600;
+            color: #0360e9;
+            margin-bottom: 5px;
+        }
+        
+        .pedido-detalhes {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+        
+        .pedido-acoes {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-mini {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .btn-aprovar {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-recusar {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .notificacoes-principal {
+            flex: 1;
+        }
+        
+        .contador-pendentes {
+            background: #ff8c00;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        /* Modal onboarding RH */
+        .modal-onboarding-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(20, 40, 80, 0.35);
+            z-index: 3000;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        .modal-onboarding-content {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(3,96,233,0.13), 0 1.5px 8px rgba(0,0,0,0.08);
+            padding: 18px 18px 12px 18px;
+            min-width: 280px;
+            max-width: 420px;
+            max-height: 80vh;
+            position: relative;
+            animation: fadeInUp 0.3s;
+            overflow-y: auto;
+            border: 1.5px solid #e6eaf7;
+            margin-top: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .modal-onboarding-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .modal-onboarding-logo {
+            height: 32px;
+            margin-bottom: 4px;
+        }
+        .modal-onboarding-content h2 {
+            color: #0360e9;
+            margin-bottom: 0;
+            font-size: 1.08rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.2px;
+            text-shadow: 0 1px 4px rgba(3,96,233,0.05);
+        }
+        .onboarding-dados-detalhes {
+            width: 100%;
+            margin: 0 0 10px 0;
+        }
+        .onboarding-campos-lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .onboarding-campos-lista li {
+            background: #f7faff;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 0.98rem;
+            color: #23408e;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-left: 3px solid #0360e9;
+        }
+        .campo-label {
+            color: #0360e9;
+            font-weight: 600;
+            min-width: 90px;
+            display: inline-block;
+            margin-right: 6px;
+            font-size: 0.97rem;
+        }
+        .campo-valor {
+            color: #23408e;
+            font-weight: 500;
+            font-size: 0.97rem;
+            word-break: break-word;
+        }
+        .modal-onboarding-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 6px;
+            width: 100%;
+        }
+        .modal-onboarding-content .btn {
+            min-width: 90px;
+            font-size: 0.97rem;
+            padding: 7px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            box-shadow: 0 1px 4px rgba(3,96,233,0.07);
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            border: none;
+            margin: 0;
+        }
+        .btn-aprovar {
+            background: linear-gradient(135deg, #3ed829 0%, #7be67b 100%);
+            color: #fff;
+        }
+        .btn-aprovar:hover {
+            background: linear-gradient(135deg, #299c1c 0%, #3ed829 100%);
+            box-shadow: 0 2px 8px rgba(62,216,41,0.10);
+        }
+        .btn-recusar {
+            background: linear-gradient(135deg, #e53e3e 0%, #ff6b6b 100%);
+            color: #fff;
+        }
+        .btn-recusar:hover {
+            background: linear-gradient(135deg, #b91c1c 0%, #e53e3e 100%);
+            box-shadow: 0 2px 8px rgba(229,62,62,0.10);
+        }
+        .modal-onboarding-content .close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #19365f;
+            cursor: pointer;
+            font-weight: bold;
+            transition: color 0.2s;
+            z-index: 10;
+            line-height: 1;
+        }
+        .modal-onboarding-content .close:hover {
+            color: #299cf3;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(18px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+>>>>>>> Stashed changes
     </style>
 </head>
 <body>
@@ -591,6 +965,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['onboarding_token'])) 
                 <?php endif; ?>
             </div>
 
+<<<<<<< Updated upstream
             <div id="pedidos-ferias">
                 <h2 class="notificacoes-section-title">Pedidos de Férias Pendentes</h2>
                 <?php if (!empty($pedidosFeriasPendentes)): ?>
@@ -608,6 +983,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['onboarding_token'])) 
                                 <input type="hidden" name="pedido_ferias_id" value="<?php echo $pf['id']; ?>">
                                 <button type="submit" name="aprovar_pedido_ferias" class="btn btn-sm">Aprovar</button>
                                 <button type="submit" name="recusar_pedido_ferias" class="btn btn-danger btn-sm">Recusar</button>
+=======
+            <?php if (empty($notificacoes)): ?>
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    📭 Não tem notificações
+                </div>
+            <?php else: ?>
+                <?php foreach ($notificacoes as $notif): ?>
+                    <div class="notificacao-item <?= $notif['lida'] ? '' : 'nao-lida' ?>">
+                        <div class="notificacao-conteudo">
+                            <div class="notificacao-mensagem">
+                                <?= htmlspecialchars($notif['mensagem']) ?>
+                            </div>
+                            <div class="notificacao-data">
+                                📅 <?= date('d/m/Y H:i', strtotime($notif['data_envio'])) ?>
+                                <?php if (!$notif['lida']): ?>
+                                    <span style="color: #ff8c00; font-weight: bold;"> • NOVA</span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="notificacao-acoes">
+                            <?php
+                            // Botão "Ver Onboarding" para RH se for notificação de onboarding submetido
+                            if (
+                                $perfil === 'rh'
+                                && (stripos($notif['mensagem'], 'onboarding submetido') !== false)
+                                && !empty($onboardingsPendentes)
+                            ) {
+                                // Tenta encontrar o token pelo email/nome na mensagem
+                                $token = null;
+                                foreach ($onboardingsPendentes as $ob) {
+                                    if (
+                                        (isset($ob['email_pessoal']) && strpos($notif['mensagem'], $ob['email_pessoal']) !== false) ||
+                                        (isset($ob['nome']) && strpos($notif['mensagem'], $ob['nome']) !== false)
+                                    ) {
+                                        $token = $ob['token'];
+                                        break;
+                                    }
+                                }
+                                if ($token && isset($onboardingPorToken[$token])) {
+                                    echo '<button type="button" class="btn-acao btn-marcar" style="background:#0360e9;" onclick="abrirModalOnboarding(\'' . $token . '\')">Ver Onboarding</button>';
+                                }
+                            }
+                            ?>
+                            <?php if (!$notif['lida']): ?>
+                                <form method="post" style="display: inline;">
+                                    <input type="hidden" name="notif_id" value="<?= $notif['id'] ?>">
+                                    <button type="submit" name="marcar_lida" class="btn-acao btn-marcar">
+                                        ✓ Marcar lida
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+                            
+                            <form method="post" style="display: inline;">
+                                <input type="hidden" name="notif_id" value="<?= $notif['id'] ?>">
+                                <button type="submit" name="remover_notif" class="btn-acao btn-remover" 
+                                        onclick="return confirm('Remover esta notificação?')">
+                                    🗑️ Remover
+                                </button>
+>>>>>>> Stashed changes
                             </form>
                         </li>
                     <?php endforeach; ?>
@@ -707,7 +1141,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['onboarding_token'])) 
             </ul>
         <?php endif; ?>
 
+<<<<<<< Updated upstream
         </div>
+=======
+        <?php if ($perfil === 'rh' && !empty($onboardingsPendentes)): ?>
+    <div id="modalOnboardingBg" class="modal-onboarding-bg" style="display:none;">
+        <div class="modal-onboarding-content" id="modalOnboardingContent" style="padding-bottom:70px; position:relative;">
+            <button class="close" onclick="fecharModalOnboarding()">&times;</button>
+            <div class="modal-onboarding-header">
+                <img src="../../assets/tlantic-logo2.png" alt="Tlantic" class="modal-onboarding-logo">
+                <h2>Onboarding Submetido</h2>
+            </div>
+            <div class="onboarding-dados-detalhes" id="onboardingDadosDetalhes" style="overflow-y:auto; max-height:55vh;">
+                <!-- Conteúdo preenchido via JS -->
+            </div>
+            <!-- Botões fixos no fundo do modal (dentro do modal) -->
+            <form method="post" id="formOnboardingAprovarRecusar"
+                  style="position:absolute;left:0;right:0;bottom:0;z-index:10;
+                         background:rgba(255,255,255,0.97);box-shadow:0 -2px 12px #0001;
+                         display:flex;justify-content:center;gap:10px;padding:16px 0 12px 0;">
+                <input type="hidden" name="onboarding_token" id="inputOnboardingToken" value="">
+                <button type="submit" name="aprovar_onboarding" class="btn btn-aprovar">Aprovar</button>
+                <button type="submit" name="recusar_onboarding" class="btn btn-recusar">Recusar</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        // Dados dos onboardings pendentes em JS
+        var onboardingsPendentes = <?php echo json_encode($onboardingPorToken); ?>;
+        function abrirModalOnboarding(token) {
+            var ob = onboardingsPendentes[token];
+            if (!ob) return;
+            document.getElementById('modalOnboardingBg').style.display = 'flex';
+            document.getElementById('inputOnboardingToken').value = token;
+            // Parse dados_json
+            var dados = {};
+            try { dados = JSON.parse(ob.dados_json); } catch(e){}
+            var campos = [
+                {label: 'Nome', key: 'nome'},
+                {label: 'Apelido', key: 'apelido'},
+                {label: 'Data Nascimento', key: 'data_nascimento'},
+                {label: 'Morada', key: 'morada'},
+                {label: 'Localidade', key: 'localidade'},
+                {label: 'Código Postal', key: 'codigo_postal'},
+                {label: 'Telemóvel', key: 'telemovel'},
+                {label: 'Sexo', key: 'sexo'},
+                {label: 'Estado Civil', key: 'estado_civil'},
+                {label: 'Habilitações', key: 'habilitacoes'},
+                {label: 'Curso', key: 'curso'},
+                {label: 'NIF', key: 'nif'},
+                {label: 'NISS', key: 'niss'},
+                {label: 'IBAN', key: 'iban'},
+                {label: 'Nome Contacto Emergência', key: 'nome_contacto_emergencia'},
+                {label: 'Grau Relacionamento', key: 'grau_relacionamento'},
+                {label: 'Contacto Emergência', key: 'contacto_emergencia'}
+            ];
+            var html = '<ul class="onboarding-campos-lista">';
+            campos.forEach(function(campo){
+                var valor = dados[campo.key] || '';
+                html += '<li><span class="campo-label">'+campo.label+':</span> <span class="campo-valor">'+valor+'</span></li>';
+            });
+            html += '</ul>';
+            document.getElementById('onboardingDadosDetalhes').innerHTML = html;
+        }
+        function fecharModalOnboarding() {
+            document.getElementById('modalOnboardingBg').style.display = 'none';
+        }
+        // Fechar ao clicar fora do modal
+        window.onclick = function(event) {
+            var modalBg = document.getElementById('modalOnboardingBg');
+            if (event.target === modalBg) fecharModalOnboarding();
+        }
+    </script>
+<?php endif; ?>
+>>>>>>> Stashed changes
     </main>
 
     <!-- Modal de Notificações Não Lidas -->

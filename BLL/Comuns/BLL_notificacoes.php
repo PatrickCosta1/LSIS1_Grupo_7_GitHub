@@ -1,12 +1,223 @@
 <?php
 require_once __DIR__ . '/../../DAL/Comuns/DAL_notificacoes.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
+<<<<<<< Updated upstream
 // Check if PHPMailer is available and include it
 $phpmailerAvailable = false;
 if (file_exists(__DIR__ . '/../../vendor/autoload.php')) {
     require_once __DIR__ . '/../../vendor/autoload.php';
     if (class_exists('PHPMailer\PHPMailer\PHPMailer')) {
         $phpmailerAvailable = true;
+=======
+class NotificacoesManager {
+    private $dal;
+    
+    public function __construct() {
+        $this->dal = new DAL_Notificacoes();
+    }
+
+    // Gera o assunto do email de notificação
+    private function getAssuntoPadrao($mensagem, $tipo = null) {
+        $prefixo = '[Portal Tlantic] Nova Notificação';
+        $tipoStr = $tipo ? ucfirst(str_replace('_', ' ', $tipo)) : 'Geral';
+        // Resumo: primeiras 8 palavras da mensagem
+        $resumo = implode(' ', array_slice(explode(' ', strip_tags($mensagem)), 0, 8));
+        return "$prefixo: $tipoStr — $resumo" . (strlen($mensagem) > strlen($resumo) ? '...' : '');
+    }
+
+    // Gera o corpo HTML do email de notificação (estético e informativo)
+    private function getCorpoPadrao($mensagem, $tipo = null, $destinatarioNome = null) {
+        // Ícones por tipo
+        $icones = [
+            'voucher_expirado' => '🎫',
+            'alteracao_fiscal' => '📋',
+            'ferias' => '🏖️',
+            'comprovativo' => '📎',
+            'onboarding' => '📝',
+            'alerta' => '🚨',
+            'geral' => '🔔'
+        ];
+        $tipoKey = $tipo ? strtolower($tipo) : 'geral';
+        $icone = $icones[$tipoKey] ?? $icones['geral'];
+        $tipoStr = $tipo ? ucfirst(str_replace('_', ' ', $tipo)) : 'Notificação';
+
+        $saudacao = $destinatarioNome ? "Olá, <b>$destinatarioNome</b>!" : "Olá!";
+        $dataEnvio = date('d/m/Y H:i');
+
+        return '
+        <html>
+        <head>
+        <meta charset="UTF-8">
+        <title>Nova Notificação - Portal Tlantic</title>
+        <style>
+            body { background: #f7faff; margin: 0; padding: 0; font-family: "Segoe UI", Arial, sans-serif; }
+            .container { max-width: 480px; margin: 32px auto; background: #fff; border-radius: 18px; box-shadow: 0 8px 32px #0360e91a, 0 2px 8px #0001; padding: 0 0 32px 0; overflow: hidden; }
+            .header { background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%); color: #fff; padding: 32px 24px 18px 24px; text-align: center; border-radius: 18px 18px 0 0; }
+            .header .icon { font-size: 2.7rem; margin-bottom: 8px; display: block; }
+            .header .title { font-size: 1.25rem; font-weight: 700; margin: 0 0 4px 0; letter-spacing: 0.5px; }
+            .header .subtitle { font-size: 1.01rem; opacity: 0.93; margin-bottom: 0; }
+            .content { padding: 32px 28px 0 28px; }
+            .saudacao { font-size: 1.08rem; color: #23408e; margin-bottom: 18px; }
+            .mensagem { background: #f7faff; border-left: 4px solid #0360e9; border-radius: 10px; padding: 18px 18px 18px 18px; font-size: 1.08rem; color: #23408e; margin-bottom: 18px; box-shadow: 0 2px 8px #0360e91a; }
+            .info { color: #888; font-size: 0.97rem; margin-bottom: 18px; }
+            .btn-aceder { display: inline-block; background: linear-gradient(135deg, #0360e9 0%, #299cf3 100%); color: #fff; font-weight: 700; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-size: 1.08rem; margin: 0 auto 18px auto; box-shadow: 0 4px 16px #0360e91a; letter-spacing: 0.2px; transition: background 0.2s; }
+            .btn-aceder:hover { background: linear-gradient(135deg, #299cf3 0%, #0360e9 100%); }
+            .footer { text-align: center; color: #aaa; font-size: 0.93rem; margin-top: 32px; }
+            .footer img { height: 22px; opacity: 0.7; margin-top: 8px; }
+        </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <span class="icon">'.$icone.'</span>
+                    <div class="title">'.$tipoStr.'</div>
+                    <div class="subtitle">Nova notificação do Portal Tlantic</div>
+                </div>
+                <div class="content">
+                    <div class="saudacao">'.$saudacao.'</div>
+                    <div class="mensagem">'.nl2br(htmlspecialchars($mensagem)).'</div>
+                    <div class="info">Recebida em: <b>'.$dataEnvio.'</b></div>
+                    <div style="text-align:center;">
+                        <a href="http://localhost/LSIS1_Grupo_7_GitHub/UI/Comuns/login.php" class="btn-aceder">Aceder ao Portal Tlantic</a>
+                    </div>
+                </div>
+                <div class="footer">
+                    Este email foi enviado automaticamente pelo Portal Tlantic.<br>
+                    Por favor, não responda a este email.<br>
+                    <img src="https://www.tlantic.com/wp-content/uploads/2021/03/logo-tlantic.png" alt="Tlantic">
+                </div>
+            </div>
+        </body>
+        </html>
+        ';
+    }
+
+    // Envia email de notificação para um utilizador
+    private function enviarEmailNotificacao($utilizador_id, $mensagem, $tipo = null) {
+        $user = $this->dal->getUtilizadorById($utilizador_id);
+        if (!$user || empty($user['email'])) return false;
+        $assunto = $this->getAssuntoPadrao($mensagem, $tipo);
+        $corpo = $this->getCorpoPadrao($mensagem, $tipo, $user['username']);
+        return $this->enviarEmailSimples($user['email'], $assunto, $corpo);
+    }
+    
+    public function criarNotificacao($utilizador_id, $mensagem, $tipo = null) {
+        $ok = $this->dal->criarNotificacao($utilizador_id, $mensagem, $tipo);
+        $this->enviarEmailNotificacao($utilizador_id, $mensagem, $tipo);
+        return $ok;
+    }
+    
+    public function enviarNotificacao($remetente_id, $destinatario_id, $mensagem, $tipo = null) {
+        $ok = $this->dal->criarNotificacao($destinatario_id, $mensagem, $tipo);
+        $this->enviarEmailNotificacao($destinatario_id, $mensagem, $tipo);
+        return $ok;
+    }
+    
+    public function enviarEmail($email, $assunto, $mensagem) {
+        $mail = new PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->CharSet = 'UTF-8';
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'suportetlantic@gmail.com';
+            $mail->Password   = 'sdmghevbfzqglaca';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = 587;
+
+            $mail->setFrom('suportetlantic@gmail.com', 'Portal Tlantic');
+            $mail->addAddress($email);
+
+            $mail->isHTML(true);
+            $mail->Subject = $assunto;
+            $mail->Body    = $mensagem;
+
+            $mail->send();
+            return true;
+        } catch (Exception $e) {
+            error_log("❌ Erro ao enviar email: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function enviarEmailSimples($email, $assunto, $mensagem) {
+        $mail = new PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->CharSet = 'UTF-8';
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'suportetlantic@gmail.com';
+            $mail->Password   = 'sdmghevbfzqglaca';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = 587;
+
+            $mail->setFrom('suportetlantic@gmail.com', 'Portal Tlantic');
+            $mail->addAddress($email);
+
+            $mail->isHTML(true);
+            $mail->Subject = $assunto;
+            $mail->Body    = $mensagem;
+
+            $mail->send();
+            return true;
+        } catch (Exception $e) {
+            error_log("❌ Erro ao enviar email: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function getNotificacoesPorUtilizador($utilizador_id) {
+        return $this->dal->getNotificacoesPorUtilizador($utilizador_id);
+    }
+    
+    public function marcarComoLida($notificacao_id, $utilizador_id) {
+        return $this->dal->marcarComoLida($notificacao_id, $utilizador_id);
+    }
+    
+    public function contarNaoLidas($utilizador_id) {
+        return $this->dal->contarNaoLidas($utilizador_id);
+    }
+    
+    public function notificarRH($mensagem, $tipo = null) {
+        $utilizadoresRH = $this->dal->getUtilizadoresRH();
+        $sucessos = 0;
+        foreach ($utilizadoresRH as $rh) {
+            if ($this->criarNotificacao($rh['id'], $mensagem, $tipo)) {
+                $sucessos++;
+            }
+        }
+        return $sucessos;
+    }
+    
+    public function notificarTodos($mensagem, $tipo = null) {
+        $utilizadores = $this->dal->getTodosUtilizadores();
+        $sucessos = 0;
+        foreach ($utilizadores as $user) {
+            if ($this->criarNotificacao($user['id'], $mensagem, $tipo)) {
+                $sucessos++;
+            }
+        }
+        return $sucessos;
+    }
+    
+    public function notificarPorPerfil($perfil, $mensagem, $tipo = null) {
+        $utilizadores = $this->dal->getUtilizadoresPorPerfil($perfil);
+        $sucessos = 0;
+        foreach ($utilizadores as $user) {
+            if ($this->criarNotificacao($user['id'], $mensagem, $tipo)) {
+                $sucessos++;
+            }
+        }
+        return $sucessos;
+    }
+    
+    public function marcarTodasComoLidas($utilizador_id) {
+        return $this->dal->marcarTodasComoLidas($utilizador_id);
+>>>>>>> Stashed changes
     }
 }
 

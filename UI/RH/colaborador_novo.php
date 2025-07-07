@@ -13,6 +13,7 @@ $notBLL = new NotificacoesManager();
 $success = '';
 $error = '';
 
+<<<<<<< Updated upstream
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = trim($_POST['nome'] ?? '');
     $email_pessoal = trim($_POST['email_pessoal'] ?? '');
@@ -53,6 +54,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } else {
         $error = "Preencha todos os campos obrigatórios.";
+=======
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['criar_convidado'])) {
+    $nome = $_POST['nome'] ?? '';
+    $emailPessoal = $_POST['email_pessoal'] ?? '';
+    $dataInicioContrato = $_POST['data_inicio_contrato'] ?? '';
+    $perfilDestinoId = $_POST['perfil_destino_id'] ?? '';
+    
+    if ($nome && $emailPessoal && $dataInicioContrato && $perfilDestinoId) {
+        if ($colabBLL->criarUtilizadorConvidado($nome, $emailPessoal, $dataInicioContrato, $perfilDestinoId)) {
+            $success = "Colaborador convidado criado e link enviado para o email pessoal.";
+        } else {
+            $error = "Erro ao criar colaborador convidado.";
+        }
+    } else {
+        $error = "Todos os campos são obrigatórios.";
+>>>>>>> Stashed changes
     }
 }
 ?>

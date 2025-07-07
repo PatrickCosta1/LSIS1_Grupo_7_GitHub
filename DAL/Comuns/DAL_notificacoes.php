@@ -41,6 +41,7 @@ class DAL_Notificacoes {
         $stmt = $this->db->prepare("DELETE FROM notificacoes WHERE id = ?");
         return $stmt->execute([$id]);
     }
+<<<<<<< Updated upstream
 
     public function notificarRH($mensagem) {
         // Corrija aqui: utilize o campo correto para identificar RH
@@ -51,6 +52,24 @@ class DAL_Notificacoes {
             $this->enviarNotificacao(null, $rh['id'], $mensagem);
         }
         return true;
+=======
+    
+    public function getUtilizadorById($utilizador_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT id, username, email FROM utilizadores WHERE id = ?");
+        $stmt->execute([$utilizador_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    public function marcarTodasComoLidas($utilizador_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            UPDATE notificacoes 
+            SET lida = 1 
+            WHERE utilizador_id = ? AND lida = 0
+        ");
+        return $stmt->execute([$utilizador_id]);
+>>>>>>> Stashed changes
     }
 
     public function getRHUsers() {

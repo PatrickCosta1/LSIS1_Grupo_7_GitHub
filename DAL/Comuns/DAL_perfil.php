@@ -73,10 +73,19 @@ class DAL_Perfil {
             error_log("=== getPedidosFeriasPorColaborador ===");
             error_log("Parâmetro colaboradorId recebido: " . $colaboradorId);
             
+<<<<<<< Updated upstream
             // Verificar se existem registros na tabela para este colaborador específico
             $debugStmt = $this->pdo->prepare("SELECT * FROM pedidos_ferias WHERE colaborador_id = ?");
             $debugStmt->execute([$colaboradorId]);
             $allResults = $debugStmt->fetchAll(PDO::FETCH_ASSOC);
+=======
+            // Query com LEFT JOIN para garantir compatibilidade e buscar todos os campos possíveis
+            $stmt = $this->pdo->prepare("
+                SELECT pf.id, pf.colaborador_id, pf.data_inicio, pf.data_fim, pf.data_pedido, COALESCE(pf.estado, 'pendente') as estado FROM pedidos_ferias pf WHERE pf.colaborador_id = ? ORDER BY pf.data_pedido DESC
+            ");
+            $stmt->execute([$colaboradorId]);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+>>>>>>> Stashed changes
             
             error_log("Registros encontrados para colaborador_id " . $colaboradorId . ": " . count($allResults));
             
