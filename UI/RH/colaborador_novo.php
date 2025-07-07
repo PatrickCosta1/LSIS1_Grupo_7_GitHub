@@ -13,46 +13,21 @@ $notBLL = new NotificacoesManager();
 $success = '';
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome = trim($_POST['nome'] ?? '');
-    $email_pessoal = trim($_POST['email_pessoal'] ?? '');
-    $data_inicio = $_POST['data_inicio_contrato'] ?? '';
-    $perfil_destino_id = intval($_POST['perfil_destino_id'] ?? 2); // 2=colaborador por default
-
-    if ($nome && $email_pessoal && $data_inicio && $perfil_destino_id) {
-        // 1. Criar utilizador convidado
-        $username = strtolower(preg_replace('/[^a-z0-9]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $nome))) . rand(100,999);
-        $password = bin2hex(random_bytes(4));
-        $perfil_convidado = 5; // Exemplo: se o id do perfil convidado for 5
-
-        $userId = $colabBLL->criarUtilizadorConvidado($username, $perfil_convidado, $password);
-        if ($userId) {
-            // 2. Gerar token e criar onboarding_temp
-            $token = bin2hex(random_bytes(24));
-            $ok = $colabBLL->criarOnboardingTemp([
-                'nome' => $nome,
-                'email_pessoal' => $email_pessoal,
-                'data_inicio_contrato' => $data_inicio,
-                'perfil_destino_id' => $perfil_destino_id,
-                'token' => $token,
-                'utilizador_id' => $userId
-            ]);
-            if ($ok) {
-                // 3. Enviar email com link de onboarding
-                $link = "http://localhost/LSIS1_Grupo_7_GitHub/UI/Convidado/onboarding_convidado.php?token=$token";
-                $mensagem = "Olá $nome,<br><br>Foi iniciado o seu processo de onboarding na Tlantic.<br>
-                Por favor, aceda ao seguinte link para preencher os seus dados:<br>
-                <a href='$link'>$link</a><br><br>Obrigado.";
-                $notBLL->enviarEmailSimples($email_pessoal, "Onboarding Tlantic", $mensagem);
-                $success = "Colaborador convidado criado e link enviado para o email pessoal.";
-            } else {
-                $error = "Erro ao criar registo de onboarding temporário.";
-            }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['criar_convidado'])) {
+    $nome = $_POST['nome'] ?? '';
+    $emailPessoal = $_POST['email_pessoal'] ?? '';
+    $dataInicioContrato = $_POST['data_inicio_contrato'] ?? '';
+    $perfilDestinoId = $_POST['perfil_destino_id'] ?? '';
+    
+    if ($nome && $emailPessoal && $dataInicioContrato && $perfilDestinoId) {
+        // Corrigir: passar os 4 argumentos corretos
+        if ($colabBLL->criarUtilizadorConvidado($nome, $emailPessoal, $dataInicioContrato, $perfilDestinoId)) {
+            $success_msg = "Colaborador convidado criado e link enviado para o email pessoal.";
         } else {
-            $error = "Erro ao criar utilizador convidado.";
+            $error_msg = "Erro ao criar colaborador convidado.";
         }
     } else {
-        $error = "Preencha todos os campos obrigatórios.";
+        $error_msg = "Todos os campos são obrigatórios.";
     }
 }
 ?>
@@ -135,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <option value="4">RH</option>
             </select>
         </label>
-        <button type="submit" class="btn">Criar e Enviar Link</button>
+        <button type="submit" name="criar_convidado" class="btn">Criar e Enviar Link</button>
     </form>
 </div>
 </body>
