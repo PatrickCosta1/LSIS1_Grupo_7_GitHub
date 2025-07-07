@@ -38,39 +38,27 @@ if ($_GET['action'] === 'aniversarios' && isset($_GET['eid'])) {
 }
 
 if ($_GET['action'] === 'alteracoes') {
-    $pdo = Database::getConnection();
-    $stmt = $pdo->prepare("
-        SELECT c.nome as colaborador_nome, p.campo, p.valor_antigo, p.valor_novo, p.estado, p.data_pedido, p.data_resposta
-        FROM pedidos_alteracao_ficha p
-        INNER JOIN colaboradores c ON p.colaborador_id = c.id
-        WHERE p.campo IN ('cargo', 'remuneracao', 'tipo_contrato', 'regime_horario', 'data_inicio_contrato', 'data_fim_contrato')
-          AND p.estado = 'aprovado'
-        ORDER BY p.data_pedido DESC
-    ");
-    $stmt->execute();
-    $alteracoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $alteracoes = $relatoriosBLL->getAlteracoesContratuais();
 
     if (empty($alteracoes)) {
-        echo '<p>Não existem alterações contratuais aprovadas para estes campos.</p>';
+        echo '<p>Não existem alterações contratuais registadas.</p>';
     } else {
         echo '<table class="alteracoes-table"><thead><tr>
                 <th>Colaborador</th>
                 <th>Campo</th>
                 <th>De</th>
                 <th>Para</th>
-                <th>Estado</th>
-                <th>Data Pedido</th>
-                <th>Data Resposta</th>
+                <th>Data Alteração</th>
+                <th>Alterado Por</th>
             </tr></thead><tbody>';
         foreach ($alteracoes as $a) {
             echo '<tr>';
             echo '<td>' . htmlspecialchars($a['colaborador_nome']) . '</td>';
             echo '<td>' . htmlspecialchars($a['campo']) . '</td>';
-            echo '<td>' . htmlspecialchars($a['valor_antigo']) . '</td>';
+            echo '<td>' . htmlspecialchars($a['valor_antigo'] ?: '-') . '</td>';
             echo '<td>' . htmlspecialchars($a['valor_novo']) . '</td>';
-            echo '<td>' . htmlspecialchars(ucfirst($a['estado'])) . '</td>';
-            echo '<td>' . date('d/m/Y H:i', strtotime($a['data_pedido'])) . '</td>';
-            echo '<td>' . ($a['data_resposta'] ? date('d/m/Y H:i', strtotime($a['data_resposta'])) : '-') . '</td>';
+            echo '<td>' . date('d/m/Y H:i', strtotime($a['data_alteracao'])) . '</td>';
+            echo '<td>' . htmlspecialchars($a['alterado_por_nome']) . '</td>';
             echo '</tr>';
         }
         echo '</tbody></table>';
@@ -92,7 +80,6 @@ if ($_GET['action'] === 'vouchers') {
     if (empty($vouchers)) {
         echo '<p>Não existem vouchers atribuídos registados.</p>';
     } else {
-        // Tabela moderna igual à dos aniversários
         echo '<table class="vouchers-table"><thead><tr>
                 <th>Colaborador</th>
                 <th>Tipo</th>
@@ -110,7 +97,20 @@ if ($_GET['action'] === 'vouchers') {
     exit();
 }
 ?>
+?>
+?>
 }
+?>
+            echo '<td>' . htmlspecialchars($v['colaborador_nome'] ?? '-') . '</td>';
+            echo '<td>' . htmlspecialchars($v['tipo']) . '</td>';
+            echo '<td>' . date('d/m/Y', strtotime($v['data_emissao'])) . '</td>';
+            echo '</tr>';
+        }
+        echo '</tbody></table>';
+    }
+    exit();
+}
+?>
 ?>
 }
 ?>

@@ -5,6 +5,10 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// VERIFICAÇÃO AUTOMÁTICA DE ALERTAS
+require_once '../../BLL/Comuns/BLL_verificador_alertas.php';
+VerificadorAlertas::verificarAlertasColaborador($_SESSION['user_id']);
+
 $colaboradorId = null;
 $userId = $_SESSION['user_id'];
 $perfil = $_SESSION['profile'] ?? '';
@@ -13,34 +17,43 @@ $isCoord = ($perfil === 'coordenador');
 $isRH = ($perfil === 'rh');
 $isAdmin = ($perfil === 'admin');
 
+
 if (!$userId || !in_array($perfil, ['colaborador', 'coordenador', 'rh', 'admin'])) {
     header('Location: ../Comuns/erro.php');
     exit();
 }
 
 require_once '../../BLL/Colaborador/BLL_ficha_colaborador.php';
+require_once '../../BLL/RH/BLL_campos_personalizados.php';
 $colabBLL = new ColaboradorFichaManager();
+$camposBLL = new CamposPersonalizadosManager();
 
+// Buscar colaborador pelo ID de colaborador
 $editColabId = $_GET['id'] ?? null;
 $targetUserId = $userId;
 
+
+$camposExtra = $camposBLL->getCamposPersonalizados(); // Vai buscar a lista de campos (nome, tipo, id)
+$valoresExtra = [];
+if (!empty($colab['id'])) {
+    $valoresExtra = $colabBLL->getCamposPersonalizadosValores($colab['id']); // Vai buscar os valores para o colaborador
+}
+
+
+
 if (in_array($perfil, ['rh', 'admin']) && $editColabId) {
-    // Buscar colaborador pelo ID de colaborador
     $colab = $colabBLL->getColaboradorById($editColabId);
     if ($colab && isset($colab['utilizador_id'])) {
         $targetUserId = $colab['utilizador_id'];
     } else {
-        // Mostra erro apenas se realmente não existir colaborador com esse ID
         echo "<div style='color:red;padding:24px;'>Colaborador não encontrado (ID: ".htmlspecialchars($editColabId).").</div>";
         exit();
     }
 } else {
-    // Colaborador só pode ver a própria ficha
     if ($isColab && $editColabId && $editColabId != $userId) {
         header('Location: ../Comuns/erro.php');
         exit();
     }
-    // Coordenador pode ver a ficha de outros (adicionar validação de equipa se necessário)
     if ($isCoord && $editColabId) {
         $colab = $colabBLL->getColaboradorById($editColabId);
     } else {
@@ -287,6 +300,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $error_message = "Erro ao atualizar dados.";
     }
+
+    // Salvar campos extra (campos personalizados)
+    $camposExtraValores = [];
+    foreach ($camposExtra as $campo) {
+        $campoId = $campo['id'];
+        $campoNome = 'campo_extra_' . $campoId;
+        if (isset($_POST[$campoNome])) {
+            $camposExtraValores[$campoId] = $_POST[$campoNome];
+        }
+    }
+    if (!empty($camposExtraValores) && !empty($colab['id'])) {
+        $colabBLL->salvarCamposPersonalizadosValores($colab['id'], $camposExtraValores);
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -441,7 +467,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php elseif ($perfil === 'admin'): ?>
                 <a href="../Admin/utilizadores.php">Utilizadores</a>
                 <a href="../Admin/permissoes.php">Permissões</a>
-                <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
                 <a href="../Admin/alertas.php">Alertas</a>
                 <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
@@ -518,7 +543,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php elseif ($perfil === 'admin'): ?>
             <a href="../Admin/utilizadores.php">Utilizadores</a>
             <a href="../Admin/permissoes.php">Permissões</a>
-            <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
             <a href="../Admin/alertas.php">Alertas</a>
             <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
             <a href="../Comuns/logout.php">Sair</a>
@@ -535,6 +559,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button type="button" class="menu-link" data-scroll="#ficha-vouchers">Informações Vouchers</button>
     <button type="button" class="menu-link" data-scroll="#ficha-emergencia">Contacto Emergência</button>
     <button type="button" class="menu-link" data-scroll="#ficha-contratual">Situação Contratual</button>
+    <button type="button" class="menu-link" data-scroll="#ficha-campos-extra">Campos Extra</button>
 </div>
 
 <main>
@@ -979,7 +1004,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
     </div>
 </div>
-       
+
+
+            <!-- Ficha Campos Extra -->
+<div id="ficha-campos-extra" class="ficha-container ficha-container-extra">
+    <div class="ficha-section-titulo">Campos Extra</div>
+    <div class="ficha-grid">
+        <?php if (!empty($camposExtra)): ?>
+            <?php foreach ($camposExtra as $campo): 
+                $campoId = $campo['id'];
+                $campoNome = 'campo_extra_' . $campoId;
+                $valor = isset($valoresExtra[$campoId]['valor']) ? $valoresExtra[$campoId]['valor'] : '';
+                $tipo = $campo['tipo'];
+                $label = htmlspecialchars($campo['nome']);
+            ?>
+                <div class="ficha-campo">
+                    <label><?= $label ?>:</label>
+                    <?php if ($tipo === 'data'): ?>
+                        <input type="date" name="<?= $campoNome ?>" value="<?= htmlspecialchars($valor) ?>">
+                    <?php elseif ($tipo === 'numero'): ?>
+                        <input type="number" name="<?= $campoNome ?>" value="<?= htmlspecialchars($valor) ?>">
+                    <?php elseif ($tipo === 'email'): ?>
+                        <input type="email" name="<?= $campoNome ?>" value="<?= htmlspecialchars($valor) ?>">
+                    <?php else: ?>
+                        <input type="text" name="<?= $campoNome ?>" value="<?= htmlspecialchars($valor) ?>">
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="ficha-campo">
+                <em>Não existem campos personalizados definidos.</em>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
 
             <div id="btn-flutuante-guardar">
                 <button type="submit" class="btn">Guardar Alterações</button>
@@ -1478,6 +1536,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+<div style="height: 100px;"></div>
 
 </body>
 </html>

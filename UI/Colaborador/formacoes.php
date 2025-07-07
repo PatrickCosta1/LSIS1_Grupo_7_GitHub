@@ -176,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['formacao_id'])) {
                             <div class="formacao-descricao"><?= htmlspecialchars($f['descricao']) ?></div>
                         </div>
                         <div class="formacao-acoes">
-                            <button class="btn-data" onclick="abrirModalData('<?= $f['id'] ?>', '<?= htmlspecialchars($f['nome']) ?>', '<?= htmlspecialchars($f['data_inicio']) ?>', '<?= htmlspecialchars($f['data_fim']) ?>', '<?= htmlspecialchars($f['horario_semanal'] ?? '') ?>')">
+                            <button class="btn-data" onclick="abrirModalData('<?= $f['id'] ?>', '<?= htmlspecialchars($f['nome']) ?>', '<?= htmlspecialchars($f['data_inicio']) ?>', '<?= htmlspecialchars($f['data_fim']) ?>', '<?= htmlspecialchars($f['horario_semanal'] ?? '') ?>', '<?= htmlspecialchars($f['formador'] ?? '') ?>')">
                                 Ver Datas
                             </button>
                             <?php if ($formacoesBLL->jaInscrito($colaborador_id, $f['id'])): ?>
@@ -211,6 +211,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['formacao_id'])) {
                         <strong>Data de Fim:</strong>
                         <span id="modalDataFim"></span>
                     </div>
+                    <div class="data-item">
+                        <strong>Formador:</strong>
+                        <span id="modalFormador"></span>
+                    </div>
                     <div class="data-item horario-semanal">
                         <strong>Horário Semanal:</strong>
                         <div id="modalHorarioSemanal"></div>
@@ -238,10 +242,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['formacao_id'])) {
 
 <script>
 // Modal de Datas
-function abrirModalData(id, nome, dataInicio, dataFim, horarioSemanal) {
+function abrirModalData(id, nome, dataInicio, dataFim, horarioSemanal, formador) {
     document.getElementById('modalDatasTitle').textContent = nome;
     document.getElementById('modalDataInicio').textContent = new Date(dataInicio).toLocaleDateString('pt-PT');
     document.getElementById('modalDataFim').textContent = new Date(dataFim).toLocaleDateString('pt-PT');
+    document.getElementById('modalFormador').textContent = formador || 'Por definir';
     
     // Processar horário semanal
     const horarioContainer = document.getElementById('modalHorarioSemanal');

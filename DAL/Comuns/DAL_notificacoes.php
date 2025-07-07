@@ -2,67 +2,102 @@
 require_once __DIR__ . '/../Database.php';
 
 class DAL_Notificacoes {
-    private $db;
-    public function __construct() {
-        $this->db = Database::getConnection();
+    
+    public function criarNotificacao($utilizador_id, $mensagem, $tipo = null) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            INSERT INTO notificacoes (utilizador_id, mensagem, tipo, data_envio, lida) 
+            VALUES (?, ?, ?, NOW(), 0)
+        ");
+        return $stmt->execute([$utilizador_id, $mensagem, $tipo]);
     }
-
-    public function enviarNotificacao($remetenteId, $destinatarioId, $mensagem) {
-        // Insere apenas o destinatário (utilizador_id), mensagem, data_envio e lida
-        $stmt = $this->db->prepare("INSERT INTO notificacoes (utilizador_id, mensagem, data_envio, lida) VALUES (?, ?, NOW(), 0)");
-        return $stmt->execute([$destinatarioId, $mensagem]);
+    
+    public function getNotificacoesPorUtilizador($utilizador_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT id, mensagem, tipo, data_envio, lida 
+            FROM notificacoes 
+            WHERE utilizador_id = ? 
+            ORDER BY data_envio DESC 
+            LIMIT 50
+        ");
+        $stmt->execute([$utilizador_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function getUtilizadorById($id) {
-        $stmt = $this->db->prepare("SELECT id, username, email FROM utilizadores WHERE id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch();
+    
+    public function marcarComoLida($notificacao_id, $utilizador_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            UPDATE notificacoes 
+            SET lida = 1 
+            WHERE id = ? AND utilizador_id = ?
+        ");
+        return $stmt->execute([$notificacao_id, $utilizador_id]);
     }
-
-    public function getUtilizadorIdByColaboradorId($colaboradorId) {
-        $stmt = $this->db->prepare("SELECT utilizador_id FROM colaboradores WHERE id = ?");
-        $stmt->execute([$colaboradorId]);
-        $result = $stmt->fetch();
-        return $result ? $result['utilizador_id'] : null;
+    
+    public function contarNaoLidas($utilizador_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*) 
+            FROM notificacoes 
+            WHERE utilizador_id = ? AND lida = 0
+        ");
+        $stmt->execute([$utilizador_id]);
+        return $stmt->fetchColumn();
     }
-
-    public function getNotificacoesByUserId($userId) {
-        $stmt = $this->db->prepare("SELECT * FROM notificacoes WHERE utilizador_id = ? ORDER BY data_envio DESC");
-        $stmt->execute([$userId]);
-        return $stmt->fetchAll();
+    
+    public function getUtilizadoresRH() {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT u.id, u.username, u.email 
+            FROM utilizadores u 
+            INNER JOIN perfis p ON u.perfil_id = p.id 
+            WHERE p.nome = 'rh' AND u.ativo = 1
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function marcarComoLida($notificacaoId) {
-        $stmt = $this->db->prepare("UPDATE notificacoes SET lida = 1 WHERE id = ?");
-        return $stmt->execute([$notificacaoId]);
+    
+    public function getTodosUtilizadores() {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT u.id, u.username, u.email 
+            FROM utilizadores u 
+            WHERE u.ativo = 1
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function eliminarNotificacao($id) {
-        $stmt = $this->db->prepare("DELETE FROM notificacoes WHERE id = ?");
-        return $stmt->execute([$id]);
+    
+    public function getUtilizadoresPorPerfil($perfil) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT u.id, u.username, u.email 
+            FROM utilizadores u 
+            INNER JOIN perfis p ON u.perfil_id = p.id 
+            WHERE p.nome = ? AND u.ativo = 1
+        ");
+        $stmt->execute([$perfil]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function notificarRH($mensagem) {
-        // Corrija aqui: utilize o campo correto para identificar RH
-        // Exemplo: perfil_id = 4 (ajuste conforme o seu sistema)
-        $stmt = $this->db->query("SELECT id FROM utilizadores WHERE perfil_id = 4");
-        $rhs = $stmt->fetchAll();
-        foreach ($rhs as $rh) {
-            $this->enviarNotificacao(null, $rh['id'], $mensagem);
-        }
-        return true;
+    
+    public function marcarTodasComoLidas($utilizador_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            UPDATE notificacoes 
+            SET lida = 1 
+            WHERE utilizador_id = ? AND lida = 0
+        ");
+        return $stmt->execute([$utilizador_id]);
     }
-
-    public function getRHUsers() {
-        // Ajuste o valor de perfil_id conforme o seu sistema (exemplo: 4 para RH)
-        $stmt = $this->db->query("SELECT id, username, email FROM utilizadores WHERE perfil_id = 4");
-        return $stmt->fetchAll();
-    }
-
-    public function getColaboradorByUtilizadorId($utilizadorId) {
-        $stmt = $this->db->prepare("SELECT * FROM colaboradores WHERE utilizador_id = ?");
-        $stmt->execute([$utilizadorId]);
-        return $stmt->fetch();
+    
+    public function removerNotificacao($notificacao_id, $utilizador_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            DELETE FROM notificacoes 
+            WHERE id = ? AND utilizador_id = ?
+        ");
+        return $stmt->execute([$notificacao_id, $utilizador_id]);
     }
 }
 ?>

@@ -11,21 +11,22 @@ class DAL_GerirFormacoes {
 
     public function adicionarFormacao($dados) {
         $pdo = Database::getConnection();
-        $sql = "INSERT INTO formacoes (nome, descricao, data_inicio, data_fim, horario_semanal)
-                VALUES (:nome, :descricao, :data_inicio, :data_fim, :horario_semanal)";
+        $sql = "INSERT INTO formacoes (nome, descricao, data_inicio, data_fim, horario_semanal, formador)
+                VALUES (:nome, :descricao, :data_inicio, :data_fim, :horario_semanal, :formador)";
         $stmt = $pdo->prepare($sql);
         return $stmt->execute([
             ':nome' => $dados['nome'],
             ':descricao' => $dados['descricao'],
             ':data_inicio' => $dados['data_inicio'],
             ':data_fim' => $dados['data_fim'],
-            ':horario_semanal' => $dados['horario_semanal']
+            ':horario_semanal' => $dados['horario_semanal'],
+            ':formador' => $dados['formador']
         ]);
     }
 
     public function editarFormacao($id, $dados) {
         $pdo = Database::getConnection();
-        $sql = "UPDATE formacoes SET nome = :nome, descricao = :descricao, data_inicio = :data_inicio, data_fim = :data_fim, horario_semanal = :horario_semanal
+        $sql = "UPDATE formacoes SET nome = :nome, descricao = :descricao, data_inicio = :data_inicio, data_fim = :data_fim, horario_semanal = :horario_semanal, formador = :formador
                 WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         return $stmt->execute([
@@ -34,6 +35,7 @@ class DAL_GerirFormacoes {
             ':data_inicio' => $dados['data_inicio'],
             ':data_fim' => $dados['data_fim'],
             ':horario_semanal' => $dados['horario_semanal'],
+            ':formador' => $dados['formador'],
             ':id' => $id
         ]);
     }

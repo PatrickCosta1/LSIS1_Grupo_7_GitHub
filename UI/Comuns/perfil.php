@@ -159,33 +159,16 @@ if ($colaborador_id) {
             </div>
             <a href="../Comuns/logout.php">Sair</a>
         <?php elseif ($_SESSION['profile'] === 'admin'): ?>
-            <a href="../Admin/dashboard_admin.php">Dashboard</a>
-            <a href="../Admin/utilizadores.php">Utilizadores</a>
+            <<a href="../Admin/utilizadores.php">Utilizadores</a>
             <a href="../Admin/permissoes.php">Permissões</a>
-            <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
             <a href="../Admin/alertas.php">Alertas</a>
-            <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-            <a href="../RH/equipas.php">Equipas</a>
-            <a href="../RH/relatorios.php">Relatórios</a>
-            <div class="dropdown-perfil">
-                <a href="../Comuns/perfil.php" class="perfil-link">
-                    Perfil
-                    <span class="seta-baixo">▾</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
-                    <a href="../Colaborador/beneficios.php">Benefícios</a>
-                    <a href="../Colaborador/ferias.php">Férias</a>
-                    <a href="../Colaborador/formacoes.php">Formações</a>
-                    <a href="../Colaborador/recibos.php">Recibos</a>
-                </div>
-            </div>
-            <a href="../Comuns/logout.php">Sair</a>
+            <a href="../Comuns/perfil.php" class="perfil-link">Perfil</a>
+            <a href="../Comuns/logout.php" class="sair-link">Sair</a>
         <?php elseif ($_SESSION['profile'] === 'rh'): ?>
-            <div class="dropdown-equipas">
+                <div class="dropdown-equipas">
                 <a href="../RH/equipas.php" class="equipas-link">
                     Equipas
-                    <span class="seta-baixo">▾</span>
+                    <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
                     <a href="../RH/relatorios.php">Relatórios</a>
@@ -195,7 +178,7 @@ if ($colaborador_id) {
             <div class="dropdown-colaboradores">
                 <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
                     Colaboradores
-                    <span class="seta-baixo">▾</span>
+                    <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
                     <a href="../RH/exportar.php">Exportar</a>
@@ -204,19 +187,20 @@ if ($colaborador_id) {
             <div class="dropdown-gestao">
                 <a href="#" class="gestao-link">
                     Gestão
-                    <span class="seta-baixo">▾</span>
+                    <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
                     <a href="../RH/gerir_beneficios.php">Gerir Benefícios</a>
                     <a href="../RH/gerir_formacoes.php">Gerir Formações</a>
                     <a href="../RH/gerir_recibos.php">Submeter Recibos</a>
+                    <a href="../RH/campos_personalizados.php">Campos Personalizados</a>
                 </div>
             </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>
             <div class="dropdown-perfil">
                 <a href="../Comuns/perfil.php" class="perfil-link">
                     Perfil
-                    <span class="seta-baixo">▾</span>
+                    <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
                     <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
