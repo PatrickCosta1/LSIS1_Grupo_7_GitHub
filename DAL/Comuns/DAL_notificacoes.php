@@ -61,6 +61,13 @@ class DAL_Notificacoes {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
+    public function getUtilizadorById($utilizador_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT id, username, email FROM utilizadores WHERE id = ?");
+        $stmt->execute([$utilizador_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
     public function marcarTodasComoLidas($utilizador_id) {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare("

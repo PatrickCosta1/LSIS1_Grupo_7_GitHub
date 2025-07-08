@@ -152,6 +152,7 @@ class DAL_FichaColaborador {
 
     public function aprovarPedidoComprovativo($pedidoId) {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         try {
             $this->pdo->beginTransaction();
             
@@ -182,6 +183,8 @@ class DAL_FichaColaborador {
             return false;
         }
 =======
+=======
+>>>>>>> Stashed changes
         // Atualiza o status do pedido para aprovado
         $stmt = $this->pdo->prepare("UPDATE pedidos_comprovativo SET status = 'aprovado', data_resposta = NOW() WHERE id = ?");
         $success = $stmt->execute([$pedidoId]);
@@ -204,6 +207,9 @@ class DAL_FichaColaborador {
             }
         }
         return $success;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 

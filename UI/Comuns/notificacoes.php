@@ -220,6 +220,9 @@ if ($perfil === 'rh' && isset($_POST['onboarding_token'])) {
     }
     header('Location: notificacoes.php');
     exit();
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 }
 ?>
@@ -521,6 +524,137 @@ if ($perfil === 'rh' && isset($_POST['onboarding_token'])) {
             align-items: flex-start;
             justify-content: center;
             transition: background 0.3s;
+<<<<<<< Updated upstream
+=======
+        }
+        .modal-onboarding-content {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(3,96,233,0.13), 0 1.5px 8px rgba(0,0,0,0.08);
+            padding: 18px 18px 12px 18px;
+            min-width: 280px;
+            max-width: 420px;
+            max-height: 80vh;
+            position: relative;
+            animation: fadeInUp 0.3s;
+            overflow-y: auto;
+            border: 1.5px solid #e6eaf7;
+            margin-top: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .modal-onboarding-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .modal-onboarding-logo {
+            height: 32px;
+            margin-bottom: 4px;
+        }
+        .modal-onboarding-content h2 {
+            color: #0360e9;
+            margin-bottom: 0;
+            font-size: 1.08rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.2px;
+            text-shadow: 0 1px 4px rgba(3,96,233,0.05);
+        }
+        .onboarding-dados-detalhes {
+            width: 100%;
+            margin: 0 0 10px 0;
+        }
+        .onboarding-campos-lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .onboarding-campos-lista li {
+            background: #f7faff;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 0.98rem;
+            color: #23408e;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-left: 3px solid #0360e9;
+        }
+        .campo-label {
+            color: #0360e9;
+            font-weight: 600;
+            min-width: 90px;
+            display: inline-block;
+            margin-right: 6px;
+            font-size: 0.97rem;
+        }
+        .campo-valor {
+            color: #23408e;
+            font-weight: 500;
+            font-size: 0.97rem;
+            word-break: break-word;
+        }
+        .modal-onboarding-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 6px;
+            width: 100%;
+        }
+        .modal-onboarding-content .btn {
+            min-width: 90px;
+            font-size: 0.97rem;
+            padding: 7px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            box-shadow: 0 1px 4px rgba(3,96,233,0.07);
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            border: none;
+            margin: 0;
+        }
+        .btn-aprovar {
+            background: linear-gradient(135deg, #3ed829 0%, #7be67b 100%);
+            color: #fff;
+        }
+        .btn-aprovar:hover {
+            background: linear-gradient(135deg, #299c1c 0%, #3ed829 100%);
+            box-shadow: 0 2px 8px rgba(62,216,41,0.10);
+        }
+        .btn-recusar {
+            background: linear-gradient(135deg, #e53e3e 0%, #ff6b6b 100%);
+            color: #fff;
+        }
+        .btn-recusar:hover {
+            background: linear-gradient(135deg, #b91c1c 0%, #e53e3e 100%);
+            box-shadow: 0 2px 8px rgba(229,62,62,0.10);
+        }
+        .modal-onboarding-content .close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #19365f;
+            cursor: pointer;
+            font-weight: bold;
+            transition: color 0.2s;
+            z-index: 10;
+            line-height: 1;
+        }
+        .modal-onboarding-content .close:hover {
+            color: #299cf3;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(18px);}
+            to { opacity: 1; transform: translateY(0);}
+>>>>>>> Stashed changes
         }
         .modal-onboarding-content {
             background: #fff;
@@ -1104,6 +1238,7 @@ if ($perfil === 'rh' && isset($_POST['onboarding_token'])) {
                 <?php endif; ?>
             </div>
 
+<<<<<<< Updated upstream
             <?php if (!empty($onboardingsPendentes)): ?>
                 <h2 class="notificacoes-section-title">Onboardings Pendentes</h2>
                 <div class="onboarding-lista">
@@ -1144,6 +1279,8 @@ if ($perfil === 'rh' && isset($_POST['onboarding_token'])) {
 <<<<<<< Updated upstream
         </div>
 =======
+=======
+>>>>>>> Stashed changes
         <?php if ($perfil === 'rh' && !empty($onboardingsPendentes)): ?>
     <div id="modalOnboardingBg" class="modal-onboarding-bg" style="display:none;">
         <div class="modal-onboarding-content" id="modalOnboardingContent" style="padding-bottom:70px; position:relative;">
@@ -1214,6 +1351,9 @@ if ($perfil === 'rh' && isset($_POST['onboarding_token'])) {
         }
     </script>
 <?php endif; ?>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     </main>
 
