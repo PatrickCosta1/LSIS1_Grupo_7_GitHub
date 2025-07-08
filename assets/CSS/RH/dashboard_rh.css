@@ -573,3 +573,31 @@ h1 {
     background: #e3eafc;
     color: #0360e9 !important;
 }
+
+/* Modal Dashboard Custom */
+.modal-dashboard-custom {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0; right: 0; bottom: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(25,54,95,0.18);
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.modal-dashboard-content {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(41,156,243,0.13);
+    padding: 38px 32px 32px 32px;
+    min-width: 320px;
+    max-width: 95vw;
+    text-align: center;
+    position: relative;
+    animation: modalFadeIn 0.25s;
+}
+@keyframes modalFadeIn {
+    from { transform: translateY(-40px) scale(0.98); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}

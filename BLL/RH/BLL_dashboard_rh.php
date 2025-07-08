@@ -73,6 +73,31 @@ class RHDashboardManager {
     public function getNomesColaboradoresPorEquipaComGenero() {
         return $this->dal->getNomesColaboradoresPorEquipaComGenero();
     }
+
+    // Novo: Dados detalhados de um colaborador
+    public function getDadosColaboradorById($colaborador_id) {
+        return $this->dal->getDadosColaboradorById($colaborador_id);
+    }
+
+    // Novo: Número de alterações contratuais por colaborador
+    public function getNumAlteracoesContratuaisByColaborador($colaborador_id) {
+        return $this->dal->getNumAlteracoesContratuaisByColaborador($colaborador_id);
+    }
+
+    // Novo: Evolução salarial por colaborador
+    public function getEvolucaoSalarialByColaborador($colaborador_id) {
+        return $this->dal->getEvolucaoSalarialByColaborador($colaborador_id);
+    }
+
+    // Novo: Número de formações feitas por colaborador
+    public function getNumFormacoesByColaborador($colaborador_id) {
+        return $this->dal->getNumFormacoesByColaborador($colaborador_id);
+    }
+
+    // Novo: Número de pedidos de férias por colaborador
+    public function getNumPedidosFeriasByColaborador($colaborador_id) {
+        return $this->dal->getNumPedidosFeriasByColaborador($colaborador_id);
+    }
 }
 
 // Nenhuma alteração necessária para centralização dos gráficos

@@ -99,5 +99,13 @@ class DAL_Notificacoes {
         ");
         return $stmt->execute([$notificacao_id, $utilizador_id]);
     }
+    
+    public function getEmailByUtilizadorId($utilizador_id) {
+        $db = \Database::getConnection();
+        $stmt = $db->prepare("SELECT email FROM utilizadores WHERE id = ?");
+        $stmt->execute([$utilizador_id]);
+        $row = $stmt->fetch();
+        return $row ? $row['email'] : null;
+    }
 }
 ?>

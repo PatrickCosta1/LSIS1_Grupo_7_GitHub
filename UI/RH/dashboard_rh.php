@@ -263,6 +263,9 @@ $retencao_media_equipas = count($taxas_retencao_validas) > 0 ? (array_sum($taxas
                     <option value="<?php echo $idx; ?>"><?php echo htmlspecialchars($nome_equipa); ?></option>
                 <?php endforeach; ?>
             </select>
+            <button id="btnDashboardCustom" style="margin-left:18px;padding:7px 18px;border-radius:7px;background:#299cf3;color:#fff;font-weight:bold;border:none;cursor:pointer;box-shadow:0 2px 8px rgba(41,156,243,0.08);transition:background 0.2s;">
+                Faça a sua Dashboard!
+            </button>
         </div>
         <div class="dashboard-grid">
             <div class="kpi-card" style="background:rgba(92, 176, 255, 0.2);">
@@ -457,6 +460,9 @@ $retencao_media_equipas = count($taxas_retencao_validas) > 0 ? (array_sum($taxas
         </div>
        
     </main>
+
+   
+
     <script>
         const equipasLabels = <?php echo json_encode($equipas_labels); ?>;
         const equipasMembros = <?php echo json_encode($equipas_membros); ?>;
@@ -484,6 +490,11 @@ $retencao_media_equipas = count($taxas_retencao_validas) > 0 ? (array_sum($taxas
             filtrarPorEquipa("all");
         });
 
+        document.getElementById("btnDashboardCustom").addEventListener("click", function() {
+            window.location.href = "dash_personalizada.php";
+        });
+
+    
         // Função para forçar redimensionamento dos gráficos
         function forceChartResize() {
             setTimeout(() => {
@@ -1344,6 +1355,9 @@ $retencao_media_equipas = count($taxas_retencao_validas) > 0 ? (array_sum($taxas
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script src="../../assets/chatbot.js"></script>
+
+   
+
 </body>
 <div style="height:100px;"></div>
 </html>

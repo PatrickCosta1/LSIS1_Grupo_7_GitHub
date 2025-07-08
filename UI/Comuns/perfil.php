@@ -22,34 +22,9 @@ if ($colab) {
     error_log("Colaborador ID extraído: " . $colaborador_id);
 }
 
-if ($colaborador_id) {
-    try {
         $formacoesInscritas = $userBLL->getFormacoesPorColaborador($colaborador_id);
         $pedidosFerias = $userBLL->getPedidosFeriasPorColaborador($colaborador_id);
-        
-        error_log("=== DEBUG PERFIL FINAL ===");
-        error_log("User ID (sessão): " . $_SESSION['user_id']);
-        error_log("Colaborador dados completos: " . print_r($colab, true));
-        error_log("Colaborador ID usado na query: " . $colaborador_id);
-        error_log("Formações encontradas: " . count($formacoesInscritas));
-        error_log("Pedidos de férias encontrados: " . count($pedidosFerias));
-        
-        if (!empty($pedidosFerias)) {
-            error_log("SUCESSO: Pedidos de férias encontrados!");
-            foreach ($pedidosFerias as $index => $pedido) {
-                error_log("Pedido " . ($index + 1) . ": " . print_r($pedido, true));
-            }
-        } else {
-            error_log("PROBLEMA: Nenhum pedido de férias encontrado para colaborador_id = " . $colaborador_id);
-        }
-    } catch (Exception $e) {
-        error_log("EXCEÇÃO no perfil: " . $e->getMessage());
-        $formacoesInscritas = [];
-        $pedidosFerias = [];
-    }
-} else {
-    error_log("ERRO: colaborador_id é null. Dados do colaborador: " . print_r($colab, true));
-}
+
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -78,33 +53,35 @@ if ($colaborador_id) {
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;">
     </a>
     <nav>
-        <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
-      <button id="open-chatbot" style="
-          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
-          color:rgb(255, 255, 255);
-          border: none;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          font-size: 28px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          ">
-        ?
-      </button>
-      <iframe
-        id="chatbot-iframe"
-        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
-        title="Ajuda Chatbot"
-        width="350"
-        height="500"
-        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-      </iframe>
-    </div>
-    <script src="../../assets/chatbot.js"></script>
+        <?php if ($_SESSION['profile'] === 'colaborador'): ?>
+            <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+              <button id="open-chatbot" style="
+                  background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
+                  color:rgb(255, 255, 255);
+                  border: none;
+                  border-radius: 50%;
+                  width: 60px;
+                  height: 60px;
+                  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+                  font-size: 28px;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  ">
+                ?
+              </button>
+              <iframe
+                id="chatbot-iframe"
+                src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
+                title="Ajuda Chatbot"
+                width="350"
+                height="500"
+                style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+              </iframe>
+            </div>
+            <script src="../../assets/chatbot.js"></script>
+        <?php endif; ?>
 
         <?php if ($_SESSION['profile'] === 'coordenador'): ?>
             <?php
@@ -348,18 +325,14 @@ if ($colaborador_id) {
             <?php else: ?>
                 <div class="calendario-vazio">
                     <p>Não tens pedidos de férias registados.</p>
-                    <p style="font-size: 0.8rem; color: #666; margin-top: 8px;">
-                        Debug Info:<br>
-                        User ID: <?php echo $_SESSION['user_id']; ?><br>
-                        Colaborador ID: <?php echo $colaborador_id ?: 'null'; ?><br>
-                        Colaborador encontrado: <?php echo $colab ? 'SIM' : 'NÃO'; ?><br>
-                        <?php if ($colab): ?>
-                            Colaborador.id: <?php echo $colab['id'] ?? 'NULL'; ?><br>
-                            Colaborador.utilizador_id: <?php echo $colab['utilizador_id'] ?? 'NULL'; ?>
-                        <?php endif; ?>
-                    </p>
                 </div>
             <?php endif; ?>
+            <!-- DEBUG: Mostrar conteúdo real de $pedidosFerias -->
+            <!-- <pre style="background:#f8f8f8;color:#333;font-size:0.9em;padding:8px;border-radius:6px;overflow-x:auto;max-width:100%;margin-bottom:12px;">
+            <?php
+            // echo 'DEBUG pedidosFerias (json): ' . json_encode($pedidosFerias, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            ?>
+            </pre> -->
         </div>
     </div>
 </div>

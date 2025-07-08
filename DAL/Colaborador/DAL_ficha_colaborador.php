@@ -158,8 +158,28 @@ class DAL_FichaColaborador {
     }
 
     public function aprovarPedidoComprovativo($pedidoId) {
+        // Atualiza o status do pedido para aprovado
         $stmt = $this->pdo->prepare("UPDATE pedidos_comprovativo SET status = 'aprovado', data_resposta = NOW() WHERE id = ?");
-        return $stmt->execute([$pedidoId]);
+        $success = $stmt->execute([$pedidoId]);
+        
+        // Buscar o pedido para saber o campo e o ficheiro
+        $pedido = $this->getPedidoComprovantivoById($pedidoId);
+        if ($success && $pedido && !empty($pedido['tipo_comprovativo']) && !empty($pedido['comprovativo_novo'])) {
+            // Atualizar o campo correto na tabela colaboradores
+            $campo = $pedido['tipo_comprovativo'];
+            $ficheiro = $pedido['comprovativo_novo'];
+            $colabId = $pedido['colaborador_id'];
+            // Só permite campos válidos
+            $validCampos = [
+                'comprovativo_cc', 'comprovativo_iban', 'comprovativo_estado_civil', 'comprovativo_morada_fiscal', 'comprovativo_cartao_continente'
+            ];
+            if (in_array($campo, $validCampos)) {
+                $sql = "UPDATE colaboradores SET $campo = ? WHERE id = ?";
+                $upd = $this->pdo->prepare($sql);
+                $upd->execute([$ficheiro, $colabId]);
+            }
+        }
+        return $success;
     }
 
     public function recusarPedidoComprovativo($pedidoId) {

@@ -2,12 +2,6 @@
     require_once __DIR__ . '/../Database.php';
 
     class DAL_ColaboradoresGerir {
-        private $pdo;
-        
-        public function __construct() {
-            $this->pdo = Database::getConnection();
-        }
-
         public function getAllColaboradores($excludeUserId = null) {
             $pdo = Database::getConnection();
             // Agrupa por colaborador e concatena os nomes das equipas
@@ -141,7 +135,18 @@
             return $ok ? $pdo->lastInsertId() : false;
         }
 
-        
+        public function criarOnboardingTemp($dados) {
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare("INSERT INTO onboarding_temp (nome, email_pessoal, data_inicio_contrato, perfil_destino_id, token, utilizador_id) VALUES (?, ?, ?, ?, ?, ?)");
+            return $stmt->execute([
+                $dados['nome'],
+                $dados['email_pessoal'],
+                $dados['data_inicio_contrato'],
+                $dados['perfil_destino_id'],
+                $dados['token'],
+                $dados['utilizador_id']
+            ]);
+        }
 
         public function getOnboardingTempByToken($token) {
             $pdo = Database::getConnection();
@@ -260,71 +265,14 @@
             if (!$row) return false;
             $utilizadorId = $row['utilizador_id'];
 
+            // Remover relações em equipa_colaboradores antes de remover colaborador
+            $pdo->prepare("DELETE FROM equipa_colaboradores WHERE colaborador_id = ?")->execute([$colaboradorId]);
+
             // Remover colaborador
             $pdo->prepare("DELETE FROM colaboradores WHERE id = ?")->execute([$colaboradorId]);
             // Remover utilizador
             $pdo->prepare("DELETE FROM utilizadores WHERE id = ?")->execute([$utilizadorId]);
             return true;
-        }
-
-        public function criarUtilizador($nome, $emailPessoal, $dataInicioContrato, $perfilDestinoId, $token) {
-            try {
-                $this->pdo->beginTransaction();
-                
-                // Gerar username único
-                $username = strtolower(preg_replace('/[^a-z0-9]/', '', 
-                    iconv('UTF-8', 'ASCII//TRANSLIT', $nome))) . rand(100, 999);
-                
-                // Gerar password temporária
-                $password = bin2hex(random_bytes(5));
-                
-                // Criar utilizador convidado (perfil_id = 1 temporariamente)
-                $stmt = $this->pdo->prepare("
-                    INSERT INTO utilizadores (username, email, password, perfil_id, ativo) 
-                    VALUES (?, ?, ?, 1, 1)
-                ");
-                $stmt->execute([$username, $emailPessoal, $password]);
-                $utilizadorId = $this->pdo->lastInsertId();
-                
-                $this->pdo->commit();
-                return $utilizadorId;
-                
-            } catch (PDOException $e) {
-                $this->pdo->rollBack();
-                error_log("Erro ao criar utilizador: " . $e->getMessage());
-                return false;
-            }
-        }
-
-        public function criarOnboardingTemp($utilizadorId, $token) {
-            try {
-                $stmt = $this->pdo->prepare("
-                    INSERT INTO onboarding_temp 
-                    (nome, email_pessoal, data_inicio_contrato, perfil_destino_id, token, utilizador_id, estado) 
-                    VALUES (?, ?, ?, ?, ?, ?, 'pendente')
-                ");
-                // Buscar dados do utilizador para preencher o onboarding_temp
-                $userStmt = $this->pdo->prepare("SELECT username as nome, email FROM utilizadores WHERE id = ?");
-                $userStmt->execute([$utilizadorId]);
-                $userData = $userStmt->fetch(PDO::FETCH_ASSOC);
-                
-                if ($userData) {
-                    $stmt->execute([
-                        $userData['nome'],
-                        $userData['email'],
-                        date('Y-m-d'), // data padrão
-                        2, // perfil colaborador por padrão
-                        $token,
-                        $utilizadorId
-                    ]);
-                    return $this->pdo->lastInsertId();
-                }
-                return false;
-                
-            } catch (PDOException $e) {
-                error_log("Erro ao criar onboarding temp: " . $e->getMessage());
-                return false;
-            }
         }
     }
     ?>

@@ -21,6 +21,23 @@ if ($perfil === 'rh') {
     $pedidosFeriasPendentes = $fichaManager->listarPedidosFeriasPendentes();
     $pedidosComprovantivosPendentes = $fichaManager->listarPedidosComprovantivosPendentes();
     $pedidosAlteracaoFichaPendentes = $fichaManager->listarPedidosPendentes();
+
+    // Onboardings pendentes
+    require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
+    $colabBLL = new RHColaboradoresManager();
+    $onboardingsPendentes = $colabBLL->listarOnboardingsPendentes();
+
+    // Aprovar/Recusar onboarding
+    if (isset($_POST['aprovar_onboarding']) && isset($_POST['onboarding_token'])) {
+        $colabBLL->aprovarOnboarding($_POST['onboarding_token']);
+        header('Location: notificacoes.php');
+        exit();
+    }
+    if (isset($_POST['recusar_onboarding']) && isset($_POST['onboarding_token'])) {
+        $colabBLL->recusarOnboarding($_POST['onboarding_token']);
+        header('Location: notificacoes.php');
+        exit();
+    }
     
     // Processar aprovação/recusa de férias
     if (isset($_POST['aprovar_ferias'])) {
@@ -373,15 +390,117 @@ $naoLidas = $notifBLL->contarNaoLidas($userId);
             margin-left: 8px;
         }
         
-        @media (max-width: 768px) {
-            .page-layout {
-                flex-direction: column;
-            }
-            
-            .menu-lateral-rh {
-                width: 100%;
-                order: 2;
-            }
+        .onboarding-pendente-block { background: #fffbe6; border-left: 4px solid #0360e9; padding: 14px; border-radius: 8px; margin-bottom: 12px;}
+        .onboarding-btn { background: #0360e9; color: #fff; border: none; border-radius: 4px; padding: 6px 14px; cursor: pointer; margin-top: 8px;}
+        .onboarding-btn.aprovar { background: #28a745; }
+        .onboarding-btn.recusar { background: #dc3545; }
+        .onboarding-modal-bg {
+            display: none;
+            position: fixed;
+            left: 0; right: 0; bottom: 0;
+            top: unset;
+            width: 100vw;
+            height: auto;
+            min-height: 0;
+            z-index: 3000;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .onboarding-modal {
+            background: linear-gradient(135deg, #f7faff 0%, #e9f0ff 100%);
+            border-radius: 22px 22px 0 0;
+            max-width: 420px;
+            width: 98vw;
+            max-height: 72vh;
+            min-height: 120px;
+            padding: 32px 24px 24px 24px;
+            box-shadow: 0 -8px 32px #0360e93a, 0 2px 8px #0001;
+            position: relative;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            animation: slideUpOnboardingModal 0.35s cubic-bezier(.6,1.5,.6,1) 1;
+        }
+        @keyframes slideUpOnboardingModal {
+            from { transform: translateY(80px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+        }
+        .onboarding-modal-close {
+            position: absolute;
+            top: 14px;
+            right: 22px;
+            font-size: 26px;
+            color: #0360e9;
+            cursor: pointer;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        .onboarding-modal-close:hover { color: #e53e3e; }
+        .onboarding-modal h2 {
+            color: #0360e9;
+            margin-bottom: 14px;
+            font-size: 1.18rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+        .onboarding-modal .onboarding-scroll {
+            overflow-y: auto;
+            max-height: 38vh;
+            margin-bottom: 10px;
+            padding-right: 4px;
+        }
+        .onboarding-modal .campo {
+            margin-bottom: 7px;
+            font-size: 0.97rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .onboarding-modal label {
+            font-weight: 600;
+            color: #23408e;
+            font-size: 0.97rem;
+            min-width: 120px;
+            flex: 0 0 120px;
+        }
+        .onboarding-modal .valor {
+            color: #333;
+            font-size: 0.97rem;
+            background: #f3f7ff;
+            border-radius: 6px;
+            padding: 2px 8px;
+            margin-left: 4px;
+            flex: 1 1 auto;
+            word-break: break-all;
+        }
+        .onboarding-btn {
+            background: linear-gradient(90deg,#0360e9 0%,#4f8cff 100%);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px #0360e91a;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .onboarding-btn.aprovar { background: linear-gradient(90deg,#28a745 0%,#5be584 100%);}
+        .onboarding-btn.recusar { background: linear-gradient(90deg,#dc3545 0%,#ff8c8c 100%);}
+        .onboarding-btn:hover { box-shadow: 0 4px 16px #0360e92a; }
+        .onboarding-modal form {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 18px;
+        }
+        @media (max-width: 600px) {
+            .onboarding-modal { max-width: 100vw; border-radius: 18px 18px 0 0; padding: 18px 6vw 18px 6vw;}
+            .onboarding-modal h2 { font-size: 1.05rem; }
+            .onboarding-modal label { min-width: 90px; font-size: 0.95rem;}
+            .onboarding-modal .valor { font-size: 0.95rem;}
         }
     </style>
 </head>
@@ -613,6 +732,51 @@ $naoLidas = $notifBLL->contarNaoLidas($userId);
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
+                
+                <div class="menu-secao">
+                    <h4>📝 Onboardings Pendentes
+                        <?php if (!empty($onboardingsPendentes)): ?>
+                            <span class="contador-pendentes"><?= count($onboardingsPendentes) ?></span>
+                        <?php endif; ?>
+                    </h4>
+                    <?php if (empty($onboardingsPendentes)): ?>
+                        <p style="color: #666; font-size: 0.9rem;">Nenhum onboarding pendente</p>
+                    <?php else: ?>
+                        <?php foreach ($onboardingsPendentes as $ob): 
+                            $dados = json_decode($ob['dados_json'] ?? '{}', true);
+                        ?>
+                        <div class="onboarding-pendente-block">
+                            <div><b><?= htmlspecialchars($ob['nome']) ?></b> (<?= htmlspecialchars($ob['email_pessoal']) ?>)</div>
+                            <div>Perfil destino: <?= htmlspecialchars($ob['perfil_destino_id']) ?> | Início: <?= htmlspecialchars($ob['data_inicio_contrato']) ?></div>
+                            <button class="onboarding-btn" onclick="abrirModalOnboarding('<?= $ob['token'] ?>')">Ver Formulário</button>
+                        </div>
+                        <!-- Modal para cada onboarding -->
+                        <div class="onboarding-modal-bg" id="modal-onboarding-<?= $ob['token'] ?>">
+                            <div class="onboarding-modal">
+                                <span class="onboarding-modal-close" onclick="fecharModalOnboarding('<?= $ob['token'] ?>')">&times;</span>
+                                <h2>Formulário Onboarding</h2>
+                                <div class="onboarding-scroll">
+                                <?php if ($dados): ?>
+                                    <?php foreach ($dados as $campo => $valor): ?>
+                                        <div class="campo">
+                                            <label><?= htmlspecialchars(ucwords(str_replace('_',' ', $campo))) ?>:</label>
+                                            <span class="valor"><?= htmlspecialchars($valor) ?></span>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <div style="color:#e53e3e;">Dados não preenchidos.</div>
+                                <?php endif; ?>
+                                </div>
+                                <form method="post">
+                                    <input type="hidden" name="onboarding_token" value="<?= $ob['token'] ?>">
+                                    <button type="submit" name="aprovar_onboarding" class="onboarding-btn aprovar">Aprovar</button>
+                                    <button type="submit" name="recusar_onboarding" class="onboarding-btn recusar" onclick="return confirm('Tem a certeza que deseja recusar este onboarding?')">Recusar</button>
+                                </form>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
             </div>
             
             <!-- Notificações Principal -->
@@ -761,7 +925,43 @@ $naoLidas = $notifBLL->contarNaoLidas($userId);
                     fecharModalNaoLidas();
                 }
             });
+            
+            function abrirModalOnboarding(token) {
+                document.getElementById('modal-onboarding-' + token).style.display = 'flex';
+            }
+            function fecharModalOnboarding(token) {
+                document.getElementById('modal-onboarding-' + token).style.display = 'none';
+            }
         </script>
     </main>
+    <?php if ($perfil === 'colaborador'): ?>
+    <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+      <button id="open-chatbot" style="
+          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
+          color:rgb(255, 255, 255);
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+          font-size: 28px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          ">
+        ?
+      </button>
+      <iframe
+        id="chatbot-iframe"
+        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
+        title="Ajuda Chatbot"
+        width="350"
+        height="500"
+        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+      </iframe>
+    </div>
+    <script src="../../assets/chatbot.js"></script>
+    <?php endif; ?>
 </body>
 </html>
