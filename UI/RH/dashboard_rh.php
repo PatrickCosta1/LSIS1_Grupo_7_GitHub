@@ -31,7 +31,7 @@ foreach ($idades as $row) {
     }
 }
 
-$colabs = $rhBLL->getNomesColaboradoresPorEquipa();
+$colabs = $rhBLL->getNomesColaboradoresPorEquipaComGenero();
 $colaboradores_unicos = [];
 $equipas_colaboradores = [];
 $ids_processados_global = []; // Array para garantir IDs únicos globalmente
@@ -50,7 +50,7 @@ foreach ($colabs as $row) {
         $ids_processados_global[$id_colab] = true; // Marca como processado
     }
 }
-$total_colab_unicos = count($colaboradores_unicos);
+$total_colaboradores_unicos = count($colaboradores_unicos);
 
 // Calcular idade média por equipa
 $equipas_idade_media = [];
@@ -107,56 +107,56 @@ if ($equipas_labels) {
     }
 }
 
-// Percentagem de masculino/feminino/outro por equipa - COM VERIFICAÇÃO DE IDS ÚNICOS
+// Percentagem de masculino/feminino/outro por equipa - CORRIGIR CÁLCULO
 $genero_equipa_raw = $rhBLL->getDistribuicaoGeneroPorEquipa();
 $percent_masculino = [];
 $percent_feminino = [];
 $percent_outro = [];
-$total_masc = 0;
-$total_fem = 0;
-$total_outro = 0;
-$total_colab = 0;
-$ids_contados_globais = []; // IDs já contados globalmente
+$total_masc_global = 0;
+$total_fem_global = 0;
+$total_outro_global = 0;
 
+// Calcular percentuais globais usando IDs únicos
+foreach ($colaboradores_unicos as $id => $colab) {
+    $genero_norm = strtolower(trim($colab['sexo'] ?? ''));
+    if ($genero_norm === 'm' || $genero_norm === 'masculino') {
+        $total_masc_global++;
+    } elseif ($genero_norm === 'f' || $genero_norm === 'feminino') {
+        $total_fem_global++;
+    } else {
+        $total_outro_global++;
+    }
+}
+
+// Calcular percentuais por equipa
 foreach ($equipas_labels as $nome_equipa) {
-    $masc = 0;
-    $fem = 0;
-    $outro = 0;
-    $total = 0;
-    $ids_equipa = []; // IDs únicos por equipa
-
-    if (isset($genero_equipa_raw[$nome_equipa])) {
-        foreach ($genero_equipa_raw[$nome_equipa] as $genero => $count) {
-            // Para cada colaborador desta equipa e género, só conta se o ID ainda não foi contado nesta equipa
-            foreach ($colabs as $colab) {
-                if (
-                    $colab['equipa_nome'] === $nome_equipa &&
-                    isset($colab['colaborador_id']) &&
-                    !isset($ids_equipa[$colab['colaborador_id']])
-                ) {
-                    $ids_equipa[$colab['colaborador_id']] = true;
-                    $genero_norm = strtolower(trim($genero));
-                    if ($genero_norm === 'm' || $genero_norm === 'masculino') $masc++;
-                    elseif ($genero_norm === 'f' || $genero_norm === 'feminino') $fem++;
-                    else $outro++;
-                    $total++;
-                    // Só conta para o global se ainda não foi contado
-                    if (!isset($ids_contados_globais[$colab['colaborador_id']])) {
-                        $ids_contados_globais[$colab['colaborador_id']] = true;
-                        if ($genero_norm === 'm' || $genero_norm === 'masculino') $total_masc++;
-                        elseif ($genero_norm === 'f' || $genero_norm === 'feminino') $total_fem++;
-                        else $total_outro++;
-                        $total_colab++;
-                    }
-                }
-            }
+    $masc = 0; $fem = 0; $outro = 0; $total = 0;
+    $ids_processados_equipa = [];
+    
+    foreach ($colabs as $colab) {
+        if ($colab['equipa_nome'] === $nome_equipa && 
+            isset($colab['colaborador_id']) && 
+            !isset($ids_processados_equipa[$colab['colaborador_id']])) {
+            
+            $ids_processados_equipa[$colab['colaborador_id']] = true;
+            $genero_norm = strtolower(trim($colab['sexo'] ?? ''));
+            
+            if ($genero_norm === 'm' || $genero_norm === 'masculino') $masc++;
+            elseif ($genero_norm === 'f' || $genero_norm === 'feminino') $fem++;
+            else $outro++;
+            $total++;
         }
     }
-
+    
     $percent_masculino[] = $total > 0 ? round($masc / $total * 100, 1) : 0;
     $percent_feminino[] = $total > 0 ? round($fem / $total * 100, 1) : 0;
     $percent_outro[] = $total > 0 ? round($outro / $total * 100, 1) : 0;
 }
+
+// Calcular percentuais globais finais
+$masc_percent_global = $total_colaboradores_unicos > 0 ? ($total_masc_global / $total_colaboradores_unicos * 100) : 0;
+$fem_percent_global = $total_colaboradores_unicos > 0 ? ($total_fem_global / $total_colaboradores_unicos * 100) : 0;
+$outro_percent_global = $total_colaboradores_unicos > 0 ? ($total_outro_global / $total_colaboradores_unicos * 100) : 0;
 
 // Distribuição geográfica
 $geo_labels = [];
@@ -173,13 +173,20 @@ if ($distribuicao_geografica && is_array($distribuicao_geografica)) {
 $equipas_localidades = $rhBLL->getLocalidadesPorEquipa();
 
 // Taxa de retenção
-$retencao_por_equipa_assoc = $rhBLL->getTaxaRetencaoPorEquipa();
-$retencao_global = $rhBLL->getTaxaRetencaoGlobal();
+$ano_selecionado = isset($_GET['ano']) ? intval($_GET['ano']) : date('Y');
+$retencao_por_equipa_assoc = $rhBLL->getTaxaRetencaoPorEquipa($ano_selecionado);
+$retencao_global = $rhBLL->getTaxaRetencaoGlobal($ano_selecionado);
 // Garantir que a ordem dos arrays corresponde à ordem de $equipas_labels
 $retencao_por_equipa = [];
 foreach ($equipas_labels as $nome_equipa) {
     $retencao_por_equipa[] = isset($retencao_por_equipa_assoc[$nome_equipa]) ? $retencao_por_equipa_assoc[$nome_equipa] : 0;
 }
+
+// Calcular média simples das taxas de retenção para usar no perfil médio (DEPOIS de definir $retencao_por_equipa)
+$taxas_retencao_validas = array_filter($retencao_por_equipa, function($taxa) {
+    return $taxa !== null && !is_nan($taxa) && is_numeric($taxa) && $taxa > 0;
+});
+$retencao_media_equipas = count($taxas_retencao_validas) > 0 ? (array_sum($taxas_retencao_validas) / count($taxas_retencao_validas)) : 0;
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -222,6 +229,7 @@ foreach ($equipas_labels as $nome_equipa) {
                     <a href="gerir_beneficios.php">Gerir Benefícios</a>
                     <a href="gerir_formacoes.php">Gerir Formações</a>
                     <a href="gerir_recibos.php">Submeter Recibos</a>
+                    <a href="campos_personalizados.php">Campos Personalizados</a>
                 </div>
             </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>
@@ -259,7 +267,7 @@ foreach ($equipas_labels as $nome_equipa) {
         <div class="dashboard-grid">
             <div class="kpi-card" style="background:rgba(92, 176, 255, 0.2);">
                 <div style="font-size:15px;color:#666;">Total Colaboradores</div>
-                <div id="kpiTotalColab" style="font-size:2.1em;color:#667eea;font-weight:bold;"><?php echo array_sum($equipas_membros); ?></div>
+                <div id="kpiTotalColab" style="font-size:2.1em;color:#667eea;font-weight:bold;"><?php echo $total_colaboradores_unicos; ?></div>
             </div>
             <div class="kpi-card" style="background:rgba(171, 69, 255, 0.2);">
                 <div style="font-size:15px;color:#666;">Média de Idade</div>
@@ -282,46 +290,26 @@ foreach ($equipas_labels as $nome_equipa) {
             <div class="kpi-card" style="background:rgba(130, 236, 255, 0.2);">
                 <div style="font-size:15px;color:#666;">% Masculino</div>
                 <div id="kpiPercentMasc" style="font-size:2.1em;color:#36a2eb;font-weight:bold;">
-                    <?php
-                    if ($total_colab > 0) {
-                        $masc_percent = $total_colab > 0 ? ($total_masc / $total_colab * 100) : 0;
-                        $fem_percent = $total_colab > 0 ? ($total_fem / $total_colab * 100) : 0;
-                        $outro_percent = $total_colab > 0 ? ($total_outro / $total_colab * 100) : 0;
-                        $arr = [['val' => $masc_percent, 'idx' => 0], ['val' => $fem_percent, 'idx' => 1], ['val' => $outro_percent, 'idx' => 2]];
-                        foreach ($arr as &$a) $a['rounded'] = round($a['val'] * 10) / 10;
-                        unset($a);
-                        $soma = $arr[0]['rounded'] + $arr[1]['rounded'] + $arr[2]['rounded'];
-                        $diff = round((100 - $soma) * 10) / 10;
-                        if (abs($diff) > 0) {
-                            usort($arr, fn($a, $b) => abs($b['val']) <=> abs($a['val']));
-                            $arr[0]['rounded'] = round(($arr[0]['rounded'] + $diff) * 10) / 10;
-                        }
-                        usort($arr, fn($a, $b) => $a['idx'] <=> $b['idx']);
-                        $masc_percent = $arr[0]['rounded'];
-                        echo $masc_percent . '%';
-                    } else {
-                        echo '-';
-                    }
-                    ?>
+                    <?php echo $total_colaboradores_unicos > 0 ? round($masc_percent_global, 1) . '%' : '-'; ?>
                 </div>
             </div>
             <div class="kpi-card" style="background:rgba(255, 163, 243, 0.2);">
                 <div style="font-size:15px;color:#666;">% Feminino</div>
                 <div id="kpiPercentFem" style="font-size:2.1em;color:#ff6384;font-weight:bold;">
-                    <?php echo $total_colab > 0 ? round($fem_percent, 1) . '%' : '-'; ?>
+                    <?php echo $total_colaboradores_unicos > 0 ? round($fem_percent_global, 1) . '%' : '-'; ?>
                 </div>
             </div>
             <div class="kpi-card" style="background:rgba(255, 238, 138, 0.2);">
                 <div style="font-size:15px;color:#666;">% Outro</div>
                 <div id="kpiPercentOutro" style="font-size:2.1em;color:#DAA520;font-weight:bold;">
-                    <?php echo $total_colab > 0 ? round($outro_percent, 1) . '%' : '-'; ?>
+                    <?php echo $total_colaboradores_unicos > 0 ? round($outro_percent_global, 1) . '%' : '-'; ?>
                 </div>
             </div>
             <div class="kpi-card" style="background:rgba(255, 210, 90, 0.18);">
                 <div style="font-size:15px;color:#666;">Taxa de Retenção</div>
                 <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
                     <div id="kpiRetencao" style="font-size:2.1em;color:#DAA520;font-weight:bold;">
-                        <?php echo $retencao_global !== null ? $retencao_global . '%' : '-'; ?>
+                        <?php echo $retencao_global !== null ? $retencao_global.'%' : '-'; ?>
                     </div>
                     <div>
                         <select id="anoRetencaoSelect" style="margin-left:6px;padding:2px 8px;border-radius:6px;border:1px solid #ccd;background:#f7f8fa;font-size:1em;">
@@ -356,7 +344,7 @@ foreach ($equipas_labels as $nome_equipa) {
             </div>
             <!-- Segunda linha -->
             <div class="chart-card">
-                <div class="chart-card-title">Nível Hierárquico/Cargo</div>
+                <div class="chart-card-title">Nível Hierárquico/Perfil</div>
                 <div id="chartNivelHierarquico" class="chart-area"></div>
                 <div id="statsNivelHierarquico" class="stats-nivel"></div>
                  <span style="display:block;font-size:0.95em;font-weight:400;color:#888;margin-top:4px;">
@@ -386,7 +374,7 @@ foreach ($equipas_labels as $nome_equipa) {
             </div>
             <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;">
                 <div style="flex:1 1 120px;">
-                    <div style="font-size:13px;color:#888;">Salário Médio</div>
+                    <div style="font-size:13px;color:#888;">Remuneração Média</div>
                     <div style="font-size:1.3em;color:#19365f;font-weight:bold;">
                         <?php
                         $media_salario = isset($equipas_remuneracao_media) && count($equipas_remuneracao_media) && array_sum($equipas_remuneracao_media) > 0
@@ -418,13 +406,11 @@ foreach ($equipas_labels as $nome_equipa) {
                         ?>
                     </div>
                 </div>
+                
                 <div style="flex:1 1 120px;">
-                    <div style="font-size:13px;color:#888;">Remuneração Média</div>
-                    <div style="font-size:1.3em;color:#19365f;font-weight:bold;">
-                        <?php
-                        // Remuneração média já calculada acima, pode ser igual ao salário médio
-                        echo $media_salario;
-                        ?>
+                    <div style="font-size:13px;color:#888;">Taxa de Retenção</div>
+                    <div id="perfilRetencao" style="font-size:1.3em;color:#19365f;font-weight:bold;">
+                        <?php echo $retencao_media_equipas > 0 ? round($retencao_media_equipas, 1).'%' : '-'; ?>
                     </div>
                 </div>
             </div>
@@ -587,8 +573,8 @@ foreach ($equipas_labels as $nome_equipa) {
 
         function atualizarKPIs(idx) {
             if (idx === "all") {
-                // Total Colaboradores
-                let totalColab = equipasMembros.reduce((a,b)=>a+b,0);
+                // Total Colaboradores - usar contagem de IDs únicos
+                let totalColab = <?php echo $total_colaboradores_unicos; ?>;
                 animateKPIValue("kpiTotalColab", totalColab, '', 0);
 
                 // Média de Idade
@@ -609,27 +595,24 @@ foreach ($equipas_labels as $nome_equipa) {
                 if (remMedia !== '-') animateKPIValue("kpiRemuneracao", remMedia, ' €', 2);
                 else document.getElementById("kpiRemuneracao").innerText = '-';
 
-                // Percentuais
-                let totalMasc = 0, totalFem = 0, totalOutro = 0, totalGeral = 0;
-                for (let i = 0; i < equipasLabels.length; i++) {
-                    totalMasc += isNaN(percentMasc[i]) ? 0 : percentMasc[i] / 100 * equipasMembros[i];
-                    totalFem += isNaN(percentFem[i]) ? 0 : percentFem[i] / 100 * equipasMembros[i];
-                    totalOutro += isNaN(percentOutro[i]) ? 0 : percentOutro[i] / 100 * equipasMembros[i];
-                    totalGeral += equipasMembros[i];
-                }
-                let mascVal = totalGeral > 0 ? (totalMasc / totalGeral * 100) : '-';
-                let femVal = totalGeral > 0 ? (totalFem / totalGeral * 100) : '-';
-                let outroVal = totalGeral > 0 ? (totalOutro / totalGeral * 100) : '-';
-                if (mascVal !== '-') animateKPIValue("kpiPercentMasc", mascVal, '%', 1);
+                // Percentuais - usar valores globais corretos
+                let mascVal = <?php echo round($masc_percent_global, 1); ?>;
+                let femVal = <?php echo round($fem_percent_global, 1); ?>;
+                let outroVal = <?php echo round($outro_percent_global, 1); ?>;
+                
+                if (mascVal >= 0) animateKPIValue("kpiPercentMasc", mascVal, '%', 1);
                 else document.getElementById("kpiPercentMasc").innerText = '-';
-                if (femVal !== '-') animateKPIValue("kpiPercentFem", femVal, '%', 1);
+                if (femVal >= 0) animateKPIValue("kpiPercentFem", femVal, '%', 1);
                 else document.getElementById("kpiPercentFem").innerText = '-';
-                if (outroVal !== '-') animateKPIValue("kpiPercentOutro", outroVal, '%', 1);
+                if (outroVal >= 0) animateKPIValue("kpiPercentOutro", outroVal, '%', 1);
                 else document.getElementById("kpiPercentOutro").innerText = '-';
 
-                // Retenção
-                if (retencaoGlobal !== null && retencaoGlobal !== undefined)
-                    animateKPIValue("kpiRetencao", retencaoGlobal, '%', 1);
+                // Retenção - calcular média simples das taxas de cada equipa
+                let taxasValidas = retencaoPorEquipa.filter(taxa => taxa !== undefined && taxa !== null && !isNaN(taxa));
+                let retencaoMedia = taxasValidas.length > 0 ? (taxasValidas.reduce((a,b) => a+b, 0) / taxasValidas.length) : 0;
+                
+                if (retencaoMedia > 0) 
+                    animateKPIValue("kpiRetencao", retencaoMedia, '%', 1);
                 else
                     document.getElementById("kpiRetencao").innerText = '-';
             } else {
@@ -655,9 +638,9 @@ foreach ($equipas_labels as $nome_equipa) {
                 else document.getElementById("kpiRemuneracao").innerText = '-';
 
                 // Percentuais
-                let masc = percentMasc[idx] > 0 ? percentMasc[idx] : '-';
-                let fem = percentFem[idx] > 0 ? percentFem[idx] : '-';
-                let outro = percentOutro[idx] > 0 ? percentOutro[idx] : '-';
+                let masc = percentMasc[idx] >= 0 ? percentMasc[idx] : '-';
+                let fem = percentFem[idx] >= 0 ? percentFem[idx] : '-';
+                let outro = percentOutro[idx] >= 0 ? percentOutro[idx] : '-';
                 if (masc !== '-') animateKPIValue("kpiPercentMasc", masc, '%', 1);
                 else document.getElementById("kpiPercentMasc").innerText = '-';
                 if (fem !== '-') animateKPIValue("kpiPercentFem", fem, '%', 1);
@@ -712,14 +695,37 @@ foreach ($equipas_labels as $nome_equipa) {
                 setChartContainerStyle("chartIdadeMedia");
                 let dataPointsIdade = [], axisXLabels = [], allAges = [];
                 if (idx === "all") {
+                    // Para "todas", usar apenas colaboradores únicos baseados em IDs
+                    let processedIds = new Set();
+                    let uniqueCollaborators = [];
+                    
+                    // Processar todas as equipas e coletar colaboradores únicos
                     equipasLabels.forEach((l, i) => {
                         let ages = equipasIdades[l] || [];
+                        let colaboradores = equipasColaboradores[l] || [];
+                        
                         ages.forEach((age, j) => {
-                            let name = equipasColaboradores[l] && equipasColaboradores[l][j] ? equipasColaboradores[l][j] : `Colab ${j + 1}`;
-                            dataPointsIdade.push({ x: dataPointsIdade.length + 1, y: Number(age), markerColor: "#764ba2", indexLabel: `${name} (${age})` });
-                            axisXLabels.push(name);
-                            allAges.push(Number(age));
+                            let name = colaboradores[j] || `Colab ${j + 1}`;
+                            // Criar um ID único baseado no nome e idade para evitar duplicatas
+                            let uniqueId = `${name}_${age}`;
+                            
+                            if (!processedIds.has(uniqueId)) {
+                                processedIds.add(uniqueId);
+                                uniqueCollaborators.push({ name: name, age: Number(age) });
+                            }
                         });
+                    });
+                    
+                    // Criar dataPoints apenas com colaboradores únicos
+                    uniqueCollaborators.forEach((colab, index) => {
+                        dataPointsIdade.push({ 
+                            x: index + 1, 
+                            y: colab.age, 
+                            markerColor: "#764ba2", 
+                            indexLabel: `${colab.name} (${colab.age})` 
+                        });
+                        axisXLabels.push(colab.name);
+                        allAges.push(colab.age);
                     });
                 } else {
                     let ages = equipasIdades[equipasLabels[idx]] || [];
@@ -774,7 +780,7 @@ foreach ($equipas_labels as $nome_equipa) {
                 chartTempo.render();
                 setChartCanvasStyle("chartTempoMedio");
             }
-            // Nível Hierárquico/Cargo - Doughnut moderno
+            // Nível Hierárquico/Perfil - Doughnut moderno
             if (typeof CanvasJS !== "undefined" && document.getElementById("chartNivelHierarquico")) {
                 setChartContainerStyle("chartNivelHierarquico");
                 let dataPointsNivel;
@@ -998,13 +1004,36 @@ foreach ($equipas_labels as $nome_equipa) {
             if (typeof CanvasJS !== "undefined" && document.getElementById("modernChartIdade")) {
                 let dataPointsIdade = [], axisXLabels = [];
                 if (idx === "all") {
+                    // Para "todas", usar apenas colaboradores únicos baseados em IDs
+                    let processedIds = new Set();
+                    let uniqueCollaborators = [];
+                    
+                    // Processar todas as equipas e coletar colaboradores únicos
                     equipasLabels.forEach((l, i) => {
                         let ages = equipasIdades[l] || [];
+                        let colaboradores = equipasColaboradores[l] || [];
+                        
                         ages.forEach((age, j) => {
-                            let name = equipasColaboradores[l] && equipasColaboradores[l][j] ? equipasColaboradores[l][j] : `Colab ${j + 1}`;
-                            dataPointsIdade.push({ x: dataPointsIdade.length + 1, y: Number(age), markerColor: "#764ba2", indexLabel: `${name} (${age})` });
-                            axisXLabels.push(name);
+                            let name = colaboradores[j] || `Colab ${j + 1}`;
+                            // Criar um ID único baseado no nome e idade para evitar duplicatas
+                            let uniqueId = `${name}_${age}`;
+                            
+                            if (!processedIds.has(uniqueId)) {
+                                processedIds.add(uniqueId);
+                                uniqueCollaborators.push({ name: name, age: Number(age) });
+                            }
                         });
+                    });
+                    
+                    // Criar dataPoints apenas com colaboradores únicos
+                    uniqueCollaborators.forEach((colab, index) => {
+                        dataPointsIdade.push({ 
+                            x: index + 1, 
+                            y: colab.age, 
+                            markerColor: "#764ba2", 
+                            indexLabel: `${colab.name} (${colab.age})` 
+                        });
+                        axisXLabels.push(colab.name);
                     });
                 } else {
                     let ages = equipasIdades[equipasLabels[idx]] || [];
@@ -1156,22 +1185,17 @@ foreach ($equipas_labels as $nome_equipa) {
             let mediaRemEmpresa = mediasRem.length ? (mediasRem.reduce((a,b)=>a+b,0)/mediasRem.length) : 0;
             let tempos = tempoMedioEmpresa.filter(x=>x>0);
             let mediaTempoEmpresa = tempos.length ? (tempos.reduce((a,b)=>a+b,0)/tempos.length) : 0;
-            let totalColabEmpresa = equipasMembros.reduce((a,b)=>a+b,0);
+            
+            // Usar contagem de colaboradores únicos
+            let totalColabEmpresa = <?php echo $total_colaboradores_unicos; ?>;
 
-            // Percentuais globais
-            let totalMasc = 0, totalFem = 0, totalOutro = 0, totalGeral = 0;
-            for (let i = 0; i < equipasLabels.length; i++) {
-                totalMasc += isNaN(percentMasc[i]) ? 0 : percentMasc[i] / 100 * equipasMembros[i];
-                totalFem += isNaN(percentFem[i]) ? 0 : percentFem[i] / 100 * equipasMembros[i];
-                totalOutro += isNaN(percentOutro[i]) ? 0 : percentOutro[i] / 100 * equipasMembros[i];
-                totalGeral += equipasMembros[i];
-            }
-            let mascEmpresa = totalGeral > 0 ? (totalMasc / totalGeral * 100) : 0;
-            let femEmpresa = totalGeral > 0 ? (totalFem / totalGeral * 100) : 0;
-            let outroEmpresa = totalGeral > 0 ? (totalOutro / totalGeral * 100) : 0;
+            // Usar percentuais globais corretos
+            let mascEmpresa = <?php echo round($masc_percent_global, 1); ?>;
+            let femEmpresa = <?php echo round($fem_percent_global, 1); ?>;
+            let outroEmpresa = <?php echo round($outro_percent_global, 1); ?>;
 
-            // Retenção global
-            let retencaoEmpresa = typeof retencaoGlobal !== "undefined" && retencaoGlobal !== null ? Number(retencaoGlobal) : 0;
+            // Usar média das taxas de retenção das equipas
+            let retencaoEmpresa = <?php echo round($retencao_media_equipas, 1); ?>;
 
             // Valores da equipa selecionada
             let equipaNome = idx === "all" ? "Todas" : equipasLabels[idx];
@@ -1182,6 +1206,8 @@ foreach ($equipas_labels as $nome_equipa) {
             let mascEquipa = idx === "all" ? mascEmpresa : (percentMasc[idx] ?? 0);
             let femEquipa = idx === "all" ? femEmpresa : (percentFem[idx] ?? 0);
             let outroEquipa = idx === "all" ? outroEmpresa : (percentOutro[idx] ?? 0);
+            
+            // Para retenção, usar média quando "all", ou valor individual da equipa
             let retencaoEquipa = idx === "all" ? retencaoEmpresa : (retencaoPorEquipa[idx] !== undefined ? retencaoPorEquipa[idx] : 0);
 
             // Helper para gráfico de barras simples
@@ -1235,18 +1261,89 @@ foreach ($equipas_labels as $nome_equipa) {
             renderComparacaoEquipa(idx);
         });
         document.getElementById("anoRetencaoSelect").addEventListener("change", function() {
-            // Aqui você pode fazer um fetch/ajax para buscar os dados do ano selecionado
-            // e atualizar a variável retencaoGlobal/retencaoPorEquipa conforme necessário.
-            // Exemplo de atualização visual:
-            // atualizarKPIs(document.getElementById("equipaSelect").value);
-            // renderComparacaoEquipa(document.getElementById("equipaSelect").value);
-            // Se necessário, recarregue os dados do PHP via AJAX ou recarregue a página com o ano como parâmetro.
-            // Por padrão, apenas atualiza os KPIs para refletir o ano (se os dados já estiverem carregados).
-            atualizarKPIs(document.getElementById("equipaSelect").value);
-            renderComparacaoEquipa(document.getElementById("equipaSelect").value);
+            let anoSelecionado = this.value;
+            
+            // Fazer AJAX para buscar dados do ano selecionado  
+            fetch(`dashboard_rh_ajax.php?ano=${anoSelecionado}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Atualizar variáveis globais
+                        window.retencaoPorEquipa = data.retencao_por_equipa;
+                        window.retencaoGlobal = data.retencao_global;
+                        
+                        // Calcular média simples das taxas de retenção
+                        let taxasValidas = data.retencao_por_equipa.filter(taxa => taxa !== undefined && taxa !== null && !isNaN(taxa) && taxa > 0);
+                        let retencaoMedia = taxasValidas.length > 0 ? (taxasValidas.reduce((a,b) => a+b, 0) / taxasValidas.length) : 0;
+                        
+                        // Atualizar KPI de retenção com a média
+                        document.getElementById("kpiRetencao").innerText = retencaoMedia > 0 ? retencaoMedia.toFixed(1) + '%' : '-';
+                        
+                        // Atualizar perfil médio com a média
+                        document.getElementByElementById("perfilRetencao").innerText = retencaoMedia > 0 ? retencaoMedia.toFixed(1) + '%' : '-';
+                        
+                        // Atualizar gráficos
+                        let equipaIdx = document.getElementById("equipaSelect").value;
+                        atualizarKPIs(equipaIdx === "all" ? equipaIdx : parseint(this.value));
+                        
+                        // Atualizar gráficos de comparação
+                        renderComparacaoEquipa(equipaIdx === "all" ? equipaIdx : parseInt(equipaIdx));
+                        
+                        // Atualizar gráfico de retenção
+                        if (typeof CanvasJS !== "undefined" && document.getElementById("chartRetencao")) {
+                            let dataPoints;
+                            if (equipaIdx === "all") {
+                                dataPoints = retencaoLabels.map((l, i) => ({
+                                    label: l,
+                                    y: data.retencao_por_equipa[i],
+                                    color: "#DAA520",
+                                    indexLabel: data.retencao_por_equipa[i] + '%'
+                                }));
+                            } else {
+                                dataPoints = [{
+                                    label: retencaoLabels[equipaIdx],
+                                    y: data.retencao_por_equipa[equipaIdx],
+                                    color: "#DAA520",
+                                    indexLabel: data.retencao_por_equipa[equipaIdx] + '%'
+                                }];
+                            }
+                            
+                            var chartRetencao = new CanvasJS.Chart("chartRetencao", {
+                                animationEnabled: true,
+                                backgroundColor: "transparent",
+                                theme: "light1",
+                                axisX: {
+                                    labelFontSize: 13,
+                                    labelAngle: -30,
+                                    interval: 1,
+                                    labelFontColor: "#19365f",
+                                    labelWrap: true,
+                                    labelMaxWidth: 120
+                                },
+                                axisY: { title: "Retenção (%)", minimum: 0, maximum: 100, labelFontColor: "#19365f", gridColor: "#ecebfa" },
+                                toolTip: { enabled: false },
+                                data: [{
+                                    type: "column",
+                                    color: "#DAA520",
+                                    indexLabelFontColor: "#DAA520",
+                                    indexLabelFontWeight: "bold",
+                                    indexLabelPlacement: "outside",
+                                    dataPoints: dataPoints
+                                }]
+                            });
+                            chartRetencao.render();
+                        }
+                    } else {
+                        console.error('Erro na resposta:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar dados de retenção:', error);
+                });
         });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script src="../../assets/chatbot.js"></script>
 </body>
+<div style="height:100px;"></div>
 </html>

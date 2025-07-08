@@ -72,33 +72,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['formacao_id'])) {
             <?php endif; ?>
         >
         <nav>
-            <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
-      <button id="open-chatbot" style="
-          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
-          color:rgb(255, 255, 255);
-          border: none;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          font-size: 28px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          ">
-        ?
-      </button>
-      <iframe
-        id="chatbot-iframe"
-        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
-        title="Ajuda Chatbot"
-        width="350"
-        height="500"
-        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-      </iframe>
-    </div>
-    <script src="../../assets/chatbot.js"></script>
+            <?php if ($perfil === 'colaborador'): ?>
+                <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+                  <button id="open-chatbot" style="
+                      background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
+                      color:rgb(255, 255, 255);
+                      border: none;
+                      border-radius: 50%;
+                      width: 60px;
+                      height: 60px;
+                      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+                      font-size: 28px;
+                      cursor: pointer;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      ">
+                    ?
+                  </button>
+                  <iframe
+                    id="chatbot-iframe"
+                    src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
+                    title="Ajuda Chatbot"
+                    width="350"
+                    height="500"
+                    style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+                  </iframe>
+                </div>
+                <script src="../../assets/chatbot.js"></script>
+            <?php endif; ?>
 
             <?php if ($perfil === 'coordenador'): ?>
                 <?php
@@ -176,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['formacao_id'])) {
                             <div class="formacao-descricao"><?= htmlspecialchars($f['descricao']) ?></div>
                         </div>
                         <div class="formacao-acoes">
-                            <button class="btn-data" onclick="abrirModalData('<?= $f['id'] ?>', '<?= htmlspecialchars($f['nome']) ?>', '<?= htmlspecialchars($f['data_inicio']) ?>', '<?= htmlspecialchars($f['data_fim']) ?>', '<?= htmlspecialchars($f['horario_semanal'] ?? '') ?>')">
+                            <button class="btn-data" onclick="abrirModalData('<?= $f['id'] ?>', '<?= htmlspecialchars($f['nome']) ?>', '<?= htmlspecialchars($f['data_inicio']) ?>', '<?= htmlspecialchars($f['data_fim']) ?>', '<?= htmlspecialchars($f['horario_semanal'] ?? '') ?>', '<?= htmlspecialchars($f['formador'] ?? '') ?>')">
                                 Ver Datas
                             </button>
                             <?php if ($formacoesBLL->jaInscrito($colaborador_id, $f['id'])): ?>
@@ -211,6 +213,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['formacao_id'])) {
                         <strong>Data de Fim:</strong>
                         <span id="modalDataFim"></span>
                     </div>
+                    <div class="data-item">
+                        <strong>Formador:</strong>
+                        <span id="modalFormador"></span>
+                    </div>
                     <div class="data-item horario-semanal">
                         <strong>Horário Semanal:</strong>
                         <div id="modalHorarioSemanal"></div>
@@ -238,10 +244,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['formacao_id'])) {
 
 <script>
 // Modal de Datas
-function abrirModalData(id, nome, dataInicio, dataFim, horarioSemanal) {
+function abrirModalData(id, nome, dataInicio, dataFim, horarioSemanal, formador) {
     document.getElementById('modalDatasTitle').textContent = nome;
     document.getElementById('modalDataInicio').textContent = new Date(dataInicio).toLocaleDateString('pt-PT');
     document.getElementById('modalDataFim').textContent = new Date(dataFim).toLocaleDateString('pt-PT');
+    document.getElementById('modalFormador').textContent = formador || 'Por definir';
     
     // Processar horário semanal
     const horarioContainer = document.getElementById('modalHorarioSemanal');

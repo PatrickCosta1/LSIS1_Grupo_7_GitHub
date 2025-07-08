@@ -33,26 +33,34 @@
 
         public function addColaborador($dados) {
             $pdo = Database::getConnection();
-            // Criar utilizador
-            $stmtUser = $pdo->prepare("INSERT INTO utilizadores (username, email, ativo, password, perfil_id) VALUES (?, ?, ?, ?, ?)");
-            $okUser = $stmtUser->execute([
-                $dados['username'],
-                $dados['email'],
-                $dados['ativo'],
-                $dados['password'],
-                $dados['perfil_id'] // este valor tem de vir do formulário/processamento
-            ]);
-            if (!$okUser) return false;
-            $userId = $pdo->lastInsertId();
+            try {
+                // Criar utilizador
+                $stmtUser = $pdo->prepare("INSERT INTO utilizadores (username, email, ativo, password, perfil_id) VALUES (?, ?, ?, ?, ?)");
+                $okUser = $stmtUser->execute([
+                    $dados['username'],
+                    $dados['email'],
+                    $dados['ativo'],
+                    $dados['password'],
+                    $dados['perfil_id']
+                ]);
+                if (!$okUser) return false;
+                $userId = $pdo->lastInsertId();
 
-            // Criar colaborador
-            $stmtColab = $pdo->prepare("INSERT INTO colaboradores (utilizador_id, nome, cargo, nivel_hierarquico) VALUES (?, ?, ?, ?)");
-            return $stmtColab->execute([
-                $userId,
-                $dados['nome'],
-                $dados['cargo'],
-                $dados['nivel_hierarquico']
-            ]);
+                // Criar colaborador
+                $stmtColab = $pdo->prepare("INSERT INTO colaboradores (utilizador_id, nome, cargo, nivel_hierarquico) VALUES (?, ?, ?, ?)");
+                return $stmtColab->execute([
+                    $userId,
+                    $dados['nome'],
+                    $dados['cargo'],
+                    $dados['nivel_hierarquico']
+                ]);
+            } catch (\PDOException $e) {
+                // Se for erro de duplicado de username, retorna false em vez de lançar exceção fatal
+                if ($e->getCode() == 23000 && strpos($e->getMessage(), 'username') !== false) {
+                    return false;
+                }
+                throw $e;
+            }
         }
 
         public function getAllEquipas() {
@@ -118,12 +126,12 @@
             return $stmt->fetchAll();
         }
 
-        public function criarUtilizadorConvidado($username, $perfil_convidado, $password) {
+        public function criarUtilizadorConvidado($username, $perfil_convidado, $password, $email_institucional = null) {
             $pdo = Database::getConnection();
-            // Gera um email temporário único para evitar duplicidade
-            $email_temp = 'convidado_' . uniqid() . '@temp.tlantic.com';
+            // Usa email institucional se fornecido, senão gera um temporário
+            $email = $email_institucional ?: ('convidado_' . uniqid() . '@temp.tlantic.com');
             $stmt = $pdo->prepare("INSERT INTO utilizadores (username, perfil_id, ativo, password, email) VALUES (?, ?, 1, ?, ?)");
-            $ok = $stmt->execute([$username, $perfil_convidado, $password, $email_temp]);
+            $ok = $stmt->execute([$username, $perfil_convidado, $password, $email]);
             return $ok ? $pdo->lastInsertId() : false;
         }
 
@@ -256,6 +264,9 @@
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$row) return false;
             $utilizadorId = $row['utilizador_id'];
+
+            // Remover relações em equipa_colaboradores antes de remover colaborador
+            $pdo->prepare("DELETE FROM equipa_colaboradores WHERE colaborador_id = ?")->execute([$colaboradorId]);
 
             // Remover colaborador
             $pdo->prepare("DELETE FROM colaboradores WHERE id = ?")->execute([$colaboradorId]);

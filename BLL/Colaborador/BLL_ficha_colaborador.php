@@ -19,19 +19,55 @@ class ColaboradorFichaManager {
 
         // Se for RH/Admin, altera diretamente
         if ($perfil === 'rh' || $perfil === 'admin') {
+            // Campos contratuais que devem ser logados
+            $camposContratuais = [
+                'cargo', 'remuneracao', 'tipo_contrato', 'regime_horario', 
+                'data_inicio_contrato', 'data_fim_contrato'
+            ];
+            
             // Se o $dados tiver 'id' (colaborador), atualizar por id, senão por utilizador_id
             if (isset($dados['id'])) {
                 $colabId = $dados['id'];
                 unset($dados['id']);
+                
+                // Buscar dados atuais do colaborador para comparar
+                $colaboradorAtual = $this->dal->getColaboradorById($colabId);
+                
+                // Registar logs das alterações contratuais antes de atualizar
+                foreach ($camposContratuais as $campo) {
+                    if (isset($dados[$campo]) && $dados[$campo] != ($colaboradorAtual[$campo] ?? null)) {
+                        $this->dal->registarLogAlteracaoContratual(
+                            $colabId,
+                            $campo,
+                            $colaboradorAtual[$campo] ?? null,
+                            $dados[$campo],
+                            $userId
+                        );
+                    }
+                }
+                
                 return $this->dal->updateColaboradorById($colabId, $dados);
             } else {
+                // Registar logs das alterações contratuais antes de atualizar
+                foreach ($camposContratuais as $campo) {
+                    if (isset($dados[$campo]) && $dados[$campo] != ($colab[$campo] ?? null)) {
+                        $this->dal->registarLogAlteracaoContratual(
+                            $colabId,
+                            $campo,
+                            $colab[$campo] ?? null,
+                            $dados[$campo],
+                            $userId
+                        );
+                    }
+                }
+                
                 return $this->dal->updateColaboradorByUserId($userId, $dados);
             }
         }
 
         // Caso contrário, cria pedidos de alteração para cada campo alterado
         $camposPermitidos = [
-            'morada_fiscal', 'sexo', 'situacao_irs', 'dependentes', 'iban', 'habilitacoes', 'curso',
+            'morada_fiscal', 'sexo', 'estado_civil', 'situacao_irs', 'dependentes', 'iban', 'habilitacoes', 'curso',
             'telemovel', 'matricula_viatura', 'nome_contacto_emergencia', 'grau_relacionamento',
             'contacto_emergencia', 'cartao_continente'
         ];
@@ -78,6 +114,9 @@ class ColaboradorFichaManager {
     public function recusarPedidoFerias($pedidoId) {
         return $this->dal->atualizarEstadoPedidoFerias($pedidoId, 'recusado');
     }
+    public function atualizarEstadoPedidoFerias($pedidoId, $estado) {
+        return $this->dal->atualizarEstadoPedidoFerias($pedidoId, $estado);
+    }
     public function getPedidoFeriasById($pedidoId) {
         return $this->dal->getPedidoFeriasById($pedidoId);
     }
@@ -110,6 +149,14 @@ class ColaboradorFichaManager {
 
     public function getPedidoComprovantivoById($pedidoId) {
         return $this->dal->getPedidoComprovantivoById($pedidoId);
+    }
+
+    // Métodos para campos personalizados (ficha extra)
+    public function getCamposPersonalizadosValores($colaborador_id) {
+        return $this->dal->getCamposPersonalizadosValores($colaborador_id);
+    }
+    public function salvarCamposPersonalizadosValores($colaborador_id, $valores) {
+        return $this->dal->salvarCamposPersonalizadosValores($colaborador_id, $valores);
     }
 }
 ?>

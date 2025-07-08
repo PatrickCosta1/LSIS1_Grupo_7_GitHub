@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../../DAL/RH/DAL_colaboradores_gerir.php';
+// Inclua o autoload do Composer no topo para garantir PHPMailer disponível
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 class RHColaboradoresManager {
     private $dal;
@@ -31,74 +33,95 @@ class RHColaboradoresManager {
         return $this->dal->getColaboradoresPorPerfil($perfilId);
     }
 
-<<<<<<< Updated upstream
-    public function criarUtilizadorConvidado($username, $perfil_convidado, $password) {
-        return $this->dal->criarUtilizadorConvidado($username, $perfil_convidado, $password);
-=======
     public function criarUtilizadorConvidado($nome, $emailPessoal, $dataInicioContrato, $perfilDestinoId) {
-        try {
-            $token = bin2hex(random_bytes(24)); // Token mais longo para segurança
-            
-            // Criar utilizador temporário
-            $utilizadorId = $this->dal->criarUtilizador($nome, $emailPessoal, $dataInicioContrato, $perfilDestinoId, $token);
-            
-            if ($utilizadorId) {
-                // Criar entrada na tabela onboarding_temp
-                $onboardingId = $this->dal->criarOnboardingTemp($utilizadorId, $token);
-                
-                if ($onboardingId) {
-                    // Enviar email de onboarding
-                    require_once __DIR__ . '/../Comuns/BLL_notificacoes.php';
-                    $notBLL = new NotificacoesManager();
-                    
-                    // Corrigir o link para ambiente local correto
-                    $linkOnboarding = "http://localhost/LSIS1_Grupo_7_GitHub/UI/Convidado/onboarding_convidado.php?token=" . $token;
-                    
-                    $assunto = "Bem-vindo à Tlantic - Complete o seu registo";
-                    $mensagem = "
-                        <div style='font-family:Segoe UI,Arial,sans-serif;background:#f7faff;padding:32px 0;'>
-                            <div style='max-width:420px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 2px 12px #0360e91a;padding:32px 28px;'>
-                                <img src='https://www.tlantic.com/wp-content/uploads/2021/03/logo-tlantic.png' alt='Tlantic' style='height:38px;display:block;margin:0 auto 18px auto;'>
-                                <h2 style='color:#0360e9;text-align:center;margin-bottom:18px;font-size:1.2rem;'>Bem-vindo à equipa Tlantic!</h2>
-                                <p style='color:#23408e;font-size:1.05rem;text-align:center;'>Para completar o seu processo de integração, clique no botão abaixo:</p>
-                                <div style='text-align:center;margin:22px 0;'>
-                                    <a href='$linkOnboarding' style='background:#0360e9;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:1.1rem;'>Completar Onboarding</a>
-                                </div>
-                                <p style='color:#444;text-align:center;font-size:0.98rem;margin-bottom:18px;'>
-                                    Se não conseguir clicar, copie e cole este link no navegador:<br>
-                                    <span style='color:#0360e9;font-size:0.95em;'>$linkOnboarding</span>
-                                </p>
-                                <div style='text-align:center;margin-top:18px;'>
-                                    <img src='https://www.tlantic.com/wp-content/uploads/2021/03/logo-tlantic.png' alt='Tlantic' style='height:22px;opacity:0.7;'>
-                                </div>
-                            </div>
-                        </div>
-                    ";
-                    
-                    // Usar enviarEmailSimples para garantir HTML
-                    $emailEnviado = $notBLL->enviarEmailSimples($emailPessoal, $assunto, $mensagem);
-                    
-                    if ($emailEnviado) {
-                        error_log("Email de onboarding enviado para: $emailPessoal");
-                    } else {
-                        error_log("Falha no envio do email para: $emailPessoal");
-                    }
-                    
-                    return true;
-                }
-            }
-            
-            return false;
-            
-        } catch (Exception $e) {
-            error_log("Erro no processo de onboarding: " . $e->getMessage());
+        // Log início do processo
+        error_log("[CONVIDADO] Início criarUtilizadorConvidado para $emailPessoal");
+        $token = bin2hex(random_bytes(24));
+        $username = strtolower(preg_replace('/[^a-z0-9]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $nome))) . rand(100,999);
+        $password = bin2hex(random_bytes(4));
+        $perfil_convidado = 1; // ID do perfil 'convidado', ajuste conforme necessário
+
+        // Validação de email
+        $emailPessoal = trim($emailPessoal);
+        if (!filter_var($emailPessoal, FILTER_VALIDATE_EMAIL)) {
+            error_log("[CONVIDADO] Email inválido: $emailPessoal");
             return false;
         }
->>>>>>> Stashed changes
+
+        $utilizadorId = $this->dal->criarUtilizadorConvidado($username, $perfil_convidado, $password);
+        if (!$utilizadorId) {
+            error_log("[CONVIDADO] Falha ao criar utilizador convidado na DAL");
+            return false;
+        }
+
+        $dados = [
+            'nome' => $nome,
+            'email_pessoal' => $emailPessoal,
+            'data_inicio_contrato' => $dataInicioContrato,
+            'perfil_destino_id' => $perfilDestinoId,
+            'token' => $token,
+            'utilizador_id' => $utilizadorId
+        ];
+        $ok = $this->dal->criarOnboardingTemp($dados);
+        if (!$ok) {
+            error_log("[CONVIDADO] Falha ao criar onboarding_temp na DAL");
+            return false;
+        }
+
+        // Montar email
+        $link = "http://localhost/LSIS1_Grupo_7_GitHub/UI/Convidado/onboarding_convidado.php?token=$token";
+        $ano = date('Y');
+        $body = '
+        <div style="background:#f7f7fa;padding:32px 0;">
+            <div style="max-width:420px;margin:0 auto;background:#fff;border-radius:12px;box-shadow:0 2px 16px rgba(102,126,234,0.10);padding:32px 28px 28px 28px;font-family:\'Segoe UI\',Arial,sans-serif;">
+                <div style="text-align:center;margin-bottom:18px;">
+                    <img src="https://i.imgur.com/8oQw7Qz.png" alt="Tlantic" style="height:48px;">
+                </div>
+                <h2 style="color:#667eea;text-align:center;margin-bottom:18px;font-weight:700;letter-spacing:0.5px;font-size:1.2rem;">Onboarding - Portal Tlantic</h2>
+                <div style="color:#333;text-align:center;font-size:1.05rem;margin-bottom:24px;">
+                    Olá <b>' . htmlspecialchars($nome) . '</b>,<br><br>
+                    Foi iniciado o seu processo de onboarding na Tlantic.<br>
+                    Por favor, aceda ao seguinte link para preencher os seus dados:<br>
+                    <a href="' . $link . '" style="color:#0360e9;text-decoration:underline;word-break:break-all;">' . $link . '</a><br><br>
+                    Obrigado.
+                </div>
+                <div style="margin-top:32px;text-align:center;color:#aaa;font-size:0.90rem;">
+                    &copy; ' . $ano . ' Tlantic. Todos os direitos reservados.
+                </div>
+            </div>
+        </div>
+        ';
+
+        // Enviar email com PHPMailer
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->CharSet = 'UTF-8';
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'suportetlantic@gmail.com';
+            $mail->Password   = 'qfas jxch tmub iboy';
+            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port= 587;
+
+            $mail->setFrom('suportetlantic@gmail.com', 'Portal Tlantic');
+            $mail->addAddress($emailPessoal);
+            $mail->isHTML(true);
+            $mail->Subject = 'Notificação - Portal Tlantic';
+            $mail->Body = $body;
+            $mail->AltBody = "Olá $nome,\n\nFoi iniciado o seu processo de onboarding na Tlantic. Aceda ao link: $link\n\nObrigado.";
+
+            $mail->send();
+            error_log("[CONVIDADO] Email enviado com sucesso para $emailPessoal");
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            error_log("[CONVIDADO] Erro PHPMailer: " . $e->getMessage());
+            return false;
+        }
+        return true;
     }
 
-    public function criarOnboardingTemp($dados, $token) {
-        return $this->dal->criarOnboardingTemp($dados, $token);
+    public function criarOnboardingTemp($dados) {
+        return $this->dal->criarOnboardingTemp($dados);
     }
 
     public function getOnboardingTempByToken($token) {

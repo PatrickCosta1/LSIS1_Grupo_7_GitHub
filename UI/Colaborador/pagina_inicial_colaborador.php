@@ -4,6 +4,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['profile'] !== 'colaborador') {
     header('Location: ../Comuns/erro.php');
     exit();
 }
+
+// VERIFICAÇÃO AUTOMÁTICA DE ALERTAS
+require_once '../../BLL/Comuns/BLL_verificador_alertas.php';
+VerificadorAlertas::verificarAlertasColaborador($_SESSION['user_id']);
+
 require_once '../../BLL/Colaborador/BLL_dashboard_colaborador.php';
 $colabBLL = new ColaboradorDashboardManager();
 $nome = htmlspecialchars($colabBLL->getColaboradorName($_SESSION['user_id']));

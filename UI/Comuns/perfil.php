@@ -22,34 +22,9 @@ if ($colab) {
     error_log("Colaborador ID extraído: " . $colaborador_id);
 }
 
-if ($colaborador_id) {
-    try {
         $formacoesInscritas = $userBLL->getFormacoesPorColaborador($colaborador_id);
         $pedidosFerias = $userBLL->getPedidosFeriasPorColaborador($colaborador_id);
-        
-        error_log("=== DEBUG PERFIL FINAL ===");
-        error_log("User ID (sessão): " . $_SESSION['user_id']);
-        error_log("Colaborador dados completos: " . print_r($colab, true));
-        error_log("Colaborador ID usado na query: " . $colaborador_id);
-        error_log("Formações encontradas: " . count($formacoesInscritas));
-        error_log("Pedidos de férias encontrados: " . count($pedidosFerias));
-        
-        if (!empty($pedidosFerias)) {
-            error_log("SUCESSO: Pedidos de férias encontrados!");
-            foreach ($pedidosFerias as $index => $pedido) {
-                error_log("Pedido " . ($index + 1) . ": " . print_r($pedido, true));
-            }
-        } else {
-            error_log("PROBLEMA: Nenhum pedido de férias encontrado para colaborador_id = " . $colaborador_id);
-        }
-    } catch (Exception $e) {
-        error_log("EXCEÇÃO no perfil: " . $e->getMessage());
-        $formacoesInscritas = [];
-        $pedidosFerias = [];
-    }
-} else {
-    error_log("ERRO: colaborador_id é null. Dados do colaborador: " . print_r($colab, true));
-}
+
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -78,33 +53,35 @@ if ($colaborador_id) {
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;">
     </a>
     <nav>
-        <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
-      <button id="open-chatbot" style="
-          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
-          color:rgb(255, 255, 255);
-          border: none;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          font-size: 28px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          ">
-        ?
-      </button>
-      <iframe
-        id="chatbot-iframe"
-        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
-        title="Ajuda Chatbot"
-        width="350"
-        height="500"
-        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-      </iframe>
-    </div>
-    <script src="../../assets/chatbot.js"></script>
+        <?php if ($_SESSION['profile'] === 'colaborador'): ?>
+            <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+              <button id="open-chatbot" style="
+                  background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
+                  color:rgb(255, 255, 255);
+                  border: none;
+                  border-radius: 50%;
+                  width: 60px;
+                  height: 60px;
+                  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+                  font-size: 28px;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  ">
+                ?
+              </button>
+              <iframe
+                id="chatbot-iframe"
+                src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
+                title="Ajuda Chatbot"
+                width="350"
+                height="500"
+                style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+              </iframe>
+            </div>
+            <script src="../../assets/chatbot.js"></script>
+        <?php endif; ?>
 
         <?php if ($_SESSION['profile'] === 'coordenador'): ?>
             <?php
@@ -159,33 +136,16 @@ if ($colaborador_id) {
             </div>
             <a href="../Comuns/logout.php">Sair</a>
         <?php elseif ($_SESSION['profile'] === 'admin'): ?>
-            <a href="../Admin/dashboard_admin.php">Dashboard</a>
-            <a href="../Admin/utilizadores.php">Utilizadores</a>
+            <<a href="../Admin/utilizadores.php">Utilizadores</a>
             <a href="../Admin/permissoes.php">Permissões</a>
-            <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
             <a href="../Admin/alertas.php">Alertas</a>
-            <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
-            <a href="../RH/equipas.php">Equipas</a>
-            <a href="../RH/relatorios.php">Relatórios</a>
-            <div class="dropdown-perfil">
-                <a href="../Comuns/perfil.php" class="perfil-link">
-                    Perfil
-                    <span class="seta-baixo">▾</span>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="../Colaborador/ficha_colaborador.php">Ficha Colaborador</a>
-                    <a href="../Colaborador/beneficios.php">Benefícios</a>
-                    <a href="../Colaborador/ferias.php">Férias</a>
-                    <a href="../Colaborador/formacoes.php">Formações</a>
-                    <a href="../Colaborador/recibos.php">Recibos</a>
-                </div>
-            </div>
-            <a href="../Comuns/logout.php">Sair</a>
+            <a href="../Comuns/perfil.php" class="perfil-link">Perfil</a>
+            <a href="../Comuns/logout.php" class="sair-link">Sair</a>
         <?php elseif ($_SESSION['profile'] === 'rh'): ?>
-            <div class="dropdown-equipas">
+                <div class="dropdown-equipas">
                 <a href="../RH/equipas.php" class="equipas-link">
                     Equipas
-                    <span class="seta-baixo">▾</span>
+                    <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
                     <a href="../RH/relatorios.php">Relatórios</a>
@@ -195,7 +155,7 @@ if ($colaborador_id) {
             <div class="dropdown-colaboradores">
                 <a href="../RH/colaboradores_gerir.php" class="colaboradores-link">
                     Colaboradores
-                    <span class="seta-baixo">▾</span>
+                    <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
                     <a href="../RH/exportar.php">Exportar</a>
@@ -204,19 +164,20 @@ if ($colaborador_id) {
             <div class="dropdown-gestao">
                 <a href="#" class="gestao-link">
                     Gestão
-                    <span class="seta-baixo">▾</span>
+                    <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
                     <a href="../RH/gerir_beneficios.php">Gerir Benefícios</a>
                     <a href="../RH/gerir_formacoes.php">Gerir Formações</a>
                     <a href="../RH/gerir_recibos.php">Submeter Recibos</a>
+                    <a href="../RH/campos_personalizados.php">Campos Personalizados</a>
                 </div>
             </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>
             <div class="dropdown-perfil">
                 <a href="../Comuns/perfil.php" class="perfil-link">
                     Perfil
-                    <span class="seta-baixo">▾</span>
+                    <span class="seta-baixo">&#9662;</span>
                 </a>
                 <div class="dropdown-menu">
                     <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
@@ -327,15 +288,18 @@ if ($colaborador_id) {
                         </div>
                         <div class="evento-status">
                             <strong>Estado:</strong> 
-                            <span class="status-<?php echo strtolower($pedido['status'] ?? 'pendente'); ?>">
+                            <span class="status-<?php echo strtolower($pedido['estado'] ?? 'pendente'); ?>">
                                 <?php 
-                                $status = $pedido['status'] ?? 'pendente';
-                                switch(strtolower($status)) {
+                                $estado = strtolower(trim($pedido['estado'] ?? 'pendente'));
+                                switch($estado) {
                                     case 'aceite':
                                     case 'aprovado':
+                                    case 'aprovada':
                                         echo '✅ Aprovado';
                                         break;
                                     case 'recusado':
+                                    case 'rejeitado':
+                                    case 'recusada':
                                         echo '❌ Recusado';
                                         break;
                                     case 'pendente':
@@ -346,14 +310,14 @@ if ($colaborador_id) {
                                 ?>
                             </span>
                         </div>
+                        <?php if (!empty($pedido['observacoes'])): ?>
+                        <div class="evento-observacoes">
+                            <strong>Observações:</strong> <?php echo htmlspecialchars($pedido['observacoes']); ?>
+                        </div>
+                        <?php endif; ?>
                         <?php if (!empty($pedido['data_pedido'])): ?>
                             <div class="evento-data-pedido">
                                 <strong>Pedido feito em:</strong> <?php echo date('d/m/Y H:i', strtotime($pedido['data_pedido'])); ?>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (!empty($pedido['observacoes'])): ?>
-                            <div class="evento-observacoes">
-                                <strong>Observações:</strong> <?php echo htmlspecialchars($pedido['observacoes']); ?>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -361,18 +325,14 @@ if ($colaborador_id) {
             <?php else: ?>
                 <div class="calendario-vazio">
                     <p>Não tens pedidos de férias registados.</p>
-                    <p style="font-size: 0.8rem; color: #666; margin-top: 8px;">
-                        Debug Info:<br>
-                        User ID: <?php echo $_SESSION['user_id']; ?><br>
-                        Colaborador ID: <?php echo $colaborador_id ?: 'null'; ?><br>
-                        Colaborador encontrado: <?php echo $colab ? 'SIM' : 'NÃO'; ?><br>
-                        <?php if ($colab): ?>
-                            Colaborador.id: <?php echo $colab['id'] ?? 'NULL'; ?><br>
-                            Colaborador.utilizador_id: <?php echo $colab['utilizador_id'] ?? 'NULL'; ?>
-                        <?php endif; ?>
-                    </p>
                 </div>
             <?php endif; ?>
+            <!-- DEBUG: Mostrar conteúdo real de $pedidosFerias -->
+            <!-- <pre style="background:#f8f8f8;color:#333;font-size:0.9em;padding:8px;border-radius:6px;overflow-x:auto;max-width:100%;margin-bottom:12px;">
+            <?php
+            // echo 'DEBUG pedidosFerias (json): ' . json_encode($pedidosFerias, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            ?>
+            </pre> -->
         </div>
     </div>
 </div>

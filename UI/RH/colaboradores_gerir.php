@@ -5,9 +5,9 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admi
     exit();
 }
 require_once '../../BLL/RH/BLL_colaboradores_gerir.php';
+require_once '../../BLL/Comuns/BLL_notificacoes.php'; // <--- Adicione esta linha
+
 $colabBLL = new RHColaboradoresManager();
-<<<<<<< Updated upstream
-=======
 $notBLL = new NotificacoesManager();
 
 $import_success = '';
@@ -140,8 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['importar_colaborador'
         }
     }
 }
->>>>>>> Stashed changes
-
 // --- Remover colaborador ---
 if (isset($_GET['remover']) && is_numeric($_GET['remover'])) {
     $colabBLL->removerColaboradorComUtilizador((int)$_GET['remover']);
@@ -157,27 +155,149 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
     <meta charset="UTF-8">
     <title>Gestão de Colaboradores - Portal Tlantic</title>
     <link rel="stylesheet" href="../../assets/CSS/RH/colaboradores_gerir.css">
+    <style>
+    /* Modal centralizado para importar colaborador */
+    .importar-modal-bg {
+        display: none;
+        position: fixed;
+        z-index: 3000;
+        left: 0; top: 0; right: 0; bottom: 0;
+        background: rgba(25,54,95,0.32);
+        justify-content: center;
+        align-items: center;
+        animation: fadeInBg 0.25s;
+    }
+    .importar-modal-bg.active,
+    .importar-modal-bg[style*="display: flex"] {
+        display: flex !important;
+    }
+    .importar-modal {
+        background: linear-gradient(135deg, #fafdff 0%, #eaf6ff 100%);
+        border-radius: 22px;
+        max-width: 420px;
+        width: 92vw;
+        padding: 38px 32px 28px 32px;
+        box-shadow: 0 12px 48px rgba(3,96,233,0.20), 0 2px 12px rgba(0,0,0,0.08);
+        text-align: center;
+        position: relative;
+        animation: modalPopIn 0.33s cubic-bezier(.23,1.12,.62,1.01);
+        border: 2.5px solid #299cf3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .importar-modal-close {
+        position: absolute;
+        top: 18px;
+        right: 24px;
+        background: none;
+        border: none;
+        font-size: 2.1rem;
+        color: #299cf3;
+        cursor: pointer;
+        transition: color 0.2s, transform 0.18s;
+        font-weight: bold;
+        z-index: 2;
+        line-height: 1;
+        opacity: 0.85;
+    }
+    .importar-modal-close:hover {
+        color: #e53e3e;
+        transform: scale(1.18) rotate(8deg);
+    }
+    .importar-modal h2 {
+        color: #0360e9;
+        font-size: 1.35rem;
+        margin-bottom: 18px;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+        text-shadow: 0 2px 8px rgba(3,96,233,0.07);
+    }
+    .importar-modal .info {
+        color: #23408e;
+        font-size: 1.08rem;
+        margin-bottom: 18px;
+        line-height: 1.6;
+        font-weight: 500;
+    }
+    .importar-modal form label {
+        display: block;
+        margin-bottom: 8px;
+        color: #1c3c69;
+        font-weight: 500;
+        font-size: 1rem;
+        text-align: left;
+    }
+    .importar-modal input[type="email"],
+    .importar-modal input[type="file"],
+    .importar-modal select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #c3cfe2;
+        border-radius: 8px;
+        font-size: 1rem;
+        margin-bottom: 12px;
+        background: #f5f7fa;
+        color: #1c3c69;
+        transition: border 0.2s;
+    }
+    .importar-btn {
+        background: linear-gradient(135deg, #ff8c00 0%, #ffd580 100%);
+        color: #23408e;
+        font-weight: 700;
+        border-radius: 7px;
+        box-shadow: 0 2px 8px #ff8c001a;
+        padding: 12px 28px;
+        transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+        margin-top: 10px;
+        outline: none;
+        border: none;
+        cursor: pointer;
+    }
+    .importar-btn:hover {
+        background: linear-gradient(135deg, #ffd580 0%, #ff8c00 100%);
+        color: #fff;
+        transform: translateY(-2px) scale(1.03);
+    }
+    </style>
     <script>
     function confirmarRemocao(nome, id) {
         if (confirm('Tem a certeza que deseja remover o colaborador "' + nome + '"? Esta ação é irreversível.')) {
             window.location.href = 'colaboradores_gerir.php?remover=' + id;
         }
     }
+    function abrirModalImportar() {
+        document.getElementById('modal-importar-bg').style.display = 'flex';
+    }
+    function fecharModalImportar() {
+        document.getElementById('modal-importar-bg').style.display = 'none';
+    }
+    function mostrarInfoCSV() {
+        document.getElementById('csv-info-modal-bg').style.display = 'flex';
+    }
+    function fecharInfoCSV() {
+        document.getElementById('csv-info-modal-bg').style.display = 'none';
+    }
+    // Fechar modal ao clicar fora
+    document.addEventListener('mousedown', function(event) {
+        const modalBg = document.getElementById('modal-importar-bg');
+        const infoBg = document.getElementById('csv-info-modal-bg');
+        if (event.target === modalBg) fecharModalImportar();
+        if (event.target === infoBg) fecharInfoCSV();
+    });
+    // Fechar modal com ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            fecharModalImportar();
+            fecharInfoCSV();
+        }
+    });
     </script>
 </head>
 <body>
     <header>
         <img src="../../assets/tlantic-logo2.png" alt="Logo Tlantic" class="logo-header" style="cursor:pointer;" onclick="window.location.href='pagina_inicial_RH.php';">
         <nav>
-            <?php if ($_SESSION['profile'] === 'admin'): ?>
-                <a href="../Admin/utilizadores.php">Utilizadores</a>
-                <a href="../Admin/permissoes.php">Permissões</a>
-                <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
-                <a href="../Admin/alertas.php">Alertas</a>
-                <a href="colaboradores_gerir.php">Colaboradores</a>
-                <a href="../Comuns/perfil.php">Perfil</a>
-                <a href="../Comuns/logout.php">Sair</a>
-            <?php else: ?>
                <div class="dropdown-equipas">
                 <a href="equipas.php" class="equipas-link">
                     Equipas
@@ -206,6 +326,7 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                     <a href="gerir_beneficios.php">Gerir Benefícios</a>
                     <a href="gerir_formacoes.php">Gerir Formações</a>
                     <a href="gerir_recibos.php">Submeter Recibos</a>
+                    <a href="campos_personalizados.php">Campos Personalizados</a>
                 </div>
             </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>
@@ -219,8 +340,6 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                 </div>
             </div>
             <a href="../Comuns/logout.php">Sair</a>
-
-            <?php endif; ?>
         </nav>
     </header>
     <div class="portal-brand">
@@ -233,6 +352,55 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
     </div>
     <main>
         <h1>Gestão de Colaboradores</h1>
+        <div class="rh-actions-bar">
+            <a href="colaborador_novo.php" class="rh-action-btn add-colab-btn">Adicionar Novo Colaborador</a>
+            <button class="rh-action-btn importar" onclick="abrirModalImportar()">Importar Colaborador Existente</button>
+        </div>
+        <!-- Modal Importar Colaborador (centralizado) -->
+        <div class="importar-modal-bg" id="modal-importar-bg">
+            <div class="importar-modal">
+                <span class="importar-modal-close" onclick="fecharModalImportar()">&times;</span>
+                <h2>Importar Colaborador Existente</h2>
+                <div class="info">
+                    Preencha os campos e selecione o ficheiro CSV do colaborador.<br>
+                </div>
+                <?php if (!empty($import_error)): ?>
+                    <div class="error-message"><?= htmlspecialchars($import_error) ?></div>
+                <?php elseif (!empty($import_success)): ?>
+                    <div class="success-message"><?= htmlspecialchars($import_success) ?></div>
+                <?php endif; ?>
+                <form method="post" enctype="multipart/form-data" autocomplete="off">
+                    <label>Email para envio das credenciais:</label>
+                    <input type="email" name="email_import" required placeholder="Email pessoal do colaborador">
+                    <label>Email da empresa (login):</label>
+                    <input type="email" name="email_empresa_import" required placeholder="Email institucional">
+                    <label>Cargo/Perfil:</label>
+                    <select name="perfil_id_import" required>
+                        <option value="2">Colaborador</option>
+                        <option value="3">Coordenador</option>
+                        <option value="4">RH</option>
+                    </select>
+                    <label>Ficheiro CSV:</label>
+                    <input type="file" name="csv_import" accept=".csv" required>
+                    <button type="submit" class="importar-btn" name="importar_colaborador">Importar</button>
+                </form>
+            </div>
+        </div>
+        <!-- Popup de informações CSV -->
+        <div class="csv-info-modal-bg" id="csv-info-modal-bg" style="display:none;">
+            <div class="csv-info-modal">
+                <span class="csv-info-modal-close" onclick="fecharInfoCSV()">&times;</span>
+                <h3>Como preparar o ficheiro CSV?</h3>
+                <div class="csv-info-content">
+                    <p>O ficheiro CSV deve conter uma linha de cabeçalho com os nomes dos campos e uma linha com os dados do colaborador.<br>
+                    <b>Campos aceitos:</b> nome, apelido, nome_abreviado, num_mecanografico, data_nascimento, telemovel, sexo, habilitacoes, curso, matricula_viatura, morada, localidade, codigo_postal, cc, nif, niss, iban, situacao_irs, dependentes, irs_jovem, primeiro_ano_descontos, cartao_continente, voucher_nos, nome_contacto_emergencia, grau_relacionamento, contacto_emergencia, data_inicio_contrato, data_fim_contrato, remuneracao, tipo_contrato, regime_horario, estado_civil, morada_fiscal</p>
+                    <p><b>Exemplo de cabeçalho:</b></p>
+                    <pre style="background:#f7f7fa;padding:8px;border-radius:6px;font-size:0.95em;">nome,apelido,data_nascimento,telemovel,sexo,habilitacoes,curso</pre>
+                    <p><b>Exemplo de linha de dados:</b></p>
+                    <pre style="background:#f7f7fa;padding:8px;border-radius:6px;font-size:0.95em;">João,Silva,1990-05-12,912345678,M,Licenciatura,Engenharia</pre>
+                </div>
+            </div>
+        </div>
         <div class="tabela-colaboradores-wrapper">
             <table class="tabela-colaboradores tabela-colaboradores-compacta">
                 <thead>
@@ -281,46 +449,19 @@ $colaboradores = $colabBLL->getAllColaboradores($_SESSION['user_id']);
                 </tbody>
             </table>
         </div>
-<<<<<<< Updated upstream
-        <a href="colaborador_novo.php" class="btn add-colab-btn">Adicionar Novo Colaborador</a>
-=======
         <div style="height: 60px;"></div>
-        <div id="modal-importar">
-            <div class="modal-content">
-                <form method="post" enctype="multipart/form-data">
-                    <h2>Importar Colaborador Existente</h2>
-                    <?php if ($import_error): ?>
-                        <div class="erro"><?= htmlspecialchars($import_error) ?></div>
-                    <?php elseif ($import_success): ?>
-                        <div class="sucesso"><?= htmlspecialchars($import_success) ?></div>
-                    <?php endif; ?>
-                    <label for="email_import">Email para envio das credenciais:</label>
-                    <input type="email" name="email_import" id="email_import" required>
-                    <label for="email_empresa_import">Email da empresa (será usado como login):</label>
-                    <input type="email" name="email_empresa_import" id="email_empresa_import" required>
-                    <label for="perfil_id_import">Cargo:</label>
-                    <select name="perfil_id_import" id="perfil_id_import" required>
-                        <option value="2">Colaborador</option>
-                        <option value="3">Coordenador</option>
-                        <option value="4">RH</option>
-                    </select>
-                    <label for="csv_import">Ficheiro CSV:</label>
-                    <input type="file" name="csv_import" id="csv_import" accept=".csv" required>
-                    <div style="margin-top:16px;">
-                        <button type="submit" name="importar_colaborador" class="btn">Importar</button>
-                        <button type="button" class="btn btn-cancelar" onclick="fecharModalImportar()">Cancelar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <script>
-        // Fechar modal ao clicar fora
-        window.onclick = function(event) {
-            const modal = document.getElementById('modal-importar');
-            if (event.target === modal) fecharModalImportar();
-        }
-        </script>
->>>>>>> Stashed changes
     </main>
+
+    <script>
+    document.getElementById('btnImportarCSV').onclick = function() {
+        document.getElementById('csvInfoModal').classList.add('active');
+    };
+    document.getElementById('closeCsvModal').onclick = function() {
+        document.getElementById('csvInfoModal').classList.remove('active');
+    };
+    document.getElementById('csvInfoModal').onclick = function(e) {
+        if (e.target === this) this.classList.remove('active');
+    };
+    </script>
 </body>
 </html>

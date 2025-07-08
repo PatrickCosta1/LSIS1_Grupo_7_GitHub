@@ -24,10 +24,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $otp = $_POST['otp'] ?? null;
     $user_id_2fa = $_POST['user_id_2fa'] ?? null;
+    $reset_2fa = isset($_POST['reset_2fa']); // NOVO: botão para resetar 2FA
+
+    $loginResult = null; // <-- Corrige o warning de variável indefinida
 
     try {
         $auth = new Authenticator();
-        if ($user_id_2fa && $otp) {
+        if ($user_id_2fa && $reset_2fa) {
+            // Gerar novo secret e mostrar QR code
+            $userRow = (new \DAL_Login())->getUserById($user_id_2fa);
+            $google2fa = new \PragmaRX\Google2FA\Google2FA();
+            $newSecret = $google2fa->generateSecretKey();
+            (new \DAL_Login())->setGoogle2FASecret($user_id_2fa, $newSecret);
+            $qrCodeUrl = $google2fa->getQRCodeUrl(
+                'Portal Tlantic',
+                $userRow['email'],
+                $newSecret
+            );
+            $renderer = new \BaconQrCode\Renderer\ImageRenderer(
+                new \BaconQrCode\Renderer\RendererStyle\RendererStyle(200),
+                new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+            );
+            $writer = new \BaconQrCode\Writer($renderer);
+            $qrCodeSvg = $writer->writeString($qrCodeUrl);
+            $qrCodeDataUri = 'data:image/svg+xml;base64,' . base64_encode($qrCodeSvg);
+            $show_2fa_setup = true;
+            $google2fa_secret = $newSecret;
+            $user_id_2fa = $user_id_2fa;
+            // Não faz login neste fluxo, então $loginResult permanece null
+        } elseif ($user_id_2fa && $otp) {
             // Segunda etapa: validar OTP
             $userRow = (new \DAL_Login())->getUserById($user_id_2fa);
             $loginResult = $auth->login($userRow['username'], $password ?: $userRow['password'], $otp);
@@ -139,6 +164,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="text" name="otp" id="otp" required pattern="\d{6}" maxlength="6" autofocus>
                     <button type="submit" class="login-btn">Validar 2FA</button>
                 </form>
+                <form method="POST" action="" style="margin-top:10px;">
+                    <input type="hidden" name="user_id_2fa" value="<?php echo htmlspecialchars($user_id_2fa); ?>">
+                    <button type="submit" name="reset_2fa" class="login-btn" style="background:#e6eaf7;color:#0360e9;">Ler novo QR Code</button>
+                </form>
+                <div style="margin-top:8px;font-size:0.95em;color:#888;">Problemas com o código? Associe novamente o Google Authenticator.</div>
             </div>
         <?php else: ?>
             <form method="POST" action="" id="loginForm" autocomplete="on">
@@ -208,33 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <script src="../../assets/login.js"></script> <!-- Corrigido caminho -->
 
-    <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
-      <button id="open-chatbot" style="
-          background: linear-gradient(135deg,rgb(145, 233, 255) 0%,rgb(135, 223, 255) 100%);
-          color: #1c3c69;
-          border: none;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          font-size: 28px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          ">
-        ?
-      </button>
-      <iframe
-        id="chatbot-iframe"
-        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
-        title="Ajuda Chatbot"
-        width="350"
-        height="500"
-        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-      </iframe>
-    </div>
-    <script src="../../assets/chatbot.js"></script>
+
 </body>
 </html>
 

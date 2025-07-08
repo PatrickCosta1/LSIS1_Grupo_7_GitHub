@@ -5,6 +5,10 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// VERIFICAÇÃO AUTOMÁTICA DE ALERTAS
+require_once '../../BLL/Comuns/BLL_verificador_alertas.php';
+VerificadorAlertas::verificarAlertasColaborador($_SESSION['user_id']);
+
 $colaboradorId = null;
 $userId = $_SESSION['user_id'];
 $perfil = $_SESSION['profile'] ?? '';
@@ -13,34 +17,43 @@ $isCoord = ($perfil === 'coordenador');
 $isRH = ($perfil === 'rh');
 $isAdmin = ($perfil === 'admin');
 
+
 if (!$userId || !in_array($perfil, ['colaborador', 'coordenador', 'rh', 'admin'])) {
     header('Location: ../Comuns/erro.php');
     exit();
 }
 
 require_once '../../BLL/Colaborador/BLL_ficha_colaborador.php';
+require_once '../../BLL/RH/BLL_campos_personalizados.php';
 $colabBLL = new ColaboradorFichaManager();
+$camposBLL = new CamposPersonalizadosManager();
 
+// Buscar colaborador pelo ID de colaborador
 $editColabId = $_GET['id'] ?? null;
 $targetUserId = $userId;
 
+
+$camposExtra = $camposBLL->getCamposPersonalizados(); // Vai buscar a lista de campos (nome, tipo, id)
+$valoresExtra = [];
+if (!empty($colab['id'])) {
+    $valoresExtra = $colabBLL->getCamposPersonalizadosValores($colab['id']); // Vai buscar os valores para o colaborador
+}
+
+
+
 if (in_array($perfil, ['rh', 'admin']) && $editColabId) {
-    // Buscar colaborador pelo ID de colaborador
     $colab = $colabBLL->getColaboradorById($editColabId);
     if ($colab && isset($colab['utilizador_id'])) {
         $targetUserId = $colab['utilizador_id'];
     } else {
-        // Mostra erro apenas se realmente não existir colaborador com esse ID
         echo "<div style='color:red;padding:24px;'>Colaborador não encontrado (ID: ".htmlspecialchars($editColabId).").</div>";
         exit();
     }
 } else {
-    // Colaborador só pode ver a própria ficha
     if ($isColab && $editColabId && $editColabId != $userId) {
         header('Location: ../Comuns/erro.php');
         exit();
     }
-    // Coordenador pode ver a ficha de outros (adicionar validação de equipa se necessário)
     if ($isCoord && $editColabId) {
         $colab = $colabBLL->getColaboradorById($editColabId);
     } else {
@@ -262,6 +275,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($colabBLL->updateColaboradorByUserId($targetUserId, $dados, $perfil)) {
         if ($canEditAll) {
             $success_message = "Dados atualizados com sucesso!";
+            $modal_type = "rh";
         } else {
             // Notificar RH
             require_once '../../BLL/Comuns/BLL_notificacoes.php';
@@ -273,8 +287,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $nomeColab = $colab['nome'] ?? '';
             $notBLL->notificarRH("O colaborador $nomeColab solicitou alteração de dados na ficha. Acesse a área de aprovações.");
-            // Mensagem para popup
-            $success_message = "O seu pedido de alteração foi enviado e será analisado pelo RH. Em breve terá uma resposta.";
+            // Mensagem para modal
+            $success_message = "Pedido de atualização de dados enviado!";
+            $modal_type = "colaborador";
         }
         // Recarregar dados após atualização
         if (in_array($perfil, ['rh', 'admin']) && $editColabId) {
@@ -284,6 +299,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } else {
         $error_message = "Erro ao atualizar dados.";
+    }
+
+    // Salvar campos extra (campos personalizados)
+    $camposExtraValores = [];
+    foreach ($camposExtra as $campo) {
+        $campoId = $campo['id'];
+        $campoNome = 'campo_extra_' . $campoId;
+        if (isset($_POST[$campoNome])) {
+            $camposExtraValores[$campoId] = $_POST[$campoNome];
+        }
+    }
+    if (!empty($camposExtraValores) && !empty($colab['id'])) {
+        $colabBLL->salvarCamposPersonalizadosValores($colab['id'], $camposExtraValores);
     }
 }
 ?>
@@ -439,7 +467,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php elseif ($perfil === 'admin'): ?>
                 <a href="../Admin/utilizadores.php">Utilizadores</a>
                 <a href="../Admin/permissoes.php">Permissões</a>
-                <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
                 <a href="../Admin/alertas.php">Alertas</a>
                 <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
                 <a href="../Comuns/perfil.php">Perfil</a>
@@ -516,7 +543,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php elseif ($perfil === 'admin'): ?>
             <a href="../Admin/utilizadores.php">Utilizadores</a>
             <a href="../Admin/permissoes.php">Permissões</a>
-            <a href="../Admin/campos_personalizados.php">Campos Personalizados</a>
             <a href="../Admin/alertas.php">Alertas</a>
             <a href="../RH/colaboradores_gerir.php">Colaboradores</a>
             <a href="../Comuns/logout.php">Sair</a>
@@ -533,6 +559,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button type="button" class="menu-link" data-scroll="#ficha-vouchers">Informações Vouchers</button>
     <button type="button" class="menu-link" data-scroll="#ficha-emergencia">Contacto Emergência</button>
     <button type="button" class="menu-link" data-scroll="#ficha-contratual">Situação Contratual</button>
+    <button type="button" class="menu-link" data-scroll="#ficha-campos-extra">Campos Extra</button>
 </div>
 
 <main>
@@ -781,7 +808,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="ficha-section-titulo">Informações Fiscais</div>
     <div class="ficha-grid">
         <?php if ($canEditAll || $isColab || $isOwnFicha): ?>
-            <!-- Campos movidos para esta seção -->
+            <!-- Link Gerar Mod 99 -->
+            <?php if ($isColab && $isOwnFicha): ?>
+                <div class="ficha-campo" style="grid-column: 1 / -1;">
+                    <a href="mod99_gerar.php" target="_blank" class="btn" style="background:#0360e9;color:#fff;margin-bottom:12px;display:inline-block;text-decoration:none;">
+                        📝 Gerar Mod 99 (PDF)
+                    </a>
+                    <span style="font-size:0.95em;color:#666;margin-left:8px;">Baixe, assine e faça upload do Mod 99 assinado.</span>
+                </div>
+            <?php endif; ?>
+            <!-- Campos fiscais existentes -->
             <div class="ficha-campo">
                 <label>Morada Fiscal:</label>
                 <input type="text" name="morada_fiscal" value="<?php echo htmlspecialchars($colab['morada_fiscal'] ?? ''); ?>" 
@@ -938,10 +974,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="ficha-campo">
                 <label>Remuneração:</label>
                 <div class="remuneracao-container">
-                    <span class="euro-symbol">€</span>
                     <input type="number" name="remuneracao" step="0.01" min="0" placeholder="0.00" 
-                           value="<?php echo htmlspecialchars(str_replace('€', '', $colab['remuneracao'] ?? '')); ?>" 
+                           value="<?php echo htmlspecialchars($colab['remuneracao'] ?? ''); ?>" 
                            <?php echo fieldAttr('remuneracao', $canEditAll, []); ?>>
+                    <span class="euro-symbol">€</span>
                 </div>
             </div>
             <div class="ficha-campo">
@@ -977,7 +1013,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
     </div>
 </div>
-       
+
+
+            <!-- Ficha Campos Extra -->
+<div id="ficha-campos-extra" class="ficha-container ficha-container-extra">
+    <div class="ficha-section-titulo">Campos Extra</div>
+    <div class="ficha-grid">
+        <?php if (!empty($camposExtra)): ?>
+            <?php foreach ($camposExtra as $campo): 
+                $campoId = $campo['id'];
+                $campoNome = 'campo_extra_' . $campoId;
+                $valor = isset($valoresExtra[$campoId]['valor']) ? $valoresExtra[$campoId]['valor'] : '';
+                $tipo = $campo['tipo'];
+                $label = htmlspecialchars($campo['nome']);
+            ?>
+                <div class="ficha-campo">
+                    <label><?= $label ?>:</label>
+                    <?php if ($tipo === 'data'): ?>
+                        <input type="date" name="<?= $campoNome ?>" value="<?= htmlspecialchars($valor) ?>">
+                    <?php elseif ($tipo === 'numero'): ?>
+                        <input type="number" name="<?= $campoNome ?>" value="<?= htmlspecialchars($valor) ?>">
+                    <?php elseif ($tipo === 'email'): ?>
+                        <input type="email" name="<?= $campoNome ?>" value="<?= htmlspecialchars($valor) ?>">
+                    <?php else: ?>
+                        <input type="text" name="<?= $campoNome ?>" value="<?= htmlspecialchars($valor) ?>">
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="ficha-campo">
+                <em>Não existem campos personalizados definidos.</em>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
 
             <div id="btn-flutuante-guardar">
                 <button type="submit" class="btn">Guardar Alterações</button>
@@ -1056,17 +1125,64 @@ window.addEventListener('scroll', function() {
 </script>
 
 <?php if ($success_message): ?>
-<div id="popup-success" class="popup-overlay">
-    <div class="popup-content">
-        <button onclick="document.getElementById('popup-success').style.display='none';" class="popup-close">&times;</button>
-        <div class="popup-message">
+<!-- Modal de Sucesso -->
+<div id="modal-success" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-icon">
+            <?php if (isset($modal_type) && $modal_type === 'rh'): ?>
+                ✓
+            <?php else: ?>
+                📤
+            <?php endif; ?>
+        </div>
+        <h3 class="modal-title">
+            <?php if (isset($modal_type) && $modal_type === 'rh'): ?>
+                Sucesso!
+            <?php else: ?>
+                Pedido Enviado!
+            <?php endif; ?>
+        </h3>
+        <div class="modal-message">
             <?php echo htmlspecialchars($success_message); ?>
         </div>
-        <div class="popup-actions">
-            <button onclick="document.getElementById('popup-success').style.display='none';" class="popup-btn">Fechar</button>
-        </div>
+        <button onclick="closeModal()" class="modal-button">OK</button>
     </div>
 </div>
+
+<script>
+// Mostrar modal automaticamente se houver mensagem de sucesso
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('modal-success');
+    if (modal) {
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 100);
+    }
+});
+
+function closeModal() {
+    const modal = document.getElementById('modal-success');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
+
+// Fechar modal ao clicar fora dele
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('modal-success');
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// Fechar modal com tecla ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+</script>
 <?php endif; ?>
 
 <script>
@@ -1388,7 +1504,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Adicionar € à remuneração
         const remuneracao = document.querySelector('input[name="remuneracao"]');
         if (remuneracao && remuneracao.value) {
-            remuneracao.value = '€' + remuneracao.value;
+            // REMOVIDO - Não adicionar € automaticamente
+            // remuneracao.value = '€' + remuneracao.value;
         }
 
         // Adicionar id do colaborador ao POST se RH/Admin estiver a editar outro colaborador
@@ -1428,6 +1545,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+<div style="height: 100px;"></div>
 
 </body>
 </html>
