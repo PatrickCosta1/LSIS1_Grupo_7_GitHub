@@ -7,14 +7,16 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['profile'], ['rh', 'admi
 require_once '../../BLL/RH/BLL_equipa_nova.php';
 $equipasBLL = new EquipaNovaManager();
 
-$tipo = $_POST['tipo'] ?? 'colaboradores';
-$responsaveis = $equipasBLL->getResponsaveisPorTipo($tipo);
-$membros = $equipasBLL->getMembrosPorTipo($tipo);
-
 $success = '';
 $error = '';
+$form_submitted = false;
+$tipo = 'colaboradores'; // valor padrão
+$responsaveis = [];
+$membros = [];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Só considera submit real se o botão submit_equipa for enviado
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_equipa'])) {
+    $form_submitted = true;
     $nome = trim($_POST['nome'] ?? '');
     $responsavel_id = $_POST['responsavel_id'] ?? null;
     $elementos = $_POST['elementos'] ?? [];
@@ -30,6 +32,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Preencha todos os campos obrigatórios.";
     }
     // Atualizar listas após submit
+    $responsaveis = $equipasBLL->getResponsaveisPorTipo($tipo);
+    $membros = $equipasBLL->getMembrosPorTipo($tipo);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Apenas atualização do tipo, não mostrar mensagens
+    $tipo = $_POST['tipo'] ?? 'colaboradores';
+    $responsaveis = $equipasBLL->getResponsaveisPorTipo($tipo);
+    $membros = $equipasBLL->getMembrosPorTipo($tipo);
+} else {
+    // Primeira visita à página - carregar dados padrão
     $responsaveis = $equipasBLL->getResponsaveisPorTipo($tipo);
     $membros = $equipasBLL->getMembrosPorTipo($tipo);
 }
@@ -101,9 +112,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <main>
         <h1>Criar Nova Equipa</h1>
-        <?php if ($success): ?><div class="success-message"><?php echo $success; ?></div><?php endif; ?>
-        <?php if ($error): ?><div class="error-message"><?php echo $error; ?></div><?php endif; ?>
-        <form method="POST" class="ficha-form ficha-form-moderna" id="form-equipa-nova">
+        <!-- Mensagens inline de sucesso/erro centralizadas -->
+        <div style="display: flex; justify-content: center;">
+            <?php if ($success): ?>
+                <div class="mensagem-sucesso" style="color: #155724; background: #d4edda; border: 1px solid #c3e6cb; padding: 10px; margin-bottom: 16px; border-radius: 4px;">
+                    <?= htmlspecialchars($success) ?>
+                </div>
+            <?php elseif ($error): ?>
+                <div class="mensagem-erro" style="color: #721c24; background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; margin-bottom: 16px; border-radius: 4px;">
+                    <?= htmlspecialchars($error) ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <form method="POST" class="ficha-form ficha-form-moderna" id="form-equipa-nova" autocomplete="off">
             <div class="ficha-grid">
                 <div class="ficha-campo">
                     <label>Tipo de Equipa:</label>
@@ -148,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
             <div style="text-align:center; margin-top: 24px;">
-                <button type="submit" class="btn">Criar Equipa</button>
+                <button type="submit" class="btn" name="submit_equipa" id="btn-criar-equipa">Criar Equipa</button>
             </div>
         </form>
         <div style="text-align:center; margin-top: 16px;">

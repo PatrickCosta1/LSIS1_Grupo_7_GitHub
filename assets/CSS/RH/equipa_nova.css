@@ -567,3 +567,87 @@ header nav a:hover::before, .btn:hover::before {
 .dropdown-gestao:focus-within .dropdown-menu {
     display: block;
 }
+
+/* Modal de mensagem: centrado, quadrado, efeito de fade-in */
+.modal-mensagem {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(30, 41, 59, 0.18);
+    display: flex !important; /* força flex para garantir centralização */
+    align-items: center !important;
+    justify-content: center !important;
+    animation: fadeInModalBg 0.25s;
+}
+@keyframes fadeInModalBg {
+    from { background: rgba(30,41,59,0); }
+    to { background: rgba(30,41,59,0.18); }
+}
+.modal-mensagem-content {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(3,96,233,0.18);
+    width: 320px;
+    height: 320px;
+    min-width: 200px;
+    min-height: 200px;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    padding: 0 28px;
+    animation: fadeInModal 0.28s;
+}
+@keyframes fadeInModal {
+    from { transform: scale(0.92) translateY(30px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+}
+.modal-mensagem-close {
+    position: absolute;
+    top: 16px; right: 22px;
+    font-size: 1.7rem;
+    color: #888;
+    cursor: pointer;
+    font-weight: bold;
+    transition: color 0.2s;
+    z-index: 2;
+}
+.modal-mensagem-close:hover {
+    color: #0360e9;
+}
+#modal-mensagem-text {
+    font-size: 1.13rem;
+    font-weight: 600;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+.modal-mensagem.modal-success .modal-mensagem-content {
+    border-top: 7px solid #38a169;
+}
+.modal-mensagem.modal-error .modal-mensagem-content {
+    border-top: 7px solid #e53e3e;
+}
+.modal-mensagem.modal-success #modal-mensagem-text {
+    color: #38a169;
+}
+.modal-mensagem.modal-error #modal-mensagem-text {
+    color: #e53e3e;
+}
+@media (max-width: 600px) {
+    .modal-mensagem-content {
+        width: 90vw;
+        height: 90vw;
+        min-width: 0;
+        min-height: 0;
+        padding: 10px 4vw 10px 4vw;
+    }
+    .modal-mensagem-close {
+        top: 8px; right: 10px; font-size: 1.3rem;
+    }
+}

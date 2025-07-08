@@ -356,34 +356,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
-
-                <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
-      <button id="open-chatbot" style="
-          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
-          color:rgb(255, 255, 255);
-          border: none;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          font-size: 28px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          ">
-        ?
-      </button>
-      <iframe
-        id="chatbot-iframe"
-        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
-        title="Ajuda Chatbot"
-        width="350"
-        height="500"
-        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-      </iframe>
     </div>
-    <script src="../../assets/chatbot.js"></script>
 
             <?php elseif ($perfil === 'coordenador'): ?>
                 <?php
@@ -811,10 +784,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Link Gerar Mod 99 -->
             <?php if ($isColab && $isOwnFicha): ?>
                 <div class="ficha-campo" style="grid-column: 1 / -1;">
-                    <a href="mod99_gerar.php" target="_blank" class="btn" style="background:#0360e9;color:#fff;margin-bottom:12px;display:inline-block;text-decoration:none;">
-                        📝 Gerar Mod 99 (PDF)
-                    </a>
-                    <span style="font-size:0.95em;color:#666;margin-left:8px;">Baixe, assine e faça upload do Mod 99 assinado.</span>
+                    <div class="mod99-btn-container" style="text-align:center;">
+                        <a href="mod99_gerar.php" target="_blank" class="mod99-btn">
+                            Gerar Mod 99 (PDF)
+                        </a>
+                    </div>
+                    <div class="mod99-desc" style="text-align:center;">
+                        Baixe, assine e faça upload do Mod 99 assinado.
+                    </div>
+                    <div class="comprovativo-section" style="display:flex; flex-direction:column; align-items:center; margin-top:12px;">
+                        <label class="comprovativo-label" style="margin-bottom:6px;">Comprovativo (Mod. 99) (PDF):</label>
+                        <?php if ($canEditAll || in_array('morada_fiscal', $colabEditable)): ?>
+                            <input type="file" name="comprovativo_morada_fiscal" accept=".pdf,.jpg,.jpeg,.png" style="margin-bottom:8px;">
+                        <?php endif; ?>
+                        <?php if (!empty($colab['comprovativo_morada_fiscal'])): ?>
+                            <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_morada_fiscal']); ?>" target="_blank" class="comprovativo-link">Ver comprovativo atual</a>
+                        <?php endif; ?>
+                    </div>
                 </div>
             <?php endif; ?>
             <!-- Campos fiscais existentes -->
@@ -823,15 +809,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" name="morada_fiscal" value="<?php echo htmlspecialchars($colab['morada_fiscal'] ?? ''); ?>" 
                        pattern="[^º]*" title="Não é permitido o símbolo º" 
                        <?php echo fieldAttr('morada_fiscal', $canEditAll, $colabEditable); ?>>
-                <div class="comprovativo-section">
-                    <label class="comprovativo-label">Comprovativo (Mod. 99) (PDF):</label>
-                    <?php if ($canEditAll || in_array('morada_fiscal', $colabEditable)): ?>
-                        <input type="file" name="comprovativo_morada_fiscal" accept=".pdf,.jpg,.jpeg,.png">
-                    <?php endif; ?>
-                    <?php if (!empty($colab['comprovativo_morada_fiscal'])): ?>
-                        <a href="../../Uploads/comprovativos/<?php echo htmlspecialchars($colab['comprovativo_morada_fiscal']); ?>" target="_blank" class="comprovativo-link">Ver comprovativo atual</a>
-                    <?php endif; ?>
-                </div>
             </div>
             <div class="ficha-campo">
                 <label>Estado Civil:</label>
@@ -1053,6 +1030,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
     </form>
 </main>
+
+<?php if ($perfil === 'colaborador'): ?>
+    <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+      <button id="open-chatbot" style="
+          background: linear-gradient(135deg,rgb(255, 203, 120) 0%,rgb(251, 155, 0) 100%);
+          color:rgb(255, 255, 255);
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+          font-size: 28px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          ">
+        ?
+      </button>
+      <iframe
+        id="chatbot-iframe"
+        src="https://www.chatbase.co/chatbot-iframe/SHUUk9C_zO-W-kHarKtWh"
+        title="Ajuda Chatbot"
+        width="350"
+        height="500"
+        style="display: none; position: absolute; bottom: 70px; right: 0; border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+      </iframe>
+    </div>
+    <script src="../../assets/chatbot.js"></script>
+    <?php endif; ?>
 
     <script>
     window.addEventListener('scroll', function() {

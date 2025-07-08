@@ -59,14 +59,29 @@ header nav a.active {
     color: #e0eaff !important;
 }
 
+/* KPIs: 5 por linha */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 16px;
     margin-top: 36px;
     max-width: 1600px;
     width: 100%;
     padding: 0 20px;
+    justify-items: center;
+}
+
+/* Gráficos: 3 por linha, centralizados */
+.dashboard-main-charts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+    max-width: 1600px;
+    width: 100%;
+    padding: 0 20px;
+    justify-items: center;
+    justify-content: center;
 }
 
 .kpi-card {
@@ -125,176 +140,66 @@ header nav a.active {
     font-weight: 500;
 }
 
-/* Estilos para os gráficos */
-.dashboard-main-charts {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    margin-top: 40px;
-    max-width: 1600px;
-    width: 100%;
-    padding: 0 20px;
-}
-
+/* Centralizar o conteúdo dos cards de gráfico */
 .chart-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 255, 0.9) 100%);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 8px 32px rgba(25, 54, 95, 0.1);
-    transition: all 0.3s ease;
-    min-height: 400px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 350px;
+    overflow: visible;
 }
 
-.chart-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(25, 54, 95, 0.15);
-    border-color: rgba(38, 0, 255, 0.5);
+/* Centralizar a área do gráfico dentro do card */
+.chart-area {
+    flex: 1 1 0;
+    min-height: 250px;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    width: 100%;
+    position: relative;
+    background: none;
+    box-sizing: border-box;
 }
 
-.chart-card-title {
-    color: #19365f;
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-align: center;
-    padding-bottom: 12px;
-    border-bottom: 2px solid rgba(25, 54, 95, 0.1);
-}
-
-
-/* Responsividade extra para gráficos em telas pequenas */
-@media (max-width: 900px) {
-    .chart-card {
-        min-height: 220px;
-    }
-    .chart-area,
-    #chartContainer,
-    #chartIdadeMedia,
-    #chartTempoMedio,
-    #chartNivelHierarquico,
-    #chartGeografia,
-    #chartGenero {
-        min-height: 120px;
-    }
-    .chart-area canvas,
-    #chartContainer canvas,
-    #chartIdadeMedia canvas,
-    #chartTempoMedio canvas,
-    #chartNivelHierarquico canvas,
-    #chartGeografia canvas,
-    #chartGenero canvas {
-        min-height: 100px !important;
-    }
-}
-
+/* Responsividade para 5 KPIs por linha e 3 gráficos por linha */
 @media (max-width: 1400px) {
     .dashboard-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 14px;
     }
-    
     .dashboard-main-charts {
         grid-template-columns: repeat(2, 1fr);
     }
 }
-
 @media (max-width: 1200px) {
     .dashboard-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 12px;
     }
-    
-    .kpi-card {
-        padding: 10px 6px;
-        min-width: 100px;
-    }
-    
-    .kpi-valor {
-        font-size: 1.4rem;
-    }
-    
-    .kpi-titulo {
-        font-size: 0.68rem;
-    }
-    
-    .kpi-descricao {
-        font-size: 0.65rem;
-    }
-    
     .dashboard-main-charts {
         grid-template-columns: repeat(2, 1fr);
     }
 }
-
 @media (max-width: 900px) {
     .dashboard-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
-    
-    .kpi-card {
-        padding: 8px 4px;
-        min-width: 90px;
-    }
-    
-    .kpi-valor {
-        font-size: 1.2rem;
-    }
-    
     .dashboard-main-charts {
         grid-template-columns: 1fr;
     }
-    
-    .chart-card {
-        min-height: 350px;
-        padding: 20px;
-    }
-    
-    .chart-area {
-        min-height: 250px;
-    }
 }
-
 @media (max-width: 600px) {
     .dashboard-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
-    
-    .kpi-card {
-        padding: 8px 3px;
-        min-width: 80px;
-    }
-    
-    .kpi-valor {
-        font-size: 1.1rem;
-    }
-    
-    .kpi-titulo {
-        font-size: 0.62rem;
-        margin-bottom: 4px;
-    }
-    
-    .kpi-descricao {
-        font-size: 0.6rem;
-    }
-    
-    .chart-card {
-        min-height: 300px;
-        padding: 16px;
-    }
-    
-    .chart-card-title {
-        font-size: 1rem;
-        margin-bottom: 16px;
-    }
-    
-    .chart-area {
-        min-height: 200px;
+    .dashboard-main-charts {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -574,30 +479,3 @@ h1 {
     color: #0360e9 !important;
 }
 
-/* Modal Dashboard Custom */
-.modal-dashboard-custom {
-    display: none;
-    position: fixed;
-    z-index: 2000;
-    left: 0; top: 0; right: 0; bottom: 0;
-    width: 100vw; height: 100vh;
-    background: rgba(25,54,95,0.18);
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-}
-.modal-dashboard-content {
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 8px 32px rgba(41,156,243,0.13);
-    padding: 38px 32px 32px 32px;
-    min-width: 320px;
-    max-width: 95vw;
-    text-align: center;
-    position: relative;
-    animation: modalFadeIn 0.25s;
-}
-@keyframes modalFadeIn {
-    from { transform: translateY(-40px) scale(0.98); opacity: 0; }
-    to { transform: translateY(0) scale(1); opacity: 1; }
-}

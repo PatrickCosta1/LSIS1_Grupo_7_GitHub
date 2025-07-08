@@ -369,6 +369,89 @@ class DAL_DashboardRH {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // Novo: Dados detalhados de um colaborador (idade, remuneração, tempo na empresa, cargo)
+    public function getDadosColaboradorById($colaborador_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT 
+                nome,
+                data_nascimento,
+                remuneracao,
+                data_inicio_contrato,
+                cargo
+            FROM colaboradores
+            WHERE id = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$colaborador_id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) return null;
+
+        // Calcular idade
+        $idade = null;
+        if ($row['data_nascimento'] && $row['data_nascimento'] !== '0000-00-00') {
+            $idade = date_diff(date_create($row['data_nascimento']), date_create('now'))->y;
+        }
+
+        // Calcular tempo na empresa
+        $tempo_empresa = null;
+        if ($row['data_inicio_contrato'] && $row['data_inicio_contrato'] !== '0000-00-00') {
+            $dt_inicio = date_create($row['data_inicio_contrato']);
+            $dt_hoje = date_create('now');
+            $diff = date_diff($dt_inicio, $dt_hoje);
+            $tempo_empresa = $diff->y + ($diff->m / 12);
+            $tempo_empresa = round($tempo_empresa, 1);
+        }
+
+        return [
+            'nome' => $row['nome'],
+            'idade' => $idade,
+            'remuneracao' => $row['remuneracao'],
+            'tempo_empresa' => $tempo_empresa,
+            'cargo' => $row['cargo']
+        ];
+    }
+
+    // Novo: Número de alterações contratuais por colaborador
+    public function getNumAlteracoesContratuaisByColaborador($colaborador_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM logs_alteracoes_contratuais WHERE colaborador_id = ?");
+        $stmt->execute([$colaborador_id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? (int)$row['total'] : 0;
+    }
+
+    // Novo: Evolução salarial (remuneração) por colaborador
+    public function getEvolucaoSalarialByColaborador($colaborador_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT data_alteracao, valor_novo
+            FROM logs_alteracoes_contratuais
+            WHERE colaborador_id = ? AND campo = 'remuneracao'
+            ORDER BY data_alteracao ASC
+        ");
+        $stmt->execute([$colaborador_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Novo: Número de formações feitas por colaborador
+    public function getNumFormacoesByColaborador($colaborador_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM inscricao_formacoes WHERE colaborador_id = ?");
+        $stmt->execute([$colaborador_id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? (int)$row['total'] : 0;
+    }
+
+    // Novo: Número de pedidos de férias por colaborador
+    public function getNumPedidosFeriasByColaborador($colaborador_id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM pedidos_ferias WHERE colaborador_id = ?");
+        $stmt->execute([$colaborador_id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? (int)$row['total'] : 0;
+    }
 }
 // Nenhuma alteração necessária para centralização dos gráficos
 ?>
