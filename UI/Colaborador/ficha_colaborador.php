@@ -396,7 +396,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <a href="../Comuns/logout.php">Sair</a>
             <?php elseif ($perfil === 'rh'): ?>
-                    <div class="dropdown-equipas">
+                     <div class="dropdown-equipas">
                 <a href="../RH/equipas.php" class="equipas-link">
                     Equipas
                     <span class="seta-baixo">&#9662;</span>
@@ -423,6 +423,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="dropdown-menu">
                     <a href="../RH/gerir_beneficios.php">Gerir Benefícios</a>
                     <a href="../RH/gerir_formacoes.php">Gerir Formações</a>
+                    <a href="../RH/gerir_recibos.php">Submeter Recibos</a>
+                    <a href="../RH/campos_personalizados.php">Campos Personalizados</a>
                 </div>
             </div>
             <a href="../Comuns/notificacoes.php">Notificações</a>
@@ -435,7 +437,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <a href="../Colaborador/ficha_colaborador.php">Perfil Colaborador</a>
                 </div>
             </div>
-            <a href="../Comuns/logout.php">Sair</a> 
+            <a href="../Comuns/logout.php">Sair</a>
                 
             <?php elseif ($perfil === 'admin'): ?>
                 <a href="../Admin/utilizadores.php">Utilizadores</a>
