@@ -229,13 +229,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['formacao_id'])) {
         <div id="modalInscricao" class="formacao-modal">
             <div class="modal-content">
                 <span class="close" onclick="fecharModalInscricao()">&times;</span>
-                <h2>Confirmar Inscrição</h2>
-                <p>Deseja inscrever-se na formação <strong id="modalInscricaoNome"></strong>?</p>
+                <div class="modal-icon">
+                    <svg fill="none" viewBox="0 0 48 48">
+                        <circle cx="24" cy="24" r="22" stroke="#299cf3" stroke-width="3" fill="#eaf6ff"/>
+                        <path d="M15 25.5L22 32L34 18" stroke="#299cf3" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h2>
+                    Confirmação de Inscrição
+                </h2>
+                <p>
+                    Deseja inscrever-se na formação <strong id="modalInscricaoNome"></strong>?
+                </p>
                 <div class="modal-actions">
                     <form method="post" id="formInscricao">
                         <input type="hidden" name="formacao_id" id="modalFormacaoId">
-                        <button type="submit" class="btn-confirmar">Confirmar Inscrição</button>
-                        <button type="button" class="btn-cancelar" onclick="fecharModalInscricao()">Cancelar</button>
+                        <button type="submit" class="btn-confirmar">
+                            <svg width="20" height="20" fill="#fff" style="vertical-align:middle;" viewBox="0 0 24 24">
+                                <path d="M2 21l21-9-21-9v7l15 2-15 2z"/>
+                            </svg>
+                            Confirmar Inscrição
+                        </button>
+                        <button type="button" class="btn-cancelar" onclick="fecharModalInscricao()">
+                            <svg width="20" height="20" fill="#299cf3" style="vertical-align:middle;" viewBox="0 0 24 24">
+                                <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11l4.89 4.89-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41l-4.89-4.89 4.89-4.89a1 1 0 0 0 0-1.41z"/>
+                            </svg>
+                            Cancelar
+                        </button>
                     </form>
                 </div>
             </div>

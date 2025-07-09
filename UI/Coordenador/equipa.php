@@ -135,8 +135,6 @@ if (!$coordenador_colab_id) {
                         <?php
                         // Não mostrar o próprio coordenador na lista OU destacar visualmente
                         if ($c['id'] == $coordenador_colab_id) {
-                            // Pode comentar a linha abaixo para não mostrar o coordenador
-                            // continue;
                             $isSelf = true;
                         } else {
                             $isSelf = false;
@@ -155,7 +153,7 @@ if (!$coordenador_colab_id) {
                         <td><?php echo htmlspecialchars($c['cargo']); ?></td>
                         <td><!-- Última Atividade --></td>
                         <td>
-                            <a class="btn-azul-ficha" href="../Colaborador/ficha_colaborador.php" title="Ver Ficha">
+                            <a class="btn-azul-ficha" href="../Colaborador/ficha_colaborador.php?id=<?php echo $c['id']; ?>" title="Ver Ficha">
                                 Ver Ficha
                             </a>
                         </td>
