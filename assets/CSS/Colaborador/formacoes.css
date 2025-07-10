@@ -495,129 +495,111 @@ main .descricao-inicial {
     }
 }
 
-/* Modal de Inscrição Moderno */
+/* Modal de Inscrição Simples e Centrado */
 #modalInscricao .modal-content {
-    border: 0;
-    background: linear-gradient(135deg, #f7fbff 0%, #eaf6ff 100%);
-    box-shadow: 0 8px 32px rgba(41,156,243,0.18), 0 1.5px 0 #299cf3 inset;
-    border-radius: 18px;
-    padding: 0 0 24px 0;
-    max-width: 410px;
-    min-width: 320px;
-    animation: modalSlideIn 0.3s cubic-bezier(.4,1.6,.6,1);
-    position: relative;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(25,54,95,0.13);
+    max-width: 350px;
+    min-width: 0;
+    margin: auto;
+    padding: 32px 24px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#modalInscricao .close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    color: #aaa;
+    border: none;
+    font-size: 26px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+}
+
+#modalInscricao .close:hover {
+    color: #299cf3;
+    background: #f2f6fa;
+    border-radius: 50%;
+}
+
+#modalInscricao .modal-icon {
+    display: none;
 }
 
 #modalInscricao .modal-content h2 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.35rem;
-    color: #299cf3;
+    color: #23408e;
+    font-size: 1.18rem;
     font-weight: 700;
-    margin: 0;
-    padding: 32px 32px 0 32px;
-    background: none;
-    border-radius: 18px 18px 0 0;
-    border-bottom: 0;
-    box-shadow: none;
+    margin: 0 0 16px 0;
+    padding: 0;
+    text-align: center;
+    width: 100%;
 }
 
 #modalInscricao .modal-content p {
     color: #23408e;
-    font-size: 1.08rem;
-    margin: 18px 32px 0 32px;
+    font-size: 1.02rem;
+    margin: 0 0 24px 0;
     text-align: center;
     font-weight: 500;
+    width: 100%;
 }
 
 #modalInscricao .modal-actions {
-    padding: 0 32px 24px 32px;
     display: flex;
-    gap: 14px;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
     justify-content: center;
-    margin-top: 18px;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+#modalInscricao .btn-confirmar,
+#modalInscricao .btn-cancelar {
+    width: 180px;
+    margin: 0 auto;
+    border-radius: 7px;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 11px 0;
+    display: block;
+    text-align: center;
 }
 
 #modalInscricao .btn-confirmar {
-    background: linear-gradient(90deg, #23408e 0%, #709bff 100%);
+    background: #299cf3;
     color: #fff;
     border: none;
-    padding: 12px 28px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 1.05rem;
-    box-shadow: 0 2px 8px rgba(41,156,243,0.10);
-    transition: background 0.2s, transform 0.15s;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 7px;
+    transition: background 0.18s;
 }
 
 #modalInscricao .btn-confirmar:hover {
-    background: linear-gradient(90deg, #709bff 0%, #003c69 100%);
-    transform: translateY(-2px) scale(1.03);
+    background: #23408e;
 }
 
 #modalInscricao .btn-cancelar {
-    background: #fff;
-    color: #299cf3;
-    border: 2px solid #299cf3;
-    padding: 12px 28px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 1.05rem;
-    transition: background 0.2s, color 0.2s, border 0.2s, transform 0.15s;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 7px;
+    background: #f2f6fa;
+    color: #23408e;
+    border: 1.5px solid #ccd;
+    transition: background 0.18s, color 0.18s;
 }
 
 #modalInscricao .btn-cancelar:hover {
     background: #eaf6ff;
-    color: #19365f;
-    border-color: #19365f;
-    transform: translateY(-1px) scale(1.02);
-}
-
-#modalInscricao .close {
-    top: 18px;
-    right: 22px;
-    background: #eaf6ff;
     color: #299cf3;
-    border: 2px solid #eaf6ff;
-    width: 36px;
-    height: 36px;
-    font-size: 28px;
-    transition: background 0.2s, color 0.2s;
-}
-
-#modalInscricao .close:hover {
-    background: #fff;
-    color: #19365f;
-    border-color: #299cf3;
-}
-
-/* Ícone de Confirmação */
-#modalInscricao .modal-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 24px;
-    margin-bottom: 0;
-}
-
-#modalInscricao .modal-icon svg {
-    width: 54px;
-    height: 54px;
-    display: block;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(41,156,243,0.10);
-    padding: 7px;
 }
 
 /* Responsive */
